@@ -11,8 +11,8 @@
 .fig1 .f1-control:focus-visible { outline:3px solid #b396ce; outline-offset:3px; }
 .fig1 select.f1-control { min-width:61px; padding:0 8px; }
 .fig1 .f1-icon { width:12px; height:12px; fill:currentColor; }
-.fig1 .f1-scroll { padding:13px 16px 0; overflow-x:auto; scrollbar-width:thin; overscroll-behavior-x:contain; }
-.fig1 .f1-diagram { width:100%; height:auto; display:block; min-width:900px; overflow:visible; font-family:inherit; fill:#252c35; }
+.fig1 .f1-scroll { padding:13px 16px 0; overflow:visible; }
+.fig1 .f1-diagram { width:100%; height:auto; display:block; min-width:0; overflow:visible; font-family:inherit; fill:#252c35; }
 .fig1 .f1-panel-title { font-size:21px; font-weight:700; }
 .fig1 .f1-panel-sub { font-size:13px; fill:#7c838b; }
 .fig1 .f1-gpu { font-size:15px; fill:#555e68; }
@@ -75,6 +75,6 @@
  .fig1 .f1-status + .f1-status { border-left:0; border-top:1px solid #f0f1f4; }
  .fig1 .f1-legend { justify-content:flex-start; gap:10px 18px; padding:13px 16px; }
  .fig1 .f1-caption { padding:0 16px 15px; text-align:left; }
- .fig1 .f1-scroll-hint { display:block; }
+ .fig1 .f1-scroll-hint { display:none; }
 }
 @media (prefers-reduced-motion:reduce) { .fig1 .f1-surface,.fig1 .f1-control { transition:none; } }

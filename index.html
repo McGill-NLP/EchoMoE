@@ -358,7 +358,7 @@
     <div class="columns is-centered">
       <div class="column is-10">
         <h2 class="title is-3">Problem: Communication bottleneck of expert parallelism</h2>
-        <div class="content has-text-justified">
+        <div class="content">
           <p>
             Mixture-of-Experts (MoE) models enable substantial growth in parameter count while keeping per-token computation modest through sparse expert activation. Serving frontier MoE models requires distributing experts across many GPUs using <strong>Expert Parallelism (EP)</strong>.
           </p>
@@ -381,7 +381,7 @@
     <div class="columns is-centered">
       <div class="column is-10">
         <h2 class="title is-3">Observation: Nearby MoE layers receive similar inputs</h2>
-        <div class="content has-text-justified">
+        <div class="content">
           <p>
             Each transformer block adds its output to the residual stream rather than overwriting it, so a token's hidden state changes gradually with depth and nearby MoE layers read highly similar inputs.
           </p>
@@ -396,7 +396,7 @@
             <span class="insight-text">of the variance in the next MoE input is predictable from the previous one with a simple affine predictor</span>
           </div>
         </div>
-        <div class="content has-text-justified">
+        <div class="content">
           <p>
             Yet standard EP still communicates the full activation at every layer, even when much of it is predictable from an earlier state. <strong>Given a cached activation from an earlier layer, we only need to communicate the change.</strong>
           </p>
@@ -413,7 +413,7 @@
     <div class="columns is-centered">
       <div class="column is-10">
         <h2 class="title is-3">Method: Communicate the change</h2>
-        <div class="content has-text-justified">
+        <div class="content">
           <p>
             EchoMoE partitions the MoE layers into groups of $s$ consecutive layers. Full-width hidden states are transmitted once per layer group rather than at every MoE layer.
           </p>
@@ -477,7 +477,7 @@
           <strong>Figure 2. Store once, reuse across layers.</strong> A reference is shared once per layer group, and every following layer communicates only the compressed change. Routing is unchanged.
         </p>
 
-        <div class="content has-text-justified" style="margin-top: 1.5rem;">
+        <div class="content" style="margin-top: 1.5rem;">
           <h4 class="title is-5">Retrofitting an existing model</h4>
           <p>
             EchoMoE preserves the original model's behavior by first initializing the compressors to minimize activation reconstruction error, then training end-to-end to match the uncompressed model. This requires <strong>8,500&times; fewer training tokens</strong> than full pretraining.
@@ -495,7 +495,7 @@
     <div class="columns is-centered">
       <div class="column is-10">
         <h2 class="title is-3">Results: Less RDMA traffic, higher throughput</h2>
-        <div class="content has-text-justified">
+        <div class="content">
           <p>
             We evaluate EchoMoE on Qwen3-30B-A3B across 18 benchmarks spanning knowledge &amp; reasoning, mathematics, coding and instruction following, served with vLLM at EP32 on four H100 nodes.
           </p>
@@ -519,7 +519,7 @@
         <p class="fig-caption">
           <strong>Figure 3. Less communication translates directly into higher throughput.</strong> EchoMoE keeps task performance close to the uncompressed model and <strong>outperforms the plain compression baseline</strong> at every level of RDMA savings, while throughput rises steadily as more traffic is saved. Hover over a point for details.
         </p>
-        <div class="content has-text-justified">
+        <div class="content">
           <p>
             <strong>EchoMoE reduces RDMA traffic by 58% with only a 3.8 pp drop in task performance</strong>, and improves throughput by <strong>22.6%</strong>. Milder compression drops only 2.0 pp, and more aggressive compression improves throughput by 42.9%.
           </p>
@@ -589,7 +589,7 @@
     <div class="columns is-centered">
       <div class="column is-10">
         <h2 class="title is-3">Inference: Where the speedup comes from</h2>
-        <div class="content has-text-justified">
+        <div class="content">
           <p>
             <strong>EchoMoE shortens prefill mainly by reducing communication.</strong> Prefill communication drops from 115 to 64 ms, while compression adds only a few milliseconds.
           </p>
@@ -629,7 +629,7 @@
         <p class="fig-caption">
           <strong>Figure 6. The slower the network, the larger the gain.</strong> Over Ethernet, EchoMoE improves throughput by up to 2.38&times; with BF16 and 3.24&times; with FP8 communication, while the same configurations give small gains on InfiniBand. Hover over the chart for each configuration.
         </p>
-        <div class="content has-text-justified">
+        <div class="content">
           <p>
             <strong>Gains grow on slower networks.</strong> Over bandwidth-constrained Ethernet (about 23 Gb/s per node), EchoMoE improves inference throughput by up to <strong>2.38&times;</strong>, and up to <strong>3.24&times;</strong> with FP8 communication, paving the way for wide-area distributed inference.
           </p>
@@ -646,7 +646,7 @@
     <div class="columns is-centered">
       <div class="column is-10">
         <h2 class="title is-3">Generality: Other MoE models</h2>
-        <div class="content has-text-justified">
+        <div class="content">
           <p>
             Applied to Gemma&nbsp;4, Kanana-2, Nemotron-3.5 and Moonlight, EchoMoE roughly <strong>halves</strong> their RDMA traffic with a 2.4&ndash;5.9 pp task performance drop. EchoMoE also composes cleanly with FP8 quantization, with no additional loss in task performance.
           </p>
@@ -663,7 +663,7 @@
     <div class="columns is-centered">
       <div class="column is-10">
         <h2 class="title is-3">Conclusion</h2>
-        <div class="content has-text-justified">
+        <div class="content">
           <p>
             EchoMoE exploits the cross-layer predictability of MoE inputs by caching an earlier activation as a reference and <strong>communicating only the compressed change</strong>. It establishes cross-layer predictability as a practical mechanism for substantially reducing EP communication in existing MoE models, and could also be incorporated as a novel architecture for pretraining.
           </p>
@@ -705,7 +705,7 @@
     <div class="columns is-centered">
       <div class="column is-10">
         <h2 class="title is-4">Acknowledgements</h2>
-        <div class="content has-text-justified is-size-7 has-text-grey">
+        <div class="content is-size-7 has-text-grey">
           <p>
             We acknowledge the support of the 2026 Google TPU Research &amp; Education Awards (TPU Builders Research Program). Siva Reddy is supported by the Canada CIFAR AI Chairs program. We thank the Mila IDT team and the Digital Research Alliance of Canada for providing the computational resources used in this work. We also thank members of McGill University, Mila, and ServiceNow Research, especially Tom&aacute;s Vergara Browne and Spandana Gella.
           </p>
