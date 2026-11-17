@@ -1,0 +1,58 @@
+# The Gemma 4 26B-A4B teacher: SFT of the base model with the instruct chat template
+# (`configs/models/gemma4-26b-a4b.yaml`) on Dolci-Instruct, response-token cross entropy only.
+# Two nodes, EP 8, 16-way data parallel, 1,048,576 tokens per update, two epochs of the packed
+# 8K layout: 2,252 updates. Megatron fuses no GELU-tanh bias and activation, and the five global
+# layers (head dim 512) run on `echomoe.training.packed_attention`, which has no CP.
+model: outputs/gemma4-26b-a4b/base
+data:
+  tokenized_dataset: outputs/gemma4-26b-a4b/data/dolci/tokens
+  layout: outputs/gemma4-26b-a4b/data/dolci/train
+  validation_layout: outputs/gemma4-26b-a4b/data/dolci/validation
+  order_seed: 42
+parallelism:
+  expert_parallel_size: 8
+  context_parallel_size: 1
+  rank_order: tp-cp-ep-dp-pp
+  context_parallel_communication: p2p
+  expected_world_size: 16
+  expected_nodes: 2
+  gpus_per_node: 8
+batch:
+  gradient_accumulation_steps: 8
+  global_batch_size: 128
+  sequence_length: 8192
+dispatcher:
+  type: deepep
+schedule:
+  epochs: 2
+  learning_rate: 2.0e-05
+  minimum_learning_rate: 2.0e-06
+  warmup_steps: 200
+  weight_decay: 0.1
+optimizer:
+  beta1: 0.9
+  beta2: 0.999
+  epsilon: 1.0e-08
+  decoupled_weight_decay: true
+runtime:
+  seed: 42
+  gradient_clip: 1.0
+  recompute: full
+  recompute_num_layers: 1
+  apply_rope_fusion: true
+  bias_activation_fusion: false
+  keep_last_checkpoints: 2
+  moe_permute_fusion: true
+  save_interval_steps: 226
+  evaluation_interval_steps: 226
+  output_dir: outputs/gemma4-26b-a4b/teacher
+  wandb_mode: offline
+  wandb_project: echomoe
+  wandb_name: initial-sft-gemma4-26b-a4b-dolci1m-ce-seed42-2n
+  wandb_group: initial-sft
+  wandb_job_type: sft
+  wandb_tags:
+  - initial-sft
+  - gemma4-26b-a4b
+  - dolci-instruct
+  - ep8

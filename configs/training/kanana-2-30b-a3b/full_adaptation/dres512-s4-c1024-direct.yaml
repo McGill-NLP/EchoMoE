@@ -1,0 +1,109 @@
+# Kanana-2-30B-A3B dres512-s4-c1024-direct, full-model adaptation on 4 nodes: 4,097 updates of 128
+# packs over 2e9 Dolmino tokens and two passes of Dolci (Table 3). References at MoE
+# layers 0, 4, ..., 44 of 47.
+run:
+  kind: mixed_recovery
+  seed: 42
+  output_dir: outputs/kanana-2-30b-a3b/runs/dres512-s4-c1024-full-adaptation
+models:
+  teacher: outputs/kanana-2-30b-a3b/teacher
+  student:
+    compressor_initialization: outputs/kanana-2-30b-a3b/fit/dres512-s4-c1024-direct.safetensors
+    folded: true
+data:
+  order_seed: 42
+  mix_seed: 42
+  mixing: {kind: annealed_random, anneal_start: 0.667, end_dolci_fraction: 0.9}
+  sources:
+    dolmino:
+      tokenized_dataset: outputs/kanana-2-30b-a3b/data/dolmino/tokens
+      train_layout: outputs/kanana-2-30b-a3b/data/dolmino/train
+      train_teacher_targets: outputs/kanana-2-30b-a3b/targets/dolmino-train
+      validation_layout: outputs/kanana-2-30b-a3b/data/dolmino/validation
+      validation_teacher_targets: outputs/kanana-2-30b-a3b/targets/dolmino-validation
+      token_budget: 2000000000
+      passes: 1
+    dolci:
+      tokenized_dataset: outputs/kanana-2-30b-a3b/data/dolci/tokens
+      train_layout: outputs/kanana-2-30b-a3b/data/dolci/train
+      train_teacher_targets: outputs/kanana-2-30b-a3b/targets/dolci-train
+      validation_layout: outputs/kanana-2-30b-a3b/data/dolci/validation
+      validation_teacher_targets: outputs/kanana-2-30b-a3b/targets/dolci-validation
+      token_budget: null
+      passes: 2
+loss:
+  target_top_m: 1024
+  kl_weight: 1.0
+  lm_weight: 0.01
+  position_chunk_size: 128
+compressor:
+  sides: {dispatch: true, combine: true}
+  dispatch:
+    rank: 512
+    variant: residual
+    bypass_layers: []
+    reference:
+      schedule: fixed
+      lead: 1
+      references: [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44]
+  combine: {rank: 1024, variant: plain, owner: direct}
+  validation: {route_mass_atol: 1.0e-06}
+  skipped_layers: []
+optimizer:
+  beta1: 0.9
+  beta2: 0.999
+  epsilon: 1.0e-08
+  weight_decay: 0.0
+  gradient_clip: 1.0
+  decoupled_weight_decay: false
+  parameter_groups:
+    dense_backbone: {learning_rate: 2.0e-05, minimum_learning_rate: 2.0e-06}
+    router: {learning_rate: 1.0e-05, minimum_learning_rate: 1.0e-06}
+    experts: {learning_rate: 3.0e-05, minimum_learning_rate: 3.0e-06}
+    expert_factor: {learning_rate: 3.0e-05, minimum_learning_rate: 3.0e-06}
+    dispatch_compressor: {learning_rate: 5.0e-05, minimum_learning_rate: 5.0e-06}
+    dispatch_reference: {learning_rate: 5.0e-05, minimum_learning_rate: 5.0e-06}
+    combine_compressor: {learning_rate: 5.0e-05, minimum_learning_rate: 5.0e-06}
+# warmup is 5 % of the updates
+scheduler: {family: cosine, warmup_steps: 205}
+batch: {micro_batch_size: 1, gradient_accumulation_steps: 4, global_batch_size: 128}
+parallelism:
+  tensor_parallel_size: 1
+  pipeline_parallel_size: 1
+  expert_parallel_size: 8
+  context_parallel_size: 1
+  rank_order: tp-cp-ep-dp-pp
+  context_parallel_communication: null
+  dispatcher: deepep
+  expected_world_size: 32
+  expected_nodes: 4
+  gpus_per_node: 8
+  ddp:
+    use_distributed_optimizer: true
+    grad_reduce_in_fp32: false
+    overlap_grad_reduce: true
+    overlap_param_gather: true
+    average_in_collective: false
+    bucket_size: 200000000
+    pad_buckets_for_high_nccl_busbw: true
+runtime:
+  recompute: full
+  recompute_num_layers: 4
+  attention_backend: fused
+  distributed_timeout_seconds: 1800
+  apply_rope_fusion: true
+  bias_activation_fusion: true
+  moe_router_fusion: true
+  moe_grouped_gemm: true
+  masked_softmax_fusion: false
+  moe_permute_fusion: true
+  compile_regions: true
+  matmul_precision: high
+checkpoint: {save_interval_steps: 200, keep_last: 2, resume_from: null}
+evaluation: {interval_steps: 400, at_start: true, batches: all}
+logging:
+  wandb:
+    mode: offline
+    project: echomoe
+    group: full-adaptation
+    job_type: compressor

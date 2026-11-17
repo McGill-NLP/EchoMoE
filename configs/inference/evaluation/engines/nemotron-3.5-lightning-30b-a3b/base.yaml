@@ -1,0 +1,12 @@
+# Nemotron 3.5 Lightning 30B-A3B through vLLM's own model (`base-vllm`): the base-model profile
+# without prefix caching, which vLLM 0.21 leaves off for hybrid models by default (its Mamba cache
+# modes are experimental), as the reported servers ran.
+kind: vllm_server
+tensor_parallel_size: 1
+data_parallel_size: 8
+expert_parallel: true
+all2all_backend: allgather_reducescatter
+attention_backend: FLASHINFER
+performance_mode: throughput
+prefix_caching: false
+eplb: false

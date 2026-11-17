@@ -1,0 +1,882 @@
+# The 27-task report-core suite.
+#
+# Each task entry, resolved against its sampling profile, is hashed into protocol_identity, which
+# seeds every lm-eval generation: any edit here, comments aside, resamples those tasks. That is why
+# field names and values (e.g. `arm`) stay as they are.
+suite: report_core
+tasks:
+- id: mmlu_5shot
+  family: mmlu
+  domain: knowledge_reasoning
+  arm: base_nochat
+  runner: lm_eval
+  task: mmlu
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: cais/mmlu
+  dataset_revision: c30699e8356da336a370243923dbaf21066bb9fe
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 5
+  apply_chat_template: false
+  enable_thinking: false
+  reasoning_style: direct
+  max_context: 8192
+  max_generation: 1
+  stop: []
+  sampling_profile: no_generation
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: native
+    k: null
+  metrics:
+    primary: acc
+    report:
+    - acc
+- id: arc_easy_5shot
+  family: arc_easy
+  domain: knowledge_reasoning
+  arm: base_nochat
+  runner: lm_eval
+  task: arc_easy
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: allenai/ai2_arc
+  dataset_revision: 210d026faf9955653af8916fad021475a3f00453
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 5
+  apply_chat_template: false
+  enable_thinking: false
+  reasoning_style: direct
+  max_context: 8192
+  max_generation: 1
+  stop: []
+  sampling_profile: no_generation
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: native
+    k: null
+  metrics:
+    primary: acc_norm
+    report:
+    - acc_norm
+- id: arc_challenge_5shot
+  family: arc_challenge
+  domain: knowledge_reasoning
+  arm: base_nochat
+  runner: lm_eval
+  task: arc_challenge
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: allenai/ai2_arc
+  dataset_revision: 210d026faf9955653af8916fad021475a3f00453
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 5
+  apply_chat_template: false
+  enable_thinking: false
+  reasoning_style: direct
+  max_context: 8192
+  max_generation: 1
+  stop: []
+  sampling_profile: no_generation
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: native
+    k: null
+  metrics:
+    primary: acc_norm
+    report:
+    - acc_norm
+- id: hellaswag_5shot
+  family: hellaswag
+  domain: knowledge_reasoning
+  arm: base_nochat
+  runner: lm_eval
+  task: hellaswag
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: Rowan/hellaswag
+  dataset_revision: 218ec52e09a7e7462a5400043bb9a69a41d06b76
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 5
+  apply_chat_template: false
+  enable_thinking: false
+  reasoning_style: direct
+  max_context: 8192
+  max_generation: 1
+  stop: []
+  sampling_profile: no_generation
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: native
+    k: null
+  metrics:
+    primary: acc_norm
+    report:
+    - acc_norm
+- id: mmlu_pro_5shot_cot
+  family: mmlu_pro
+  domain: knowledge_reasoning
+  arm: base_nochat
+  runner: lm_eval
+  task: mmlu_pro
+  task_revision: lm-eval-0.4.12/task-3.1
+  dataset_repository: TIGER-Lab/MMLU-Pro
+  dataset_revision: b189ec765aa7ed75c8acfea42df31fdae71f97be
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 5
+  apply_chat_template: false
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 8192
+  max_generation: 2048
+  stop:
+  - 'Question:'
+  sampling_profile: greedy
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: mmlu_redux_5shot
+  family: mmlu_redux
+  domain: knowledge_reasoning
+  arm: base_nochat
+  runner: lm_eval
+  task: mmlu_redux_generative
+  task_revision: lm-eval-0.4.12/task-4.0
+  dataset_repository: fxmarty/mmlu-redux-2.0-ok
+  dataset_revision: 8dd06e599d20d57e83b590d497c95869a2d18781
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 5
+  apply_chat_template: false
+  enable_thinking: false
+  reasoning_style: direct
+  max_context: 8192
+  max_generation: 32
+  stop:
+  - </s>
+  sampling_profile: greedy
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: bbh_3shot_cot
+  family: bbh
+  domain: knowledge_reasoning
+  arm: base_nochat
+  runner: lm_eval
+  task: bbh_cot_fewshot
+  task_revision: lm-eval-0.4.12/task-4.0
+  dataset_repository: SaylorTwift/bbh
+  dataset_revision: b5306be6f827cfafbb545ff5a51f96916029b0fd
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 3
+  apply_chat_template: false
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 8192
+  max_generation: 1024
+  stop:
+  - </s>
+  - Q
+  - '
+
+
+    '
+  sampling_profile: greedy
+  metric_filter: get-answer
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: mmlu_chat_cot
+  family: mmlu
+  domain: knowledge_reasoning
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: mmlu_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: cais/mmlu
+  dataset_revision: c30699e8356da336a370243923dbaf21066bb9fe
+  prompt_revision: local-mmlu-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-chat-choice-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: mmlu_pro_chat_cot
+  family: mmlu_pro
+  domain: knowledge_reasoning
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: mmlu_pro_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: TIGER-Lab/MMLU-Pro
+  dataset_revision: b189ec765aa7ed75c8acfea42df31fdae71f97be
+  prompt_revision: local-mmlu_pro-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-chat-choice-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: mmlu_redux_chat_cot
+  family: mmlu_redux
+  domain: knowledge_reasoning
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: mmlu_redux_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: fxmarty/mmlu-redux-2.0-ok
+  dataset_revision: 8dd06e599d20d57e83b590d497c95869a2d18781
+  prompt_revision: local-mmlu_redux-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-chat-choice-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: arc_easy_chat_cot
+  family: arc_easy
+  domain: knowledge_reasoning
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: arc_easy_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: allenai/ai2_arc
+  dataset_revision: 210d026faf9955653af8916fad021475a3f00453
+  prompt_revision: local-arc_easy-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-chat-choice-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: arc_challenge_chat_cot
+  family: arc_challenge
+  domain: knowledge_reasoning
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: arc_challenge_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: allenai/ai2_arc
+  dataset_revision: 210d026faf9955653af8916fad021475a3f00453
+  prompt_revision: local-arc_challenge-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-chat-choice-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: hellaswag_chat_cot
+  family: hellaswag
+  domain: knowledge_reasoning
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: hellaswag_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: Rowan/hellaswag
+  dataset_revision: 218ec52e09a7e7462a5400043bb9a69a41d06b76
+  prompt_revision: local-hellaswag-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-chat-choice-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: bbh_chat_cot
+  family: bbh
+  domain: knowledge_reasoning
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: bbh_cot_zeroshot
+  task_revision: lm-eval-0.4.12/task-3.0
+  dataset_repository: SaylorTwift/bbh
+  dataset_revision: b5306be6f827cfafbb545ff5a51f96916029b0fd
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: flexible-extract
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: gpqa_diamond_chat_cot
+  family: gpqa_diamond
+  domain: knowledge_reasoning
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: gpqa_diamond_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: Idavidrein/gpqa
+  dataset_revision: 633f5ee89ab8ad4522a9f850766b73f62147ffdd
+  prompt_revision: local-gpqa-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-avg-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 10
+  root_seed: 42
+  aggregation:
+    method: mean
+    k: 10
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: gsm8k_5shot_cot
+  family: gsm8k
+  domain: math
+  arm: base_nochat
+  runner: lm_eval
+  task: gsm8k_cot
+  task_revision: lm-eval-0.4.12/task-3.0
+  dataset_repository: openai/gsm8k
+  dataset_revision: 740312add88f781978c0658806c59bc2815b9866
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 5
+  apply_chat_template: false
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 8192
+  max_generation: 2048
+  stop:
+  - 'Q:'
+  - </s>
+  - <|im_end|>
+  sampling_profile: greedy
+  metric_filter: strict-match
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: exact_match
+    report:
+    - exact_match
+    - extraction_failed
+    - truncated
+- id: math500_base_cot
+  family: math500
+  domain: math
+  arm: base_nochat
+  runner: lm_eval
+  task: minerva_math500
+  task_revision: lm-eval-0.4.12/task-3.0
+  dataset_repository: HuggingFaceH4/MATH-500
+  dataset_revision: 6e4ed1a2a79af7d8630a6b768ec859cb5af4d3be
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 4
+  apply_chat_template: false
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 8192
+  max_generation: 2048
+  stop:
+  - 'Problem:'
+  sampling_profile: greedy
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: math_verify
+    report:
+    - math_verify
+    - extraction_failed
+    - truncated
+- id: gsm8k_chat_cot
+  family: gsm8k
+  domain: math
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: gsm8k_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: openai/gsm8k
+  dataset_revision: 740312add88f781978c0658806c59bc2815b9866
+  prompt_revision: local-gsm8k-chat-cot-v2
+  grader_revision: lm-eval-0.4.12+local-math-boxed-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: math_verify
+    report:
+    - math_verify
+    - extraction_failed
+    - truncated
+- id: math500_chat_cot
+  family: math500
+  domain: math
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: math500_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: HuggingFaceH4/MATH-500
+  dataset_revision: 6e4ed1a2a79af7d8630a6b768ec859cb5af4d3be
+  prompt_revision: local-math500-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-math-boxed-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: single
+    k: null
+  metrics:
+    primary: math_verify
+    report:
+    - math_verify
+    - extraction_failed
+    - truncated
+- id: aime24_chat_cot
+  family: aime24
+  domain: math
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: aime24_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: Maxwell-Jia/AIME_2024
+  dataset_revision: 8d88b2876a82a080e2f172cc9b25d0d9d2cb4792
+  prompt_revision: local-aime-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-avg-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 32768
+  max_generation: 24576
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 64
+  root_seed: 42
+  aggregation:
+    method: mean
+    k: 64
+  metrics:
+    primary: math_verify
+    report:
+    - math_verify
+    - extraction_failed
+    - truncated
+- id: aime25_chat_cot
+  family: aime25
+  domain: math
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: aime25_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: math-ai/aime25
+  dataset_revision: 563bb8404243c5f09de6ec262f2db674fe5bce9b
+  prompt_revision: local-aime-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-avg-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 32768
+  max_generation: 24576
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 64
+  root_seed: 42
+  aggregation:
+    method: mean
+    k: 64
+  metrics:
+    primary: math_verify
+    report:
+    - math_verify
+    - extraction_failed
+    - truncated
+- id: hmmt_feb_2025_chat_cot
+  family: hmmt_feb_2025
+  domain: math
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: hmmt_feb_2025_chat_cot
+  task_revision: lm-eval-0.4.12/task-1.0
+  dataset_repository: MathArena/hmmt_feb_2025
+  dataset_revision: 6fdc4277120810ff75aa22d2d5489b91f7a262a1
+  prompt_revision: local-hmmt-chat-cot-v1
+  grader_revision: lm-eval-0.4.12+local-avg-v1
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: cot
+  max_context: 32768
+  max_generation: 24576
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 64
+  root_seed: 42
+  aggregation:
+    method: mean
+    k: 64
+  metrics:
+    primary: math_verify
+    report:
+    - math_verify
+    - extraction_failed
+    - truncated
+- id: humaneval_plus_chat
+  family: humaneval_plus
+  domain: code
+  arm: chat_zero_shot
+  runner: evalplus
+  task: humaneval_instruct
+  task_revision: evalplus-0.3.1/humanevalplus-v0.1.10
+  dataset_repository: evalplus:humanevalplus
+  dataset_revision: null
+  prompt_revision: evalplus-0.3.1/humanevalplus-instruct
+  grader_revision: evalplus-0.3.1@e5d0ed0bab96280b60b637ec7f15b5e4841b0cb2
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: direct
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: pass
+    k:
+    - 1
+  metrics:
+    primary: pass@1
+    report:
+    - pass@1
+    - extraction_failed
+    - truncated
+- id: mbpp_plus_chat
+  family: mbpp_plus
+  domain: code
+  arm: chat_zero_shot
+  runner: evalplus
+  task: mbpp_plus_instruct
+  task_revision: evalplus-0.3.1/mbppplus-v0.2.0
+  dataset_repository: evalplus:mbppplus
+  dataset_revision: null
+  prompt_revision: evalplus-0.3.1/mbppplus-instruct
+  grader_revision: evalplus-0.3.1@e5d0ed0bab96280b60b637ec7f15b5e4841b0cb2
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: direct
+  max_context: 16384
+  max_generation: 8192
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: qwen3_nonthinking
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: pass
+    k:
+    - 1
+  metrics:
+    primary: pass@1
+    report:
+    - pass@1
+    - extraction_failed
+    - truncated
+- id: ifeval_chat
+  family: ifeval
+  domain: instruction_following
+  arm: chat_zero_shot
+  runner: lm_eval
+  task: ifeval
+  task_revision: lm-eval-0.4.12/task-4.0
+  dataset_repository: google/IFEval
+  dataset_revision: 966cd89545d6b6acfd7638bc708b98261ca58e84
+  prompt_revision: lm-eval-0.4.12/builtin
+  grader_revision: lm-eval-0.4.12
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: direct
+  max_context: 8192
+  max_generation: 1280
+  stop: []
+  sampling_profile: greedy
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: native
+    k: null
+  metrics:
+    primary: prompt_level_strict_acc
+    report:
+    - prompt_level_strict_acc
+    - prompt_level_loose_acc
+- id: ifbench_chat
+  family: ifbench
+  domain: instruction_following
+  arm: chat_zero_shot
+  runner: ifbench
+  task: ifbench
+  task_revision: ifbench-0.2.0/db69a6f05689830b0068b8f1529ebcfd2f3b164c
+  dataset_repository: null
+  dataset_revision: null
+  prompt_revision: ifbench-0.2.0/official
+  grader_revision: ifbench-0.2.0@db69a6f05689830b0068b8f1529ebcfd2f3b164c
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: direct
+  max_context: 32768
+  max_generation: 2048
+  stop: []
+  sampling_profile: greedy
+  metric_filter: null
+  num_samples: 1
+  root_seed: 42
+  aggregation:
+    method: native
+    k: null
+  metrics:
+    primary: prompt_level_loose_acc
+    report:
+    - prompt_level_loose_acc
+- id: livecodebench_chat
+  family: livecodebench
+  domain: code
+  arm: chat_zero_shot
+  runner: livecodebench
+  task: livecodebench_chat
+  task_revision: livecodebench/release_v6
+  dataset_repository: livecodebench/code_generation_lite
+  dataset_revision: 0fe84c3912ea0c4d4a78037083943e8f0c4dd505
+  prompt_revision: livecodebench/release_v6-codegeneration
+  grader_revision: livecodebench-0.1.0@28fef95ea8c9f7a547c8329f2cd3d32b92c1fa24
+  num_fewshot: 0
+  apply_chat_template: true
+  enable_thinking: false
+  reasoning_style: direct
+  max_context: 32768
+  max_generation: 16384
+  stop:
+  - <|im_end|>
+  - <|endoftext|>
+  sampling_profile: livecodebench_official
+  metric_filter: null
+  num_samples: 10
+  root_seed: 42
+  aggregation:
+    method: pass
+    k:
+    - 1
+    - 5
+  metrics:
+    primary: pass@1
+    report:
+    - pass@1
+    - pass@5
+    - extraction_failed
+    - truncated

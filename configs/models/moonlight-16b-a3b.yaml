@@ -1,0 +1,15 @@
+# Moonlight-16B-A3B: the base weights, the base tiktoken tokenizer converted to tokenizer.json,
+# and the Instruct chat template (`echomoe.training.base_model`).
+base:
+  repo: moonshotai/Moonlight-16B-A3B
+  revision: 476b36a473d4467f94469414bef6cee75c9c8172
+instruct:
+  repo: moonshotai/Moonlight-16B-A3B-Instruct
+  revision: 4e735b07a89f73647dfab71ab91b840f362ede5b
+tokens: {bos: 163584, eod: 163585, eos: 163586, pad: 163838}
+# The tokenizer never adds bos.
+document_bos: false
+# The remote code encodes 400,000-character chunks and cuts runs of more than 25,000 whitespace
+# or non-whitespace characters. The converted tokenizer does not, so the text is cut first.
+cut_long_runs: true
+assistant_content: verbatim

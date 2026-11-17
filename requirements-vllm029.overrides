@@ -1,0 +1,5 @@
+# DeepEP v2's rail-stride connections need NCCL 2.31; the CUDA compiler matches the CUDA 13.0 runtime headers.
+nvidia-nccl-cu13==2.31.2
+nvidia-cuda-nvcc==13.0.88
+nvidia-cuda-crt==13.0.88
+nvidia-nvvm==13.0.88

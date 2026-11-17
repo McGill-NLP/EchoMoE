@@ -1,0 +1,14 @@
+# LSH-MoE serving for the 18 short tasks of the reported evaluation (README, Table 15):
+# data-parallel.yaml at 0.85 of GPU memory. At 0.94 their prefill-heavy batches ran out of memory.
+# At 0.85 the KV cache holds 91,744 tokens.
+kind: vllm_server
+tensor_parallel_size: 1
+data_parallel_size: 8
+expert_parallel: false
+attention_backend: FLASHINFER
+performance_mode: throughput
+prefix_caching: true
+eplb: false
+max_num_seqs: 64
+gpu_memory_utilization: 0.85
+request_timeout_seconds: 21600

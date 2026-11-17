@@ -1,0 +1,32 @@
+# Zero-shot reason-then-answer chat setting. Prompt revision: local-gpqa-chat-cot-v1
+#
+# Uses the simple-evals "ANSWER: $LETTER" final line rather than lm-eval's
+# final-parenthesis fallback, and a deterministic per-question option shuffle so
+# the full-width and compressed variants see identical orderings.
+task: gpqa_diamond_chat_cot
+dataset_path: Idavidrein/gpqa
+dataset_name: gpqa_diamond
+training_split: train
+validation_split: train
+test_split: null
+process_docs: !function echomoe.inference.evaluation.tasks.gpqa_process_docs
+output_type: generate_until
+num_fewshot: 0
+doc_to_text: "Answer the following multiple choice question. The last line of your response should be of the following format: 'ANSWER: $LETTER' (without quotes) where LETTER is one of ABCD. Think step by step before answering.\n\n{{Question}}\n\nA. {{choice1}}\nB. {{choice2}}\nC. {{choice3}}\nD. {{choice4}}"
+doc_to_target: "{{answer}}"
+generation_kwargs:
+  until: ["<|im_end|>", "<|endoftext|>"]
+filter_list:
+  - name: chat-choice
+    filter:
+      - function: regex
+        regex_pattern: 'ANSWER:\s*\**\(?([A-Da-d])\)?\**'
+        group_select: -1
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+metadata:
+  version: 1.0

@@ -1,0 +1,116 @@
+[project]
+name = "echomoe"
+version = "0.1.0"
+description = "Low-rank compression of expert-parallel MoE dispatch and combine communication."
+requires-python = ">=3.12,<3.15"
+license = { text = "Apache-2.0" }
+dependencies = [
+    "torch==2.11.0",
+    "torchvision==0.26.0",
+    "flash-attn-3",
+    "numpy>=2.3,<2.5",
+    "pyyaml>=6,<7",
+    "safetensors>=0.7,<0.8",
+    "datasets>=4.8,<5",
+    "huggingface-hub>=1.15,<2",
+    "wandb>=0.27,<0.28",
+]
+
+# vLLM loads these in every process it starts (server, engine core, workers), which is how the
+# folded student's model classes reach them. scripts/env.sh sets VLLM_PLUGINS so that .venv-vllm
+# loads only the evaluation plugin and .venv-vllm029 only the throughput one.
+[project.entry-points."vllm.general_plugins"]
+echomoe = "echomoe.inference.evaluation.model:register"
+echomoe_throughput = "echomoe.inference.throughput.model:register"
+
+# The groups are the ones requirements-{megatron,vllm}.lock were compiled from, unchanged, so the
+# locks regenerate exactly. peft, tenacity and ray are not imported by this release.
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pre-commit>=3.7",
+    "ruff==0.15.13",
+    "pyright>=1.1",
+]
+vllm = [
+    "vllm==0.21.0",
+    "deep-ep==2.1.0+01dc3aa",
+    "transformers==5.8.1",
+    # vLLM 0.21 wheels link the CUDA 13 runtime while torch stays on CUDA 12.8.
+    "nvidia-cuda-runtime==13.0.96",
+    "nvidia-cuda-nvrtc==13.0.88",
+    "lm-eval[ifeval,math]==0.4.12",
+    "wonderwords==3.0.1",
+    "ifbench @ git+https://github.com/allenai/IFBench.git@db69a6f05689830b0068b8f1529ebcfd2f3b164c",
+    "evalplus==0.3.1",
+    # LiveCodeBench's grader, run from its checkout, needs pebble.
+    "pebble==5.1.3",
+    "peft==0.18.1",
+    "tenacity==9.1.4",
+    "ray",
+]
+megatron = [
+    "deep-ep==2.1.0+01dc3aa",
+    "transformers==5.8.1",
+    "transformer-engine[pytorch]>=2.11",
+    "megatron-core==0.19.2",
+    "megatron-bridge==0.6.2",
+    "fa3-te-compat",
+    "causal-conv1d==1.5.3.post1",
+    "mamba-ssm==2.3.1",
+    # transformer-engine and megatron-bridge build without isolation and need these in the venv.
+    # nvidia-modelopt, which megatron-core 0.19.2 requires, needs setuptools 80 or later.
+    "setuptools>=80",
+    "packaging>=24.2",
+    "pybind11",
+    "wheel",
+    "ninja",
+]
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["echomoe*"]
+
+[tool.setuptools.package-data]
+# the GIN kernels' sources, which the throughput runtime compiles at first use
+"echomoe.inference.throughput" = ["gin/*.cu", "gin/*.cpp"]
+
+[tool.uv]
+# Their setup.py imports torch and runs nvcc, so they build against the target venv.
+no-build-isolation-package = [
+    "transformer-engine",
+    "transformer-engine-torch",
+    "megatron-bridge",
+    "mamba-ssm",
+    "causal-conv1d",
+    "nv-grouped-gemm",
+]
+# emerging-optimizers: megatron-core leaves it unconstrained and the resolver would pick a yanked
+# 999.9.9. NCCL: torch pins 2.28.9, DeepEP needs 2.30.4 or later at build and run time.
+# transformer-engine: megatron-bridge asks for the CUDA 13 core, whose library links a cuBLAS
+# that a CUDA 12.8 stack does not have.
+override-dependencies = [
+    "emerging-optimizers==0.3.0",
+    "nvidia-nccl-cu12==2.30.7",
+    "transformer-engine[core-cu12,pytorch]==2.11.0",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }
+flash-attn-3 = { url = "https://github.com/windreamer/flash-attention3-wheels/releases/download/2026.05.11-5e0e3b1/flash_attn_3-3.0.0%2B20260511.cu128torch2110cxx11abitrue.ab6632-cp39-abi3-linux_x86_64.whl" }
+# DeepEP 2.1.0 at upstream 01dc3aa, built for sm90 against the venv's NCCL 2.30.7 and NVSHMEM 3.4.5.
+deep-ep = { path = "third-party/deepep/deep_ep-2.1.0+01dc3aa-cp312-cp312-linux_x86_64.whl" }
+# Megatron's Mamba layers (Nemotron-H), built for sm90 against the venv's torch (scripts/install.sh).
+causal-conv1d = { path = "third-party/mamba/causal_conv1d-1.5.3.post1-cp312-cp312-linux_x86_64.whl" }
+mamba-ssm = { path = "third-party/mamba/mamba_ssm-2.3.1-cp312-cp312-linux_x86_64.whl" }
+# Re-exports FA3 under flash_attn_3.flash_attn_interface, the import path Transformer Engine expects.
+fa3-te-compat = { path = "third-party/fa3-te-compat" }

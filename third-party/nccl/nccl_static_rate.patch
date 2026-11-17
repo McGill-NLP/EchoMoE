@@ -1,0 +1,48 @@
+diff --git a/src/transport/net_ib/connect.cc b/src/transport/net_ib/connect.cc
+index 2a0096a..a71040d 100644
+--- a/src/transport/net_ib/connect.cc
++++ b/src/transport/net_ib/connect.cc
+@@ -20,6 +20,8 @@ NCCL_PARAM(IbPkeyValue, "IB_PKEY_VALUE", -1);
+ NCCL_PARAM(IbUseInline, "IB_USE_INLINE", 0);
+ NCCL_PARAM(IbSl, "IB_SL", -1);
+ NCCL_PARAM(IbTc, "IB_TC", -1);
++// injection rate of every QP, as an ibv_rate value (0: the port rate)
++NCCL_PARAM(IbStaticRate, "IB_STATIC_RATE", 0);
+ NCCL_PARAM(IbFifoTc, "IB_FIFO_TC", -1);
+ NCCL_PARAM(IbEceEnable, "IB_ECE_ENABLE", 1);
+ 
+@@ -477,6 +479,7 @@ ncclResult_t ncclIbQpRtr(struct ncclIbQp* qp) {
+     }
+   }
+   qpAttr.ah_attr.sl = rtrAttr->sl;
++  qpAttr.ah_attr.static_rate = ncclParamIbStaticRate();
+   qpAttr.ah_attr.src_path_bits = 0;
+   qpAttr.ah_attr.port_num = rtrAttr->localIbPort;
+   TRACE(NCCL_NET, "NET/IB: %s: qpn=%u mtu=%d dst=%u ll=%u port=%u sl: %d tc: %d", __func__, qp->qp->qp_num,
+diff --git a/src/transport/net_ib/gdaki/gin_host_gdaki.cc b/src/transport/net_ib/gdaki/gin_host_gdaki.cc
+index 62b7720..fb98787 100644
+--- a/src/transport/net_ib/gdaki/gin_host_gdaki.cc
++++ b/src/transport/net_ib/gdaki/gin_host_gdaki.cc
+@@ -57,6 +57,12 @@ NCCL_PARAM(GinGdakiQpDepth, "GIN_GDAKI_QP_DEPTH", 128);
+ NCCL_PARAM(GinGdakiMaxDestRdAtomic, "GIN_GDAKI_MAX_DEST_RD_ATOMIC", -2);
+ NCCL_PARAM(GinGdakiMaxQpRdAtomic, "GIN_GDAKI_MAX_QP_RD_ATOMIC", -2);
+ NCCL_PARAM(GinErrorQuerySec, "GIN_ERROR_QUERY_SEC", 10);
++// injection rate of every GIN QP, as an ibv_rate value (0: the port rate); read when each GIN context is
++// created, not cached as NCCL_PARAM, so one process can give its device communicators different rates
++static int64_t ncclParamGinStaticRate() {
++  const char* value = getenv("NCCL_GIN_STATIC_RATE");
++  return value ? atoll(value) : 0;
++}
+ NCCL_PARAM(GinIbOooAll, "GIN_IB_OOO_OPT", 0);
+ extern int64_t ncclParamIbTimeout();
+ extern int64_t ncclParamIbRetryCnt();
+@@ -409,6 +415,9 @@ static ncclResult_t gdakiCreateVerbsAh(struct gdaki_context* ctx, int ib_sl, int
+   // set_port_num?
+   DOCACHECKGOTO(doca_verbs_ah_attr_set_sgid_index(ctx->ah, ib_gid_index), status, destroy_verbs_ah);
+   DOCACHECKGOTO(doca_verbs_ah_attr_set_hop_limit(ctx->ah, 255), status, destroy_verbs_ah);
++  // the QP context takes mlx5's encoding: the ibv_rate value plus MLX5_STAT_RATE_OFFSET (5)
++  if (ncclParamGinStaticRate())
++    DOCACHECKGOTO(doca_verbs_ah_attr_set_static_rate(ctx->ah, ncclParamGinStaticRate() + 5), status, destroy_verbs_ah);
+ 
+   return ncclSuccess;
+ 

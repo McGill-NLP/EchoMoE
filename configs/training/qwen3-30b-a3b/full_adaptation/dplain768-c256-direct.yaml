@@ -1,0 +1,9 @@
+# dplain768-c256-direct, full adaptation: Tables 14 and 22.
+base: ../full_adaptation.yaml
+run: {output_dir: outputs/qwen3-30b-a3b/runs/dplain768-c256-full-adaptation}
+models:
+  student: {compressor_initialization: outputs/qwen3-30b-a3b/fit/dplain768-c256-direct.safetensors}
+compressor:
+  dispatch: {rank: 768, variant: plain}
+  combine: {rank: 256}
+runtime: {recompute_num_layers: 4}

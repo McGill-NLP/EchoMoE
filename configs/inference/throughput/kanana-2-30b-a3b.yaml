@@ -1,0 +1,22 @@
+# Kanana-2-30B-A3B: the SFT teacher (base) and the trained student (folded, dispatch rank 512,
+# combine rank 1024, a reference every 4 MoE layers), both with BF16 experts. One KV cache size for
+# both variants: MLA caches 576 BF16 values per token and layer, 48 layers, so the largest
+# workloads' 590k tokens per GPU take 32.6 GB. The engine options override engine.yaml.
+expert_format: bf16
+engine:
+  kv_cache_memory_bytes: 38654705664  # 36 GiB
+  seed: 0
+# the base model rewrites its empty route slots (fairness.py) and masks its padding rows' routes
+decode_guard: true
+padding_route_mask: true
+# both variants run the two shared experts on a second stream beside the routed experts
+second_stream: true
+# prompt token ids, drawn uniformly from [low, high). The vocabulary has 128,256
+prompt_vocab: [1000, 128000]
+# network contexts (QPs) each DeepEP buffer allocates
+deepep_contexts: 65
+# per-call backend times (selection.py) by the dispatch's and combine's precision: BF16, FP8 both
+# (--fp8)
+select:
+  bf16: costs-kanana-2-30b-a3b-bf16.csv
+  fp8: costs-kanana-2-30b-a3b-fp8.csv

@@ -1,0 +1,26 @@
+source:
+  dataset_id: allenai/Dolci-Instruct-SFT
+  revision: bd3c8f3a9b2cc5a9682e44b96ddd0bb2ff027221
+  split: train
+  kind: sft
+eligibility:
+  version: dolci-eligible-user-first
+  category_default: upstream_domain
+  category_overrides:
+    Logic Puzzles: Reasoning
+    TableGPT: Science
+split:
+  seed: 42
+  validation_target: 5000
+  category_version: dolci-category
+tokenization:
+  prepared_model: outputs/qwen3-30b-a3b/base
+  model: configs/models/qwen3-30b-a3b.yaml
+  kind: chat_template
+  add_special_tokens: false
+  target_rows_per_shard: 50000
+layout:
+  sequence_length: 8192
+  alignment: 8
+  algorithm: best_fit_decreasing
+  overlength: drop_complete

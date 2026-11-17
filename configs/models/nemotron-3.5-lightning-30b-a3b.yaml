@@ -1,0 +1,15 @@
+# Nemotron 3.5 Lightning 30B-A3B: the base weights without the multi-token-prediction block, the
+# layer pattern also as `hybrid_override_pattern`, and the post-trained tokenizer and chat
+# template, whose `enable_thinking` defaults to false (`echomoe.training.base_model`).
+base:
+  repo: nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-Base-BF16
+  revision: 434456c9a6753f29d24e23c95d622aaf17111b3b
+instruct:
+  repo: nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16
+  revision: a9904d24bcc1d289a1950fa9d2b978c47cf903b9
+# eos is the end-of-turn token `<|im_end|>`, which also fills a pack, eod the document end `</s>`.
+tokens: {bos: 1, eod: 2, eos: 11, pad: 11}
+document_bos: false
+cut_long_runs: false
+# The template writes `<think></think>` before an assistant turn and strips the whole rendering.
+assistant_content: right_stripped

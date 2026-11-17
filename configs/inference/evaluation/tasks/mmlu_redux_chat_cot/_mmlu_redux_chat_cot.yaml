@@ -1,0 +1,9 @@
+group: mmlu_redux_chat_cot
+task:
+  - mmlu_redux_chat_cot_subjects
+aggregate_metric_list:
+  - metric: exact_match
+    weight_by_size: true
+    filter_list: chat-choice
+metadata:
+  version: 1.0

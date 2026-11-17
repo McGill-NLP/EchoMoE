@@ -1,0 +1,94 @@
+# LSH-MoE k5-h3 with a learned compensation scale, full adaptation: Table 15.
+# Cross-polytope LSH with projection dimension 5 and 3 hashes (1,000 buckets) per source rank and
+# expert, one set of rotations for every rank and layer, and one alpha per layer and expert. The
+# full-adaptation recipe on 4 nodes, so 2 accumulated micro-batches make the 128-pack batch.
+run:
+  kind: mixed_recovery
+  seed: 42
+  output_dir: outputs/qwen3-30b-a3b/runs/lsh-k5-h3-full-adaptation
+models:
+  teacher: outputs/qwen3-30b-a3b/teacher
+  student: {compressor_initialization: null, folded: false}
+data:
+  order_seed: 42
+  mix_seed: 42
+  mixing: {kind: annealed_random, anneal_start: 0.667, end_dolci_fraction: 0.9}
+  sources:
+    dolmino:
+      tokenized_dataset: outputs/qwen3-30b-a3b/data/dolmino/tokens
+      train_layout: outputs/qwen3-30b-a3b/data/dolmino/train
+      train_teacher_targets: outputs/qwen3-30b-a3b/targets/dolmino-train
+      validation_layout: outputs/qwen3-30b-a3b/data/dolmino/validation
+      validation_teacher_targets: outputs/qwen3-30b-a3b/targets/dolmino-validation
+      token_budget: 2000000000
+      passes: 1
+    dolci:
+      tokenized_dataset: outputs/qwen3-30b-a3b/data/dolci/tokens
+      train_layout: outputs/qwen3-30b-a3b/data/dolci/train
+      train_teacher_targets: outputs/qwen3-30b-a3b/targets/dolci-train
+      validation_layout: outputs/qwen3-30b-a3b/data/dolci/validation
+      validation_teacher_targets: outputs/qwen3-30b-a3b/targets/dolci-validation
+      token_budget: null
+      passes: 2
+loss:
+  target_top_m: 1024
+  kl_weight: 1.0
+  lm_weight: 0.01
+  position_chunk_size: 128
+compressor:
+  lsh: {projection_dim: 5, num_hashes: 3, seed: 42}
+optimizer:
+  beta1: 0.9
+  beta2: 0.999
+  epsilon: 1.0e-08
+  weight_decay: 0.0
+  gradient_clip: 1.0
+  decoupled_weight_decay: false
+  parameter_groups:
+    dense_backbone: {learning_rate: 2.0e-05, minimum_learning_rate: 2.0e-06}
+    router: {learning_rate: 1.0e-05, minimum_learning_rate: 1.0e-06}
+    experts: {learning_rate: 3.0e-05, minimum_learning_rate: 3.0e-06}
+    # 100x the unscaled 1e-3 to 1e-4, as the parameter is alpha / 0.01
+    lsh_compensation: {learning_rate: 0.1, minimum_learning_rate: 0.01}
+scheduler: {family: cosine, warmup_steps: 208}
+batch: {micro_batch_size: 2, gradient_accumulation_steps: 2, global_batch_size: 128}
+parallelism:
+  tensor_parallel_size: 1
+  pipeline_parallel_size: 1
+  expert_parallel_size: 8
+  context_parallel_size: 1
+  rank_order: tp-cp-ep-dp-pp
+  context_parallel_communication: null
+  dispatcher: deepep
+  expected_world_size: 32
+  expected_nodes: 4
+  gpus_per_node: 8
+  ddp:
+    use_distributed_optimizer: true
+    grad_reduce_in_fp32: false
+    overlap_grad_reduce: true
+    overlap_param_gather: true
+    average_in_collective: false
+    bucket_size: 200000000
+    pad_buckets_for_high_nccl_busbw: true
+runtime:
+  recompute: full
+  recompute_num_layers: 4
+  attention_backend: fused
+  distributed_timeout_seconds: 1800
+  apply_rope_fusion: true
+  bias_activation_fusion: true
+  moe_router_fusion: true
+  moe_grouped_gemm: true
+  masked_softmax_fusion: false
+  moe_permute_fusion: true
+  compile_regions: true
+  matmul_precision: high
+checkpoint: {save_interval_steps: 200, keep_last: 2, resume_from: null}
+evaluation: {interval_steps: 400, at_start: true, batches: all}
+logging:
+  wandb:
+    mode: online
+    project: communication-efficient-moe
+    group: full-adaptation
+    job_type: compressor

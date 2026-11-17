@@ -1,0 +1,16 @@
+# Qwen3-30B-A3B: the Base weights with the Instruct model's chat template, end-of-turn token and
+# padding token (`echomoe.training.base_model`).
+base:
+  repo: Qwen/Qwen3-30B-A3B-Base
+  revision: 1b75feb79f60b8dc6c5bc769a898c206a1c6a4f9
+instruct:
+  repo: Qwen/Qwen3-30B-A3B-Instruct-2507
+  revision: 0d7cf23991f47feeb3a57ecb4c9cee8ea4a17bfe
+# eod ends a Dolmino document, eos closes an assistant turn and pad fills a pack.
+tokens: {bos: 151643, eod: 151643, eos: 151645, pad: 151643}
+# Whether a Dolmino document starts with bos.
+document_bos: false
+# Whether text is tokenized in the pieces the model's remote-code tokenizer cuts it into.
+cut_long_runs: false
+# How the chat template writes an assistant turn (`prepare.written_content`).
+assistant_content: verbatim

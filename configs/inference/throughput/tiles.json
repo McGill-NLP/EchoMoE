@@ -1,0 +1,1302 @@
+{
+ "4x1536x2048-4x1024x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "128": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x2048-4x1280x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "128": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x2048-4x2048x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "128": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 5,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "4x1536x2048-4x512x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "128": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x2048-4x768x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 5,
+   "num_warps": 4
+  },
+  "128": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x2304-4x512x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "128": {
+   "BLOCK_SIZE_K": 256,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x2304-4x768x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "128": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x2560-4x1024x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "128": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x2560-4x1280x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "128": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x2560-4x512x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "128": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 5,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x2560-4x768x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "128": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x2816-4x512x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "128": {
+   "BLOCK_SIZE_K": 256,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "4x1536x3328-4x1280x768": {
+  "1024": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "128": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "131072": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "32768": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "4096": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 4
+  }
+ },
+ "8x1536x2048-8x1024x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2048-8x1280x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2048-8x2048x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 32,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2048-8x512x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 32,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2048-8x768x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2304-8x512x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2304-8x768x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2560-8x1024x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2560-8x1280x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2560-8x512x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 16,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2560-8x768x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x2816-8x512x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ },
+ "8x1536x3328-8x1280x768": {
+  "16384": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  },
+  "2048": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 128,
+   "GROUP_SIZE_M": 64,
+   "num_stages": 4,
+   "num_warps": 4
+  },
+  "512": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 64,
+   "BLOCK_SIZE_N": 64,
+   "GROUP_SIZE_M": 32,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "64": {
+   "BLOCK_SIZE_K": 128,
+   "BLOCK_SIZE_M": 16,
+   "BLOCK_SIZE_N": 32,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 4
+  },
+  "65536": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 3,
+   "num_warps": 8
+  },
+  "8192": {
+   "BLOCK_SIZE_K": 64,
+   "BLOCK_SIZE_M": 128,
+   "BLOCK_SIZE_N": 256,
+   "GROUP_SIZE_M": 1,
+   "num_stages": 4,
+   "num_warps": 8
+  }
+ }
+}

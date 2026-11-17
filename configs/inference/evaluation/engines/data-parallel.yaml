@@ -1,0 +1,19 @@
+# LSH-MoE serving: the base-model profile without expert parallelism, so every rank holds every
+# expert and clusters exactly the batch it would send.
+#
+# With all 128 experts on every rank the KV cache holds 169,504 tokens, and eager decoding runs a
+# sequence at about 11 tokens/s. 64 sequences per rank keep long generations from preempting each
+# other, and a 24,576-token generation outlasts the default request timeout. LSH-MoE's clusters
+# span a rank's batch, so these settings change its scores. The reported evaluation served the
+# long tasks with this profile and the 18 short tasks with data-parallel-short-tasks.yaml.
+kind: vllm_server
+tensor_parallel_size: 1
+data_parallel_size: 8
+expert_parallel: false
+attention_backend: FLASHINFER
+performance_mode: throughput
+prefix_caching: true
+eplb: false
+max_num_seqs: 64
+gpu_memory_utilization: 0.94
+request_timeout_seconds: 21600

@@ -1,0 +1,15 @@
+# Gemma 4 26B-A4B: the text weights of the base model as Gemma4ForCausalLM, the base tokenizer
+# (which starts plain text with bos) and the instruct tokenizer config and chat template, whose
+# thinking-off generation prompt drops the empty thought channel (`echomoe.training.base_model`).
+base:
+  repo: google/gemma-4-26B-A4B
+  revision: 24548b62aa021d562695c04aaf7758a1ea47990b
+instruct:
+  repo: google/gemma-4-26B-A4B-it
+  revision: 4d7ae4984b7db7de8f8457170b3f1a419ee76d52
+# eos is the end-of-turn token `<turn|>`, eod the document end `<eos>`.
+tokens: {bos: 2, eod: 1, eos: 106, pad: 0}
+document_bos: true
+cut_long_runs: false
+# The chat template drops thought spans from an assistant turn and strips it.
+assistant_content: without_thoughts

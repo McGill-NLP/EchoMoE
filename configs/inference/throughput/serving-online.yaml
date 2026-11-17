@@ -1,0 +1,21 @@
+# Online serving on real prompts (Table 35, Figure 19): held-out Dolci-Instruct prompts (serving.py
+# prompts), replies ending at end of sequence up to 4,096 tokens, each model's own routing. 240 s of
+# Poisson arrivals per rate: TTFT and TPOT of the middle 80 s, throughput of the last 160 s.
+rates: [16, 128, 256, 384, 512]  # requests/s into the server
+seconds: 240
+# compiles EchoMoE's Triton kernel variants before the timed rates: slow (single-token steps on
+# every rank), then fast (large batches)
+warmup:
+  - {rate: 4, num_prompts: 360}
+  - {rate: 256, num_prompts: 3000}
+prompts: outputs/qwen3-30b-a3b/serving/prompts/prompts.jsonl
+routing: model
+max_model_len: 12288  # prompts up to 8,192 tokens, replies up to 4,096
+max_num_seqs: 512
+api_servers: 16
+clients: 8  # client processes per rate (one saturates a core at about 100K tokens/s)
+# Qwen3's non-thinking sampling
+temperature: 0.7
+top_p: 0.8
+top_k: 20
+ready_seconds: 1800

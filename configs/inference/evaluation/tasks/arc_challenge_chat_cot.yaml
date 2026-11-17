@@ -1,0 +1,25 @@
+# Zero-shot reason-then-answer chat setting. Prompt revision: local-arc_challenge-chat-cot-v1
+task: arc_challenge_chat_cot
+dataset_path: allenai/ai2_arc
+dataset_name: ARC-Challenge
+test_split: test
+doc_to_text: "{{question.strip()}}\n\n{% for text in choices.text %}{{'ABCDE'[loop.index0]}}. {{text}}\n{% endfor %}\nThink step by step, then give your answer as \"The answer is (X)\"."
+doc_to_target: "{{ 'ABCDE'[answerKey|int - 1] if answerKey|string in '12345' else answerKey }}"
+output_type: generate_until
+num_fewshot: 0
+generation_kwargs:
+  until: ["<|im_end|>", "<|endoftext|>"]
+filter_list:
+  - name: chat-choice
+    filter:
+      - function: regex
+        regex_pattern: '[Tt]he answer is:?\s*\**\(?([A-Ea-e])\)?\**'
+        group_select: -1
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+metadata:
+  version: 1.0

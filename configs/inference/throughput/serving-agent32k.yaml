@@ -1,0 +1,17 @@
+# Agent-like online serving (Figure 21, bottom): as serving-agent16k.yaml with 32K-token histories.
+rates: [2, 6, 10, 14, 18, 22]  # requests/s into the server
+seconds: 240
+warmup:
+  - {rate: 1, num_prompts: 60}
+  - {rate: 32, num_prompts: 400}
+prompts: outputs/qwen3-30b-a3b/serving/prompts/prompts-agent32k.jsonl
+routing: model
+max_model_len: 32768  # prompts up to 32,000 tokens, replies up to 256
+max_num_seqs: 512
+kv_cache_dtype: fp8
+api_servers: 16
+clients: 8
+temperature: 0.7
+top_p: 0.8
+top_k: 20
+ready_seconds: 1800

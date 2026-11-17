@@ -1,0 +1,4 @@
+dataset_name: human_aging
+include: _default_template_yaml
+task: mmlu_redux_human_aging_chat_cot
+tag: mmlu_redux_chat_cot_subjects

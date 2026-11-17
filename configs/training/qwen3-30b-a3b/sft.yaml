@@ -1,0 +1,57 @@
+# The teacher: SFT of Qwen3-30B-A3B Base (with the Instruct chat template) on Dolci-Instruct,
+# response-token cross entropy only. Eight nodes, EP 8, CP 2, 32-way data parallel,
+# 1,048,576 tokens per update, two epochs of the packed 8K layout.
+model: outputs/qwen3-30b-a3b/base
+data:
+  tokenized_dataset: outputs/qwen3-30b-a3b/data/dolci/tokens
+  layout: outputs/qwen3-30b-a3b/data/dolci/train
+  validation_layout: outputs/qwen3-30b-a3b/data/dolci/validation
+  order_seed: 42
+parallelism:
+  expert_parallel_size: 8
+  context_parallel_size: 2
+  rank_order: tp-cp-ep-dp-pp
+  context_parallel_communication: p2p
+  expected_world_size: 64
+  expected_nodes: 8
+  gpus_per_node: 8
+batch:
+  gradient_accumulation_steps: 4
+  global_batch_size: 128
+  sequence_length: 8192
+dispatcher:
+  type: deepep
+schedule:
+  epochs: 2
+  learning_rate: 2.0e-05
+  minimum_learning_rate: 2.0e-06
+  warmup_steps: 200
+  weight_decay: 0.1
+optimizer:
+  beta1: 0.9
+  beta2: 0.999
+  epsilon: 1.0e-08
+  decoupled_weight_decay: true
+runtime:
+  seed: 42
+  gradient_clip: 1.0
+  recompute: none
+  recompute_num_layers: null
+  apply_rope_fusion: true
+  bias_activation_fusion: true
+  keep_last_checkpoints: 2
+  moe_permute_fusion: true
+  save_interval_steps: 223
+  evaluation_interval_steps: 223
+  output_dir: outputs/qwen3-30b-a3b/teacher
+  wandb_mode: online
+  wandb_project: communication-efficient-moe
+  wandb_name: initial-sft-qwen3-30b-a3b-dolci1m-ce-seed42-8n
+  wandb_group: initial-sft
+  wandb_job_type: sft
+  wandb_tags:
+  - initial-sft
+  - qwen3-30b-a3b
+  - dolci-instruct
+  - ep8
+  - cp2

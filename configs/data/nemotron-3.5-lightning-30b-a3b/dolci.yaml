@@ -1,0 +1,5 @@
+# Dolci for Nemotron 3.5 Lightning 30B-A3B: the Qwen3-30B-A3B recipe with this model's tokenizer.
+base: ../dolci.yaml
+tokenization:
+  prepared_model: outputs/nemotron-3.5-lightning-30b-a3b/base
+  model: configs/models/nemotron-3.5-lightning-30b-a3b.yaml

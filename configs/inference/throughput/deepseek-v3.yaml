@@ -1,0 +1,26 @@
+# DeepSeek-V3 with random weights (Tables 37 and 38): the folded student's experts in block-128 FP8
+# as the base model's, dispatch rank 1792 and combine rank 3584 with a reference every 4 MoE layers
+# (fixtures.py). Both variants dispatch FP8. The engine options override engine.yaml.
+expert_format: fp8_block128
+engine:
+  max_model_len: 8448
+  max_num_batched_tokens: 2048
+  gpu_memory_utilization: 0.95
+  kv_cache_memory_bytes: 12884901888  # 12 GiB
+  seed: 0
+  compilation_config: {mode: 0, cudagraph_mode: FULL_DECODE_ONLY, cudagraph_capture_sizes: [1, 4, 16, 64, 128]}
+# the base model runs vLLM's Triton FP8 experts, as the folded student does
+base_engine: {moe_backend: triton}
+# the base model rewrites its empty route slots (fairness.py) and masks its padding rows' routes
+decode_guard: true
+padding_route_mask: true
+# prompt token ids, drawn uniformly from [low, high)
+prompt_vocab: [1000, 128000]
+# network contexts (QPs) each DeepEP buffer allocates
+deepep_contexts: 65
+# per-call backend times (selection.py) by the dispatch's and combine's precision: BF16,
+# FP8 dispatch with BF16 combine, FP8 both (--fp8)
+select:
+  bf16: costs-deepseek-v3-bf16.csv
+  fp8-dispatch: costs-deepseek-v3-fp8-dispatch.csv
+  fp8: costs-deepseek-v3-fp8.csv

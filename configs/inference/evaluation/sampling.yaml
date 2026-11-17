@@ -1,0 +1,41 @@
+# Generation profiles referenced by every report-suite task. Sampling values
+# live here rather than in Python so a run's resolved config is everything
+# needed to replay it. Qwen3 non-thinking values come from the Qwen3 technical
+# report and LiveCodeBench from its official protocol.
+version: 1
+profiles:
+  no_generation:
+    mode: none
+
+  greedy:
+    mode: greedy
+    do_sample: false
+    temperature: 0.0
+    top_p: 1.0
+    top_k: -1
+    min_p: 0.0
+    presence_penalty: 0.0
+    frequency_penalty: 0.0
+    repetition_penalty: 1.0
+
+  qwen3_nonthinking:
+    mode: sample
+    do_sample: true
+    temperature: 0.7
+    top_p: 0.8
+    top_k: 20
+    min_p: 0.0
+    presence_penalty: 1.5
+    frequency_penalty: 0.0
+    repetition_penalty: 1.0
+
+  livecodebench_official:
+    mode: sample
+    do_sample: true
+    temperature: 0.2
+    top_p: 0.95
+    top_k: -1
+    min_p: 0.0
+    presence_penalty: 0.0
+    frequency_penalty: 0.0
+    repetition_penalty: 1.0

@@ -1,0 +1,51 @@
+{
+  "model": "opus",
+  "permissions": {
+    "allow": [
+      "Bash(uv *)",
+      "Bash(python *)",
+      "Bash(pytest *)",
+      "Bash(ruff *)",
+      "Bash(pyright *)",
+      "Bash(pre-commit *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(git branch *)",
+      "Bash(git add *)",
+      "Bash(git restore *)",
+      "Bash(git stash *)",
+      "Bash(squeue *)",
+      "Bash(sacct *)",
+      "Bash(scontrol show *)",
+      "Bash(sinfo *)",
+      "Bash(nvidia-smi*)",
+      "Bash(hostname)",
+      "Bash(module avail *)",
+      "Bash(module list)",
+      "Bash(df *)",
+      "Bash(du *)",
+      "Bash(quota *)",
+      "Bash(disk-quota)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(rg *)",
+      "Bash(wc *)",
+      "Bash(tree *)"
+    ],
+    "deny": [
+      "EnterWorktree",
+      "Bash(git worktree)",
+      "Bash(git worktree *)"
+    ]
+  },
+  "env": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONUNBUFFERED": "1"
+  },
+  "worktree": {
+    "bgIsolation": "none"
+  }
+}

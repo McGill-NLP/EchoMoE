@@ -1,0 +1,48 @@
+#:schema https://developers.openai.com/codex/config-schema.json
+# Codex CLI per-project config.
+#
+# Mirrors the posture in .claude/settings.json: default to a sandboxed
+# session with on-request approval; rely on .codex/.rules to forbid or
+# force prompts on destructive / cluster-affecting commands.
+#
+# Reference: https://developers.openai.com/codex/config-reference
+
+# When to pause for explicit user approval before executing.
+#
+# - "on-request": agent runs safe commands inside the sandbox without
+#   prompting; surfaces anything that needs network or write-outside-the-
+#   workspace for user approval.
+# - "untrusted":  every shell command needs approval. Use on shared nodes
+#   or with a new collaborator.
+# - "never":      auto-approve everything. Do NOT use on cluster login
+#   nodes; mistakes are expensive.
+approval_policy = "on-request"
+
+# Filesystem and network access during command execution.
+#
+# - "workspace-write":     read anywhere readable; write only inside the
+#   project. Network calls require approval (overridable below).
+# - "read-only":           no writes anywhere. Review-only sessions.
+# - "danger-full-access":  no sandbox. Avoid.
+sandbox_mode = "workspace-write"
+
+# Fine-tune the workspace-write sandbox.
+[sandbox_workspace_write]
+network_access = false          # Force prompt for any outbound call.
+exclude_slash_tmp = false       # /tmp stays writable by default.
+exclude_tmpdir_env_var = false  # $TMPDIR likewise.
+
+# Default model. Override per-session with `codex --model <name>` or via a
+# profile (see [profiles.<name>] below).
+model = "gpt-5.5"
+model_reasoning_effort = "high"
+model_reasoning_summary = "auto"
+
+# Environment exported to commands the agent runs. Mirrors the env block in
+# .claude/settings.json.
+[shell_environment_policy]
+inherit = "core"
+set = { PYTHONDONTWRITEBYTECODE = "1", PYTHONUNBUFFERED = "1" }
+
+# Profiles are only supported in user-level config (`~/.codex/config.toml`),
+# not in project-local config.

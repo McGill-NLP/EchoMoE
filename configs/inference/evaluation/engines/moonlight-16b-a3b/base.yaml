@@ -1,0 +1,16 @@
+# Moonlight-16B-A3B through vLLM's own model (`base-vllm`): the base-model profile on
+# FlashAttention MLA, vLLM's first choice for multi-latent attention on H100.
+#
+# The model has 8,192 positions, so the context is capped there: a generation stops where its
+# prompt leaves no room, and the 17 tasks whose limit is longer are scored under the cap.
+kind: vllm_server
+tensor_parallel_size: 1
+data_parallel_size: 8
+expert_parallel: true
+all2all_backend: allgather_reducescatter
+attention_backend: FLASH_ATTN_MLA
+performance_mode: throughput
+prefix_caching: true
+eplb: false
+max_model_len: 8192
+request_timeout_seconds: 7200

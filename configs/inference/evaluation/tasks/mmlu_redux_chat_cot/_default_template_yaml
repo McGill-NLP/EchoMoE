@@ -1,0 +1,24 @@
+# Shared body for the zero-shot reason-then-answer MMLU-Redux chat setting.
+# Prompt revision: local-mmlu_redux-chat-cot-v1
+dataset_path: fxmarty/mmlu-redux-2.0-ok
+test_split: test
+output_type: generate_until
+num_fewshot: 0
+doc_to_text: "{{question.strip()}}\n\nA. {{choices[0]}}\nB. {{choices[1]}}\nC. {{choices[2]}}\nD. {{choices[3]}}\n\nThink step by step, then give your answer as \"The answer is (X)\"."
+doc_to_target: "{{['A','B','C','D'][answer]}}"
+generation_kwargs:
+  until: ["<|im_end|>", "<|endoftext|>"]
+filter_list:
+  - name: chat-choice
+    filter:
+      - function: regex
+        regex_pattern: '[Tt]he answer is:?\s*\**\(?([A-Da-d])\)?\**'
+        group_select: -1
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+metadata:
+  version: 1.0

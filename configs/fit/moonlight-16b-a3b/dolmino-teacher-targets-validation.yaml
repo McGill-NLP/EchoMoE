@@ -1,0 +1,16 @@
+model_export: outputs/moonlight-16b-a3b/teacher/hf
+tokenized_dataset: outputs/moonlight-16b-a3b/data/dolmino/tokens
+layout: outputs/moonlight-16b-a3b/data/dolmino/validation
+output_root: outputs/moonlight-16b-a3b/targets/dolmino-validation
+order_seed: 42
+order_epochs: 1
+token_budget: null
+top_m: 1024
+part_count: 16
+rows_per_file: 262144
+logits_chunk_rows: 1024
+max_model_len: 8193
+max_num_seqs: 256
+max_num_batched_tokens: 8192
+gpu_memory_utilization: 0.88
+enable_chunked_prefill: true

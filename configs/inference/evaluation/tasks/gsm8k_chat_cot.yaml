@@ -1,0 +1,21 @@
+# Zero-shot reason-then-answer chat setting. Prompt revision: local-gsm8k-chat-cot-v2
+# Scored with the same deterministic boxed math_verify extraction as MATH-500.
+# The prompt instructs a \boxed{} answer, so exact_match string filters are
+# the wrong tool here.
+task: gsm8k_chat_cot
+dataset_path: openai/gsm8k
+dataset_name: main
+test_split: test
+doc_to_text: "{{question}}\nPlease reason step by step, and put your final answer within \\boxed{}."
+doc_to_target: "{{answer.split('#### ')[-1].strip()}}"
+output_type: generate_until
+num_fewshot: 0
+generation_kwargs:
+  until: ["<|im_end|>", "<|endoftext|>"]
+process_results: !function echomoe.inference.evaluation.tasks.boxed_math_results
+metric_list:
+  - metric: math_verify
+    aggregation: mean
+    higher_is_better: true
+metadata:
+  version: 1.0

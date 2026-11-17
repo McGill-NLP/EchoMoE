@@ -1,0 +1,22 @@
+# Qwen3-235B-A22B with random weights (Tables 37 and 38): the folded student's experts stored as
+# the base model stores them, dispatch rank 1024 and combine rank 2048 with a reference every 4
+# layers (fixtures.py). The engine options override engine.yaml for both variants.
+expert_format: bf16
+engine:
+  max_model_len: 8448
+  max_num_batched_tokens: 2048
+  gpu_memory_utilization: 0.95
+  kv_cache_memory_bytes: 30064771072  # 28 GiB
+  seed: 0
+  compilation_config: {mode: 0, cudagraph_mode: FULL_DECODE_ONLY, cudagraph_capture_sizes: [16, 128]}
+# the base model compacts each received row's routes to its rank's experts (fairness.py)
+decode_guard: true
+# prompt token ids, drawn uniformly from [low, high)
+prompt_vocab: [1000, 150000]
+# network contexts (QPs) each DeepEP buffer allocates
+deepep_contexts: 65
+# per-call backend times (selection.py) by the dispatch's and combine's precision: BF16,
+# FP8 both (--fp8)
+select:
+  bf16: costs-qwen3-235b-a22b-bf16.csv
+  fp8: costs-qwen3-235b-a22b-fp8.csv

@@ -1,0 +1,7 @@
+# 4096 prompt tokens, 256 generated tokens, 8 requests per GPU (the TCP rows)
+input_len: 4096
+output_len: 256
+batch_size: 8
+max_num_seqs: 8
+# --profile: the engine steps recorded (name, first step, steps), after a warm-up batch
+profile_windows: [[prefill, 1, 1], [decode, 144, 8]]

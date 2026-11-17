@@ -1,0 +1,188 @@
+diff --git a/deep_ep/include/deep_ep/impls/combine_reduce_epilogue.cuh b/deep_ep/include/deep_ep/impls/combine_reduce_epilogue.cuh
+index b574150..0e498cb 100644
+--- a/deep_ep/include/deep_ep/impls/combine_reduce_epilogue.cuh
++++ b/deep_ep/include/deep_ep/impls/combine_reduce_epilogue.cuh
+@@ -94,6 +94,17 @@ combine_reduce_epilogue_impl(nv_bfloat16* combined_x,
+             }
+         );
+ 
++        constexpr bool kFP8Scaleout = kFP8ScaleoutCombine and kNumScaleoutRanks > 1 and kAllowMultipleReduction and
++                                      kUseRankLayout;
++        if constexpr (kFP8Scaleout) {
++            EP_DEVICE_ASSERT(bias_0 == nullptr and bias_1 == nullptr and combined_topk_weights == nullptr);
++            fp8_scaleout_reduce<kHidden, kNumTokensInLayout>(
++                lane_idx, topk_slot_idx, static_cast<nv_bfloat16*>(tma_buffer.get_base_ptr()),
++                [=](const int& slot_idx) {
++                    return comm_buffer.get_rank_buffer(slot_idx).get_token_buffer(token_idx).get_base_ptr();
++                },
++                scaleout_rank_idx);
++        } else {
+         // Iterate over per-hidden-chunk stage
+         using combine_vec_t = typename CombineVecTraits<kHidden * sizeof(nv_bfloat16)>::vec_t;
+         constexpr int kHiddenVec = kHidden * sizeof(nv_bfloat16) / sizeof(combine_vec_t);
+@@ -113,6 +124,7 @@ combine_reduce_epilogue_impl(nv_bfloat16* combined_x,
+             /* Bias 1 */ bias_1 == nullptr ?
+                 nullptr : static_cast<combine_vec_t*>(bias_1_buffer.get_token_buffer(token_idx).get_base_ptr())
+         );
++        }
+         ptx::tma_store_fence();
+         __syncwarp();
+ 
+diff --git a/deep_ep/include/deep_ep/impls/combine_utils.cuh b/deep_ep/include/deep_ep/impls/combine_utils.cuh
+index 6139bf0..db3b9e2 100644
+--- a/deep_ep/include/deep_ep/impls/combine_utils.cuh
++++ b/deep_ep/include/deep_ep/impls/combine_utils.cuh
+@@ -38,6 +38,110 @@ struct CombineVecTraits {
+ #endif
+ };
+ 
++// FP8 on the scale-out (RDMA) leg of the hybrid combine: a node's reduced row crosses the network
++// as float8_e4m3fn with one float32 scale per 128 columns (the per-token cast of DeepEP's FP8
++// dispatch), written inside the row's bf16 slot; the epilogue dequantizes as it adds. Rows
++// that stay inside the node are not cast. Switched on in this copy of the package only.
++#ifndef EP_FP8_SCALEOUT_COMBINE
++#define EP_FP8_SCALEOUT_COMBINE 1
++#endif
++constexpr bool kFP8ScaleoutCombine = EP_FP8_SCALEOUT_COMBINE;
++
++template <int kHidden>
++constexpr int fp8_scaleout_bytes() {
++    return (kHidden + 4 * (kHidden / 128) + 31) / 32 * 32;
++}
++
++// Cast one bf16 row in place (shared memory) into `[FP8 payload | float32 scales]`; one warp.
++// Block b's bytes land below block b + 1's source, and the scales below the second half's, so
++// processing blocks in order needs only the warp syncs.
++template <int kHidden>
++__device__ __forceinline__ void quantize_row_fp8_inplace(void* base, const int& lane_idx) {
++    constexpr int kNumBlocks = kHidden / 128;
++    EP_STATIC_ASSERT(kHidden % 128 == 0, "FP8 scale-out combine needs 128-column blocks");
++    const auto src = static_cast<const nv_bfloat16*>(base);
++    const auto dst = static_cast<uint8_t*>(base);
++    // a lane keeps every 32nd block's scale until the blocks are done: the scales overwrite source columns
++    float scales_of_lane[(kNumBlocks + 31) / 32] = {};
++    #pragma unroll 1
++    for (int b = 0; b < kNumBlocks; ++ b) {
++        const auto pair = reinterpret_cast<const nv_bfloat162*>(src + b * 128 + lane_idx * 4);
++        const float2 v0 = __bfloat1622float2(pair[0]), v1 = __bfloat1622float2(pair[1]);
++        float amax = fmaxf(fmaxf(fabsf(v0.x), fabsf(v0.y)), fmaxf(fabsf(v1.x), fabsf(v1.y)));
++        #pragma unroll
++        for (int m = 16; m >= 1; m >>= 1)
++            amax = fmaxf(amax, __shfl_xor_sync(0xffffffff, amax, m));
++        amax = fmaxf(amax, 1e-4f);
++        const float factor = __fmul_rn(__frcp_rn(amax), 448.0f);
++        __syncwarp();
++        const auto q0 = __nv_cvt_float2_to_fp8x2(make_float2(__fmul_rn(v0.x, factor), __fmul_rn(v0.y, factor)), __NV_SATFINITE, __NV_E4M3);
++        const auto q1 = __nv_cvt_float2_to_fp8x2(make_float2(__fmul_rn(v1.x, factor), __fmul_rn(v1.y, factor)), __NV_SATFINITE, __NV_E4M3);
++        auto out = reinterpret_cast<__nv_fp8x2_storage_t*>(dst + b * 128 + lane_idx * 4);
++        out[0] = q0, out[1] = q1;
++        if (lane_idx == b % 32)
++            scales_of_lane[b / 32] = __fdiv_rn(amax, 448.0f);
++        __syncwarp();
++    }
++    #pragma unroll
++    for (int b = lane_idx; b < kNumBlocks; b += 32)
++        reinterpret_cast<float*>(dst + kHidden)[b] = scales_of_lane[b / 32];
++    __syncwarp();
++}
++
++// The epilogue's sum for FP8 scale-out rows: the local node's slot is bf16, the others are
++// `[FP8 | scales]`; float32 accumulation in slot order, then bf16. One warp per token.
++template <int kHidden, int kNumSlots, typename get_src_buffer_ptr_func_t>
++__device__ __forceinline__ void fp8_scaleout_reduce(const int& lane_idx, int (&topk_slot_idx)[kNumSlots],
++                                                    nv_bfloat16* dst, const get_src_buffer_ptr_func_t& get_src,
++                                                    const int& local_slot) {
++    constexpr int kChunks = kHidden / 16;
++    ptx::tma_store_wait();
++    __syncwarp();
++    #pragma unroll 1
++    for (int c = lane_idx; c < kChunks; c += 32) {
++        float acc[16];
++        #pragma unroll
++        for (int e = 0; e < 16; ++ e)
++            acc[e] = 0;
++        #pragma unroll
++        for (int k = 0; k < kNumSlots; ++ k) {
++            const int slot = topk_slot_idx[k];
++            if (slot < 0)
++                continue;
++            const auto base = static_cast<const uint8_t*>(get_src(slot));
++            if (slot == local_slot) {
++                const int4 a = reinterpret_cast<const int4*>(base + c * 32)[0];
++                const int4 b = reinterpret_cast<const int4*>(base + c * 32)[1];
++                const auto h0 = reinterpret_cast<const nv_bfloat162*>(&a);
++                const auto h1 = reinterpret_cast<const nv_bfloat162*>(&b);
++                #pragma unroll
++                for (int e = 0; e < 4; ++ e) {
++                    const float2 f0 = __bfloat1622float2(h0[e]), f1 = __bfloat1622float2(h1[e]);
++                    acc[2 * e] = __fadd_rn(acc[2 * e], f0.x), acc[2 * e + 1] = __fadd_rn(acc[2 * e + 1], f0.y);
++                    acc[8 + 2 * e] = __fadd_rn(acc[8 + 2 * e], f1.x), acc[9 + 2 * e] = __fadd_rn(acc[9 + 2 * e], f1.y);
++                }
++            } else {
++                const int4 q = *reinterpret_cast<const int4*>(base + c * 16);
++                const float s = *reinterpret_cast<const float*>(base + kHidden + (c / 8) * 4);
++                const auto pairs = reinterpret_cast<const __nv_fp8x2_storage_t*>(&q);
++                #pragma unroll
++                for (int e = 0; e < 8; ++ e) {
++                    const float2 f = __half22float2(__half2(__nv_cvt_fp8x2_to_halfraw2(pairs[e], __NV_E4M3)));
++                    acc[2 * e] = __fadd_rn(acc[2 * e], __fmul_rn(f.x, s));
++                    acc[2 * e + 1] = __fadd_rn(acc[2 * e + 1], __fmul_rn(f.y, s));
++                }
++            }
++        }
++        int4 out[2];
++        auto pairs = reinterpret_cast<nv_bfloat162*>(out);
++        #pragma unroll
++        for (int e = 0; e < 8; ++ e)
++            pairs[e] = __float22bfloat162_rn(make_float2(acc[2 * e], acc[2 * e + 1]));
++        reinterpret_cast<int4*>(dst + c * 16)[0] = out[0];
++        reinterpret_cast<int4*>(dst + c * 16)[1] = out[1];
++    }
++}
++
+ template <int kNumValidTopk, typename fetch_func_t>
+ __device__ __forceinline__
+ void compute_topk_slots(int (&topk_slot_idx)[kNumValidTopk], uint32_t mask,
+diff --git a/deep_ep/include/deep_ep/impls/hybrid_combine.cuh b/deep_ep/include/deep_ep/impls/hybrid_combine.cuh
+index ee3afa0..a8d3272 100644
+--- a/deep_ep/include/deep_ep/impls/hybrid_combine.cuh
++++ b/deep_ep/include/deep_ep/impls/hybrid_combine.cuh
+@@ -46,6 +46,8 @@ hybrid_combine_impl(nv_bfloat16* x,
+     const auto warp_idx = ptx::get_warp_idx();
+     const auto lane_idx = ptx::get_lane_idx();
+     constexpr bool kDoExpandedSend = not kAllowMultipleReduction and kUseExpandedLayout;
++    constexpr bool kFP8Scaleout = kFP8ScaleoutCombine and kNumScaleoutRanks > 1 and kAllowMultipleReduction and
++                                  kUseScaleoutRankLayout;
+ 
+     // Combine vector type selection
+     using combine_vec_t = typename CombineVecTraits<kNumHiddenBytes>::vec_t;
+@@ -377,7 +379,7 @@ hybrid_combine_impl(nv_bfloat16* x,
+                     gin.put<ncclTeamTagRail>(
+                         last_recv_token_buffer_ptr,
+                         last_send_token_buffer_ptr,
+-                        token_layout.get_num_bytes<false>(),
++                        kFP8Scaleout ? fp8_scaleout_bytes<kHidden>() : token_layout.get_num_bytes<false>(),
+                         last_src_scaleout_rank_idx,
+                         last_is_token_last_in_chunk ? 0 : ncclGinOptFlagsAggregateRequests
+                     );
+@@ -538,6 +540,10 @@ hybrid_combine_impl(nv_bfloat16* x,
+                         scaleup_buffer.get_token_buffer(stored_src_buffer_idx, true)
+                                     .get_topk_weights_ptr()[lane_idx];
+                 }
++                if constexpr (kFP8Scaleout) {
++                    if (src_scaleout_rank_idx != scaleout_rank_idx)
++                        quantize_row_fp8_inplace<kHidden>(tma_buffer.get_base_ptr(), lane_idx);
++                }
+                 ptx::tma_store_fence();
+                 __syncwarp(); // Necessary to let the leader lane see the writes
+ 
+@@ -558,7 +564,8 @@ hybrid_combine_impl(nv_bfloat16* x,
+                 // Write into scale-out send buffer or local rank recv buffer bypass
+                 if (ptx::elect_one_sync()) {
+                     ptx::tma_store_1d(send_token_buffer.get_base_ptr(), tma_buffer.get_base_ptr(),
+-                                    token_layout.get_num_bytes<false>());
++                                    kFP8Scaleout and src_scaleout_rank_idx != scaleout_rank_idx ?
++                                    fp8_scaleout_bytes<kHidden>() : token_layout.get_num_bytes<false>());
+                     ptx::tma_store_commit();
+                 }
+                 __syncwarp();

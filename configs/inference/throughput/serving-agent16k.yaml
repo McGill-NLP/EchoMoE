@@ -1,0 +1,20 @@
+# Agent-like online serving (Figure 21, top): 16K-token histories of held-out conversations ending
+# on a user turn (serving.py prompts), replies up to 256 tokens, each model's own routing, an FP8 KV
+# cache. Prefill-bound: the rates bracket both models' capacity.
+rates: [4, 12, 20, 28, 36, 44]  # requests/s into the server
+seconds: 240
+# slow, then a burst at about twice the capacity
+warmup:
+  - {rate: 1, num_prompts: 60}
+  - {rate: 64, num_prompts: 800}
+prompts: outputs/qwen3-30b-a3b/serving/prompts/prompts-agent16k.jsonl
+routing: model
+max_model_len: 16384  # prompts up to 16,000 tokens, replies up to 256
+max_num_seqs: 512
+kv_cache_dtype: fp8
+api_servers: 16
+clients: 8
+temperature: 0.7
+top_p: 0.8
+top_k: 20
+ready_seconds: 1800

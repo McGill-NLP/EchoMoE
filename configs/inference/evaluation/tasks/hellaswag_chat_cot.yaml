@@ -1,0 +1,24 @@
+# Zero-shot reason-then-answer chat setting. Prompt revision: local-hellaswag-chat-cot-v1
+task: hellaswag_chat_cot
+dataset_path: Rowan/hellaswag
+test_split: validation
+doc_to_text: "Continue the passage.\n\n{{ctx}}\n\n{% for ending in endings %}{{'ABCD'[loop.index0]}}. {{ending}}\n{% endfor %}\nThink step by step, then give your answer as \"The answer is (X)\"."
+doc_to_target: "{{['A','B','C','D'][label|int]}}"
+output_type: generate_until
+num_fewshot: 0
+generation_kwargs:
+  until: ["<|im_end|>", "<|endoftext|>"]
+filter_list:
+  - name: chat-choice
+    filter:
+      - function: regex
+        regex_pattern: '[Tt]he answer is:?\s*\**\(?([A-Da-d])\)?\**'
+        group_select: -1
+metric_list:
+  - metric: exact_match
+    aggregation: mean
+    higher_is_better: true
+    ignore_case: true
+    ignore_punctuation: true
+metadata:
+  version: 1.0

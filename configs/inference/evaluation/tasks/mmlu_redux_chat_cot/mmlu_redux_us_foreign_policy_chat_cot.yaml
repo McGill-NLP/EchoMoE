@@ -1,0 +1,4 @@
+dataset_name: us_foreign_policy
+include: _default_template_yaml
+task: mmlu_redux_us_foreign_policy_chat_cot
+tag: mmlu_redux_chat_cot_subjects

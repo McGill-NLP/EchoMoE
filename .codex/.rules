@@ -1,0 +1,57 @@
+# Codex CLI command rules for this project.
+#
+# Mirrors the deny list in .claude/settings.json. Each rule applies to a
+# command-line prefix:
+#   - "forbidden": Codex refuses to run; user must intervene manually.
+#   - "prompt":    Codex pauses and asks for explicit user approval.
+#
+# Reference: https://developers.openai.com/codex/config-reference
+
+# --- SLURM: never let the agent submit or cancel jobs autonomously ---
+[[rules.prefix_rules]]
+pattern = [{ token = "sbatch" }]
+decision = "forbidden"
+justification = "Job submission must be explicit and human-approved (see agents/cluster.md pre-flight rule 7)."
+
+[[rules.prefix_rules]]
+pattern = [{ token = "scancel" }]
+decision = "forbidden"
+justification = "Cancelling jobs is destructive; the agent should ask the user to run it."
+
+# --- Destructive shell ---
+[[rules.prefix_rules]]
+pattern = [{ token = "rm" }, { token = "-rf" }]
+decision = "forbidden"
+justification = "Recursive force-delete is unrecoverable on networked filesystems."
+
+# --- Git history rewrites and pushes ---
+[[rules.prefix_rules]]
+pattern = [{ token = "git" }, { token = "push" }]
+decision = "prompt"
+justification = "Pushing should be a deliberate user action."
+
+[[rules.prefix_rules]]
+pattern = [{ token = "git" }, { token = "push" }, { token = "--force" }]
+decision = "forbidden"
+justification = "Force-push rewrites remote history; the user must do this directly."
+
+[[rules.prefix_rules]]
+pattern = [{ token = "git" }, { token = "reset" }, { token = "--hard" }]
+decision = "prompt"
+justification = "Discards uncommitted work and resets refs; needs explicit approval."
+
+[[rules.prefix_rules]]
+pattern = [{ token = "git" }, { token = "clean" }, { token = "-f" }]
+decision = "prompt"
+justification = "Deletes untracked files; ask before running."
+
+# --- Pipe-to-shell installers ---
+# Codex evaluates prefix tokens; the pipe-to-shell idiom shows up as a
+# `curl ... | sh` or `wget ... | bash` line. Token matching can't catch
+# arbitrary positions in a pipeline, so we forbid the common installer
+# entry points instead. Use `uv add` for package installs (see
+# agents/cluster.md).
+[[rules.prefix_rules]]
+pattern = [{ any_of = ["pip", "pip3", "conda", "poetry"] }]
+decision = "prompt"
+justification = "This project mandates `uv` for Python env management; pip/conda/poetry usage needs explicit user sign-off."

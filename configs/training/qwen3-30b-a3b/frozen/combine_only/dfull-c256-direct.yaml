@@ -1,0 +1,12 @@
+# dfull-c256-direct, combine only: Table 19.
+base: ../../frozen.yaml
+run: {output_dir: outputs/qwen3-30b-a3b/runs/dfull-c256-direct-combine-only}
+models:
+  student: {compressor_initialization: outputs/qwen3-30b-a3b/fit/dfull-c256-direct.safetensors}
+compressor:
+  sides: {dispatch: false, combine: true}
+  combine: {rank: 256, variant: plain, owner: direct}
+optimizer:
+  parameter_groups:
+    combine_compressor: {learning_rate: 5.0e-05, minimum_learning_rate: 5.0e-06}
+runtime: {recompute_num_layers: 4}

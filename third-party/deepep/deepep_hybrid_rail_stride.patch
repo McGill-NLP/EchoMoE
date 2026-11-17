@@ -1,0 +1,34 @@
+--- a/csrc/kernels/backend/nccl.cu
++++ b/csrc/kernels/backend/nccl.cu
+@@ -96,6 +96,19 @@
+         // Customized RDMA barrier needs extra signals
+         reqs.ginSignalCount = num_ranks + 2 * 2;
+         reqs.ginConnectionType = allow_hybrid_mode ? NCCL_GIN_CONNECTION_RAIL: NCCL_GIN_CONNECTION_FULL;
++#if NCCL_VERSION_CODE >= NCCL_VERSION(2, 31, 0)
++        // EchoMoE local change (stage 3): hybrid mode issues RDMA only to rail peers, i.e. the
++        // same NVLink-domain index on other nodes (TEAM_WORLD_RAIL in common/handle.cuh; the
++        // scaleout barrier uses ncclTeamTagRail). NCCL_GIN_CONNECTION_RAIL still connects every
++        // rank (stride 1) in NCCL 2.31, costing contexts x ranks QPs per GPU; a custom stride
++        // equal to the NVLink domain size connects only the rail peers (contexts x nodes).
++        // EP_HYBRID_RAIL_STRIDE=0 restores upstream behaviour for A/B checks.
++        if (allow_hybrid_mode and get_env("EP_HYBRID_RAIL_STRIDE", 1) != 0) {
++            reqs.ginConnectionType = NCCL_GIN_CONNECTION_CUSTOM_STRIDE;
++            reqs.ginCustomStride = ncclTeamLsa(comm).nRanks;
++            EP_HOST_ASSERT(reqs.ginCustomStride > 0 and num_ranks % reqs.ginCustomStride == 0);
++        }
++#endif
+     }
+ #if NCCL_VERSION_CODE >= NCCL_VERSION(2, 31, 0)
+     reqs.useRuntimeVersion = true;
+@@ -113,6 +126,11 @@
+     num_rdma_ranks = num_ranks / num_nvl_ranks, rdma_rank_idx = rank_idx / num_nvl_ranks;
+     EP_HOST_ASSERT(num_ranks % num_nvl_ranks == 0 and nvl_rank_idx == rank_idx % num_nvl_ranks);
+     EP_HOST_ASSERT(rank_idx == rdma_rank_idx * num_nvl_ranks + nvl_rank_idx);
++#if NCCL_VERSION_CODE >= NCCL_VERSION(2, 31, 0)
++    // The rail stride chosen before creation must be the NVLink domain size seen after it.
++    if (reqs.ginConnectionType == NCCL_GIN_CONNECTION_CUSTOM_STRIDE)
++        EP_HOST_ASSERT(reqs.ginCustomStride == num_nvl_ranks);
++#endif
+ 
+     // Calculate scaleout/up domain size
+     if (allow_hybrid_mode) {

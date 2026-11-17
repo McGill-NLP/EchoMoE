@@ -1,0 +1,7 @@
+# 128 prompt tokens, 1024 generated tokens, 512 requests per GPU, profiled (--profile) for the step
+# breakdowns: four of the 16 prefill steps of 4,096 tokens (4-7) and eight decode steps (500-507)
+input_len: 128
+output_len: 1024
+batch_size: 512
+max_num_seqs: 512
+profile_windows: [[mid_prefill, 4, 4], [decode, 500, 8]]

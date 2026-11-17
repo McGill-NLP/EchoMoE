@@ -1,0 +1,22 @@
+# dres768-s8-c1280-direct, joint: Table 41.
+base: ../../frozen.yaml
+run: {output_dir: outputs/qwen3-30b-a3b/runs/dres768-s8-c1280-joint}
+models:
+  student: {compressor_initialization: outputs/qwen3-30b-a3b/fit/dres768-s8-c1280-direct.safetensors}
+compressor:
+  sides: {dispatch: true, combine: true}
+  dispatch:
+    rank: 768
+    variant: residual
+    bypass_layers: []
+    reference:
+      schedule: fixed
+      lead: 1
+      references: [0, 8, 16, 24, 32, 40]
+  combine: {rank: 1280, variant: plain, owner: direct}
+optimizer:
+  parameter_groups:
+    dispatch_compressor: {learning_rate: 5.0e-05, minimum_learning_rate: 5.0e-06}
+    dispatch_reference: {learning_rate: 5.0e-05, minimum_learning_rate: 5.0e-06}
+    combine_compressor: {learning_rate: 5.0e-05, minimum_learning_rate: 5.0e-06}
+runtime: {recompute_num_layers: 8}

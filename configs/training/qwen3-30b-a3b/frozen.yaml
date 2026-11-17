@@ -1,0 +1,86 @@
+# Settings shared by every dev-mode (backbone frozen) recipe of Qwen3-30B-A3B.
+run: {kind: mixed_recovery, seed: 42, stop_after_step: null}
+models:
+  teacher: outputs/qwen3-30b-a3b/teacher
+  student: {folded: false}
+data:
+  order_seed: 42
+  mix_seed: 42
+  mixing: {kind: annealed_random, anneal_start: 0.667, end_dolci_fraction: 0.9}
+  sources:
+    dolmino:
+      tokenized_dataset: outputs/qwen3-30b-a3b/data/dolmino/tokens
+      train_layout: outputs/qwen3-30b-a3b/data/dolmino/train
+      train_teacher_targets: outputs/qwen3-30b-a3b/targets/dolmino-train
+      validation_layout: outputs/qwen3-30b-a3b/data/dolmino/validation
+      validation_teacher_targets: outputs/qwen3-30b-a3b/targets/dolmino-validation
+      token_budget: 481000000
+      passes: 1
+    dolci:
+      tokenized_dataset: outputs/qwen3-30b-a3b/data/dolci/tokens
+      train_layout: outputs/qwen3-30b-a3b/data/dolci/train
+      train_teacher_targets: outputs/qwen3-30b-a3b/targets/dolci-train
+      validation_layout: outputs/qwen3-30b-a3b/data/dolci/validation
+      validation_teacher_targets: outputs/qwen3-30b-a3b/targets/dolci-validation
+      token_budget: 560000000
+      passes: 1
+loss:
+  target_top_m: 1024
+  kl_weight: 1.0
+  lm_weight: 0.01
+  position_chunk_size: 128
+compressor:
+  validation: {route_mass_atol: 1.0e-06}
+  skipped_layers: []
+optimizer:
+  beta1: 0.9
+  beta2: 0.999
+  epsilon: 1.0e-08
+  weight_decay: 0.0
+  gradient_clip: 1.0
+  decoupled_weight_decay: false
+  parameter_groups:
+    dense_backbone: {learning_rate: 0.0, minimum_learning_rate: 0.0}
+    router: {learning_rate: 0.0, minimum_learning_rate: 0.0}
+    experts: {learning_rate: 0.0, minimum_learning_rate: 0.0}
+scheduler: {family: cosine, warmup_steps: 50}
+batch: {micro_batch_size: 2, gradient_accumulation_steps: 1, global_batch_size: 128}
+parallelism:
+  tensor_parallel_size: 1
+  pipeline_parallel_size: 1
+  expert_parallel_size: 8
+  context_parallel_size: 1
+  rank_order: tp-cp-ep-dp-pp
+  context_parallel_communication: null
+  dispatcher: deepep
+  expected_world_size: 64
+  expected_nodes: 8
+  gpus_per_node: 8
+  ddp:
+    use_distributed_optimizer: true
+    grad_reduce_in_fp32: false
+    overlap_grad_reduce: true
+    overlap_param_gather: true
+    average_in_collective: false
+    bucket_size: 200000000
+    pad_buckets_for_high_nccl_busbw: true
+runtime:
+  recompute: full
+  attention_backend: fused
+  distributed_timeout_seconds: 1800
+  apply_rope_fusion: true
+  bias_activation_fusion: true
+  moe_router_fusion: true
+  moe_grouped_gemm: true
+  masked_softmax_fusion: false
+  moe_permute_fusion: true
+  compile_regions: true
+  matmul_precision: high
+checkpoint: {save_interval_steps: 200, keep_last: 2, resume_from: null}
+evaluation: {interval_steps: 400, at_start: true, batches: all}
+logging:
+  wandb:
+    mode: online
+    project: communication-efficient-moe
+    group: compressor-only
+    job_type: compressor

@@ -1,0 +1,52 @@
+# Ruff config for research projects. Tuned to be strict enough to catch real
+# bugs but lenient enough that research scripts aren't constantly red.
+#
+# Reference: https://docs.astral.sh/ruff/configuration/
+
+line-length = 99
+target-version = "py312"
+
+# Skip generated / vendored / output directories
+extend-exclude = [
+    "outputs",            # run outputs
+    ".work",              # porting scratch (gitignored)
+    ".venv*",             # the environments (gitignored)
+    "third-party/IFBench",        # cloned benchmarks and builds (gitignored)
+    "third-party/LiveCodeBench",
+    "third-party/deepep/DeepEP",
+]
+
+[lint]
+# Enabled rule families:
+#   E / W   pycodestyle errors and warnings
+#   F       pyflakes (unused imports, undefined names)
+#   I       isort (import sorting)
+#   B       flake8-bugbear (common bug patterns)
+#   UP      pyupgrade (modern Python idioms)
+#   SIM     flake8-simplify
+#   RUF     ruff-specific lints
+#   PT      pytest-style
+#   NPY     numpy-specific
+select = ["E", "W", "F", "I", "B", "UP", "SIM", "RUF", "PT", "NPY"]
+
+ignore = [
+    "E501",   # line too long. Handled by the formatter
+    "B008",   # function call in default args. Needed for Hydra / @hydra.main
+    "B905",   # zip without strict. Too noisy in research code
+    "SIM108", # ternary-over-if. Sometimes the if-form reads better
+    "RUF012", # mutable class attrs need ClassVar. Annoying for dataclass-like configs
+]
+
+[lint.per-file-ignores]
+# __init__.py often re-exports
+"**/__init__.py" = ["F401", "F403"]
+
+[lint.isort]
+known-first-party = ["minimal_moe"]
+combine-as-imports = true
+
+[format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true     # format code blocks inside docstrings
+line-ending = "lf"

@@ -1,0 +1,11 @@
+# 128,000 prompt tokens, 512 generated tokens, 4 requests per GPU
+input_len: 128000
+output_len: 512
+batch_size: 4
+max_num_seqs: 4
+# Qwen3's YaRN scaling (factor 4 over 32,768 positions, the checkpoints' rope theta) to serve
+# 128,512 tokens, for both variants. vLLM sets the complete dict on the model config.
+hf_overrides:
+  rope_parameters: {rope_type: yarn, factor: 4.0, original_max_position_embeddings: 32768, rope_theta: 1000000.0}
+# --profile: the engine steps recorded (name, first step, steps), after a warm-up batch
+profile_windows: [[prefill, 1, 1], [late_prefill, 120, 1], [decode, 144, 8]]

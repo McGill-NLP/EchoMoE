@@ -1,0 +1,19 @@
+# Overrides for compiling and installing requirements-megatron.lock (uv --override / --overrides).
+#
+# megatron-bridge 0.6.2 asks for flashinfer 0.6.8.post1. Bridge never imports it, but megatron-core
+# does and leaves it unpinned, so the version the previous stack had is kept.
+flashinfer-python==0.5.3
+# Bridge 0.6.2 pins wandb 0.29.0, and the project pins an earlier release.
+wandb>=0.27,<0.28
+# Required by bridge 0.6.2 and imported by none of its modules. Its sdist fetches a prebuilt wheel
+# that does not exist for torch 2.11 with CUDA 12 and otherwise fails to build.
+fast-hadamard-transform; sys_platform == "never"
+# Required by bridge 0.6.2 for Mistral tokenizers and imported by none of its modules. It caps numpy
+# below 2.4.
+mistral-common; sys_platform == "never"
+# Bridge 0.6.2 pins the cubin package to its own flashinfer version, and a cubin that differs from
+# flashinfer-python makes `import flashinfer` raise.
+flashinfer-cubin; sys_platform == "never"
+# megatron-core 0.19.2 and bridge 0.6.2 require nvidia-resiliency-ext 0.6.0, whose wheels need
+# glibc 2.39. Without it megatron-core reports no asynchronous checkpointing, which is not used.
+nvidia-resiliency-ext; sys_platform == "never"

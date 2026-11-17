@@ -1,0 +1,13 @@
+# Kanana-2-30B-A3B: the base weights, and the instruct tokenizer and chat template. The template
+# also writes bos before the first turn (`echomoe.training.base_model`).
+base:
+  repo: kakaocorp/kanana-2-30b-a3b-base-2601
+  revision: 0d31365acf656e5f9a593cacc4913e9c0d36cb1c
+instruct:
+  repo: kakaocorp/kanana-2-30b-a3b-instruct-2601
+  revision: 4a781fe5027da4af8d8208cb21bc5108b913bb62
+tokens: {bos: 128000, eod: 128001, eos: 128010, pad: 128001}
+# The tokenizer starts plain text with bos, so a Dolmino document does too.
+document_bos: true
+cut_long_runs: false
+assistant_content: verbatim

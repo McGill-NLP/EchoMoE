@@ -1,0 +1,6 @@
+# The token check (--tokens, with --routing model): 24 synthetic prompts per GPU of 16 to 3000
+# tokens, 48 greedy tokens each. input_len only sets max_model_len (4096).
+input_len: 4048
+output_len: 48
+batch_size: 24
+max_num_seqs: 24

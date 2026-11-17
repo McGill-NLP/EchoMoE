@@ -1,0 +1,19 @@
+# The per-connection-capped networks (--capped, Qwen3-30B-A3B): each inter-node connection injects
+# at a fixed rate, an ibv_rate value, through the NCCL build of `scripts/install.sh nccl`. NCCL's
+# own connections take nccl_ib_rate, DeepEP's take deepep_gin_rate, and the two-hop and streaming
+# kernels' (rails.py) take their own. DeepEP's buffers allocate deepep_qps network contexts. The
+# per-call backend times (selection.py) were measured on each capped network.
+2x:  # about 2x slower
+  nccl_ib_rate: 16      # 100 Gb/s
+  deepep_gin_rate: 5    # 5 Gb/s
+  rail_gin_rate: 9      # 80 Gb/s
+  stream_gin_rate: 7    # 40 Gb/s
+  deepep_qps: 21
+  select: costs-capped-2x.csv
+2.5x:  # about 2.5x slower
+  nccl_ib_rate: 9       # 80 Gb/s
+  deepep_gin_rate: 2    # 2.5 Gb/s
+  rail_gin_rate: 16     # 100 Gb/s
+  stream_gin_rate: 4    # 30 Gb/s
+  deepep_qps: 25
+  select: costs-capped-2.5x.csv

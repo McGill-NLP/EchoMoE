@@ -1,0 +1,5 @@
+# Dolci for Kanana-2-30B-A3B: the Qwen3-30B-A3B recipe with this model's tokenizer.
+base: ../dolci.yaml
+tokenization:
+  prepared_model: outputs/kanana-2-30b-a3b/base
+  model: configs/models/kanana-2-30b-a3b.yaml

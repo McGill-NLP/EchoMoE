@@ -1,0 +1,517 @@
+source:
+  dataset_id: allenai/dolma3_dolmino_mix-10B-1025
+  revision: 275d00e588098d2658e36be74ffd010dfb54d8a6
+  split: train
+  kind: pretrain
+  file_mapping:
+    - pattern: data/code-meta-reasoning/*
+      component: code-meta-reasoning
+      variant: code-meta-reasoning
+    - pattern: data/common_crawl-high-quality_19_adult_content/*
+      component: common_crawl-high-quality
+      variant: 19_adult_content
+    - pattern: data/common_crawl-high-quality_19_art_and_design/*
+      component: common_crawl-high-quality
+      variant: 19_art_and_design
+    - pattern: data/common_crawl-high-quality_19_crime_and_law/*
+      component: common_crawl-high-quality
+      variant: 19_crime_and_law
+    - pattern: data/common_crawl-high-quality_19_education_and_jobs/*
+      component: common_crawl-high-quality
+      variant: 19_education_and_jobs
+    - pattern: data/common_crawl-high-quality_19_electronics_and_hardware/*
+      component: common_crawl-high-quality
+      variant: 19_electronics_and_hardware
+    - pattern: data/common_crawl-high-quality_19_entertainment/*
+      component: common_crawl-high-quality
+      variant: 19_entertainment
+    - pattern: data/common_crawl-high-quality_19_fashion_and_beauty/*
+      component: common_crawl-high-quality
+      variant: 19_fashion_and_beauty
+    - pattern: data/common_crawl-high-quality_19_finance_and_business/*
+      component: common_crawl-high-quality
+      variant: 19_finance_and_business
+    - pattern: data/common_crawl-high-quality_19_food_and_dining/*
+      component: common_crawl-high-quality
+      variant: 19_food_and_dining
+    - pattern: data/common_crawl-high-quality_19_games/*
+      component: common_crawl-high-quality
+      variant: 19_games
+    - pattern: data/common_crawl-high-quality_19_health/*
+      component: common_crawl-high-quality
+      variant: 19_health
+    - pattern: data/common_crawl-high-quality_19_history_and_geography/*
+      component: common_crawl-high-quality
+      variant: 19_history_and_geography
+    - pattern: data/common_crawl-high-quality_19_home_and_hobbies/*
+      component: common_crawl-high-quality
+      variant: 19_home_and_hobbies
+    - pattern: data/common_crawl-high-quality_19_industrial/*
+      component: common_crawl-high-quality
+      variant: 19_industrial
+    - pattern: data/common_crawl-high-quality_19_literature/*
+      component: common_crawl-high-quality
+      variant: 19_literature
+    - pattern: data/common_crawl-high-quality_19_politics/*
+      component: common_crawl-high-quality
+      variant: 19_politics
+    - pattern: data/common_crawl-high-quality_19_religion/*
+      component: common_crawl-high-quality
+      variant: 19_religion
+    - pattern: data/common_crawl-high-quality_19_science_math_and_technology/*
+      component: common_crawl-high-quality
+      variant: 19_science_math_and_technology
+    - pattern: data/common_crawl-high-quality_19_social_life/*
+      component: common_crawl-high-quality
+      variant: 19_social_life
+    - pattern: data/common_crawl-high-quality_19_software/*
+      component: common_crawl-high-quality
+      variant: 19_software
+    - pattern: data/common_crawl-high-quality_19_software_development/*
+      component: common_crawl-high-quality
+      variant: 19_software_development
+    - pattern: data/common_crawl-high-quality_19_sports_and_fitness/*
+      component: common_crawl-high-quality
+      variant: 19_sports_and_fitness
+    - pattern: data/common_crawl-high-quality_19_transportation/*
+      component: common_crawl-high-quality
+      variant: 19_transportation
+    - pattern: data/common_crawl-high-quality_19_travel_and_tourism/*
+      component: common_crawl-high-quality
+      variant: 19_travel_and_tourism
+    - pattern: data/common_crawl-high-quality_20_adult_content/*
+      component: common_crawl-high-quality
+      variant: 20_adult_content
+    - pattern: data/common_crawl-high-quality_20_art_and_design/*
+      component: common_crawl-high-quality
+      variant: 20_art_and_design
+    - pattern: data/common_crawl-high-quality_20_crime_and_law/*
+      component: common_crawl-high-quality
+      variant: 20_crime_and_law
+    - pattern: data/common_crawl-high-quality_20_education_and_jobs/*
+      component: common_crawl-high-quality
+      variant: 20_education_and_jobs
+    - pattern: data/common_crawl-high-quality_20_electronics_and_hardware/*
+      component: common_crawl-high-quality
+      variant: 20_electronics_and_hardware
+    - pattern: data/common_crawl-high-quality_20_entertainment/*
+      component: common_crawl-high-quality
+      variant: 20_entertainment
+    - pattern: data/common_crawl-high-quality_20_fashion_and_beauty/*
+      component: common_crawl-high-quality
+      variant: 20_fashion_and_beauty
+    - pattern: data/common_crawl-high-quality_20_finance_and_business/*
+      component: common_crawl-high-quality
+      variant: 20_finance_and_business
+    - pattern: data/common_crawl-high-quality_20_food_and_dining/*
+      component: common_crawl-high-quality
+      variant: 20_food_and_dining
+    - pattern: data/common_crawl-high-quality_20_games/*
+      component: common_crawl-high-quality
+      variant: 20_games
+    - pattern: data/common_crawl-high-quality_20_health/*
+      component: common_crawl-high-quality
+      variant: 20_health
+    - pattern: data/common_crawl-high-quality_20_history_and_geography/*
+      component: common_crawl-high-quality
+      variant: 20_history_and_geography
+    - pattern: data/common_crawl-high-quality_20_home_and_hobbies/*
+      component: common_crawl-high-quality
+      variant: 20_home_and_hobbies
+    - pattern: data/common_crawl-high-quality_20_industrial/*
+      component: common_crawl-high-quality
+      variant: 20_industrial
+    - pattern: data/common_crawl-high-quality_20_literature/*
+      component: common_crawl-high-quality
+      variant: 20_literature
+    - pattern: data/common_crawl-high-quality_20_politics/*
+      component: common_crawl-high-quality
+      variant: 20_politics
+    - pattern: data/common_crawl-high-quality_20_religion/*
+      component: common_crawl-high-quality
+      variant: 20_religion
+    - pattern: data/common_crawl-high-quality_20_science_math_and_technology/*
+      component: common_crawl-high-quality
+      variant: 20_science_math_and_technology
+    - pattern: data/common_crawl-high-quality_20_social_life/*
+      component: common_crawl-high-quality
+      variant: 20_social_life
+    - pattern: data/common_crawl-high-quality_20_software/*
+      component: common_crawl-high-quality
+      variant: 20_software
+    - pattern: data/common_crawl-high-quality_20_software_development/*
+      component: common_crawl-high-quality
+      variant: 20_software_development
+    - pattern: data/common_crawl-high-quality_20_sports_and_fitness/*
+      component: common_crawl-high-quality
+      variant: 20_sports_and_fitness
+    - pattern: data/common_crawl-high-quality_20_transportation/*
+      component: common_crawl-high-quality
+      variant: 20_transportation
+    - pattern: data/common_crawl-high-quality_20_travel_and_tourism/*
+      component: common_crawl-high-quality
+      variant: 20_travel_and_tourism
+    - pattern: data/cranecode/*
+      component: cranecode
+      variant: cranecode
+    - pattern: data/cranemath/*
+      component: cranemath
+      variant: cranemath
+    - pattern: data/dolmino-math/*
+      component: dolmino-math
+      variant: dolmino-math
+    - pattern: data/dolmino_1-flan/*
+      component: dolmino_1-flan
+      variant: dolmino_1-flan
+    - pattern: data/gemini-reasoning-traces/*
+      component: gemini-reasoning-traces
+      variant: gemini-reasoning-traces
+    - pattern: data/general_reasoning_mix/*
+      component: general_reasoning_mix
+      variant: general_reasoning_mix
+    - pattern: data/llama_nemotron-reasoning-traces/*
+      component: llama_nemotron-reasoning-traces
+      variant: llama_nemotron-reasoning-traces
+    - pattern: data/math-meta-reasoning/*
+      component: math-meta-reasoning
+      variant: math-meta-reasoning
+    - pattern: data/megamatt/*
+      component: megamatt
+      variant: megamatt
+    - pattern: data/nemotron-synth-qa/*
+      component: nemotron-synth-qa
+      variant: nemotron-synth-qa
+    - pattern: data/olmocr_science_pdfs-high_quality-art_and_design-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: art_and_design-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-art_and_design-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: art_and_design-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-crime_and_law-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: crime_and_law-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-crime_and_law-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: crime_and_law-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-education_and_jobs-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: education_and_jobs-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-education_and_jobs-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: education_and_jobs-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-electronics_and_hardware-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: electronics_and_hardware-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-electronics_and_hardware-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: electronics_and_hardware-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-entertainment-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: entertainment-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-entertainment-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: entertainment-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-finance_and_business-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: finance_and_business-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-finance_and_business-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: finance_and_business-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-health-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: health-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-health-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: health-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-history_and_geography-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: history_and_geography-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-history_and_geography-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: history_and_geography-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-home_and_hobbies-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: home_and_hobbies-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-home_and_hobbies-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: home_and_hobbies-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-industrial-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: industrial-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-industrial-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: industrial-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-literature-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: literature-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-literature-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: literature-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-politics-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: politics-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-politics-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: politics-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-religion-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: religion-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-religion-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: religion-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-science_math_and_technology-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: science_math_and_technology-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-science_math_and_technology-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: science_math_and_technology-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-software-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: software-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-software-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: software-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-software_development-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: software_development-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-software_development-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: software_development-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-sports_and_fitness-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: sports_and_fitness-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-sports_and_fitness-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: sports_and_fitness-2e13
+    - pattern: data/olmocr_science_pdfs-high_quality-transportation-2e12/*
+      component: olmocr_science_pdfs-high_quality
+      variant: transportation-2e12
+    - pattern: data/olmocr_science_pdfs-high_quality-transportation-2e13/*
+      component: olmocr_science_pdfs-high_quality
+      variant: transportation-2e13
+    - pattern: data/omr-rewrite-fullthoughts/*
+      component: omr-rewrite-fullthoughts
+      variant: omr-rewrite-fullthoughts
+    - pattern: data/openthoughts2-reasoning-traces/*
+      component: openthoughts2-reasoning-traces
+      variant: openthoughts2-reasoning-traces
+    - pattern: data/program_verifiable/*
+      component: program_verifiable
+      variant: program_verifiable
+    - pattern: data/qwq-reasoning-traces/*
+      component: qwq-reasoning-traces
+      variant: qwq-reasoning-traces
+    - pattern: data/reddit_to_flashcards/*
+      component: reddit_to_flashcards
+      variant: reddit_to_flashcards
+    - pattern: data/stack_edu_fim-CSharp_0015/*
+      component: stack_edu_fim
+      variant: CSharp_0015
+    - pattern: data/stack_edu_fim-CSharp_0016/*
+      component: stack_edu_fim
+      variant: CSharp_0016
+    - pattern: data/stack_edu_fim-CSharp_0017/*
+      component: stack_edu_fim
+      variant: CSharp_0017
+    - pattern: data/stack_edu_fim-CSharp_0018/*
+      component: stack_edu_fim
+      variant: CSharp_0018
+    - pattern: data/stack_edu_fim-C_0015/*
+      component: stack_edu_fim
+      variant: C_0015
+    - pattern: data/stack_edu_fim-C_0016/*
+      component: stack_edu_fim
+      variant: C_0016
+    - pattern: data/stack_edu_fim-C_0017/*
+      component: stack_edu_fim
+      variant: C_0017
+    - pattern: data/stack_edu_fim-C_0018/*
+      component: stack_edu_fim
+      variant: C_0018
+    - pattern: data/stack_edu_fim-Cpp_0015/*
+      component: stack_edu_fim
+      variant: Cpp_0015
+    - pattern: data/stack_edu_fim-Cpp_0016/*
+      component: stack_edu_fim
+      variant: Cpp_0016
+    - pattern: data/stack_edu_fim-Cpp_0017/*
+      component: stack_edu_fim
+      variant: Cpp_0017
+    - pattern: data/stack_edu_fim-Cpp_0018/*
+      component: stack_edu_fim
+      variant: Cpp_0018
+    - pattern: data/stack_edu_fim-Go_0015/*
+      component: stack_edu_fim
+      variant: Go_0015
+    - pattern: data/stack_edu_fim-Go_0016/*
+      component: stack_edu_fim
+      variant: Go_0016
+    - pattern: data/stack_edu_fim-Go_0017/*
+      component: stack_edu_fim
+      variant: Go_0017
+    - pattern: data/stack_edu_fim-Go_0018/*
+      component: stack_edu_fim
+      variant: Go_0018
+    - pattern: data/stack_edu_fim-JavaScript_0015/*
+      component: stack_edu_fim
+      variant: JavaScript_0015
+    - pattern: data/stack_edu_fim-JavaScript_0016/*
+      component: stack_edu_fim
+      variant: JavaScript_0016
+    - pattern: data/stack_edu_fim-JavaScript_0017/*
+      component: stack_edu_fim
+      variant: JavaScript_0017
+    - pattern: data/stack_edu_fim-JavaScript_0018/*
+      component: stack_edu_fim
+      variant: JavaScript_0018
+    - pattern: data/stack_edu_fim-Java_0015/*
+      component: stack_edu_fim
+      variant: Java_0015
+    - pattern: data/stack_edu_fim-Java_0016/*
+      component: stack_edu_fim
+      variant: Java_0016
+    - pattern: data/stack_edu_fim-Java_0017/*
+      component: stack_edu_fim
+      variant: Java_0017
+    - pattern: data/stack_edu_fim-Java_0018/*
+      component: stack_edu_fim
+      variant: Java_0018
+    - pattern: data/stack_edu_fim-Markdown_0015/*
+      component: stack_edu_fim
+      variant: Markdown_0015
+    - pattern: data/stack_edu_fim-Markdown_0016/*
+      component: stack_edu_fim
+      variant: Markdown_0016
+    - pattern: data/stack_edu_fim-Markdown_0017/*
+      component: stack_edu_fim
+      variant: Markdown_0017
+    - pattern: data/stack_edu_fim-Markdown_0018/*
+      component: stack_edu_fim
+      variant: Markdown_0018
+    - pattern: data/stack_edu_fim-PHP_0015/*
+      component: stack_edu_fim
+      variant: PHP_0015
+    - pattern: data/stack_edu_fim-PHP_0016/*
+      component: stack_edu_fim
+      variant: PHP_0016
+    - pattern: data/stack_edu_fim-PHP_0017/*
+      component: stack_edu_fim
+      variant: PHP_0017
+    - pattern: data/stack_edu_fim-PHP_0018/*
+      component: stack_edu_fim
+      variant: PHP_0018
+    - pattern: data/stack_edu_fim-Python_0015/*
+      component: stack_edu_fim
+      variant: Python_0015
+    - pattern: data/stack_edu_fim-Python_0016/*
+      component: stack_edu_fim
+      variant: Python_0016
+    - pattern: data/stack_edu_fim-Python_0017/*
+      component: stack_edu_fim
+      variant: Python_0017
+    - pattern: data/stack_edu_fim-Python_0018/*
+      component: stack_edu_fim
+      variant: Python_0018
+    - pattern: data/stack_edu_fim-Ruby_0015/*
+      component: stack_edu_fim
+      variant: Ruby_0015
+    - pattern: data/stack_edu_fim-Ruby_0016/*
+      component: stack_edu_fim
+      variant: Ruby_0016
+    - pattern: data/stack_edu_fim-Ruby_0017/*
+      component: stack_edu_fim
+      variant: Ruby_0017
+    - pattern: data/stack_edu_fim-Ruby_0018/*
+      component: stack_edu_fim
+      variant: Ruby_0018
+    - pattern: data/stack_edu_fim-Rust_0015/*
+      component: stack_edu_fim
+      variant: Rust_0015
+    - pattern: data/stack_edu_fim-Rust_0016/*
+      component: stack_edu_fim
+      variant: Rust_0016
+    - pattern: data/stack_edu_fim-Rust_0017/*
+      component: stack_edu_fim
+      variant: Rust_0017
+    - pattern: data/stack_edu_fim-Rust_0018/*
+      component: stack_edu_fim
+      variant: Rust_0018
+    - pattern: data/stack_edu_fim-SQL_0015/*
+      component: stack_edu_fim
+      variant: SQL_0015
+    - pattern: data/stack_edu_fim-SQL_0016/*
+      component: stack_edu_fim
+      variant: SQL_0016
+    - pattern: data/stack_edu_fim-SQL_0017/*
+      component: stack_edu_fim
+      variant: SQL_0017
+    - pattern: data/stack_edu_fim-SQL_0018/*
+      component: stack_edu_fim
+      variant: SQL_0018
+    - pattern: data/stack_edu_fim-Shell_0015/*
+      component: stack_edu_fim
+      variant: Shell_0015
+    - pattern: data/stack_edu_fim-Shell_0016/*
+      component: stack_edu_fim
+      variant: Shell_0016
+    - pattern: data/stack_edu_fim-Shell_0017/*
+      component: stack_edu_fim
+      variant: Shell_0017
+    - pattern: data/stack_edu_fim-Shell_0018/*
+      component: stack_edu_fim
+      variant: Shell_0018
+    - pattern: data/stack_edu_fim-Swift_0015/*
+      component: stack_edu_fim
+      variant: Swift_0015
+    - pattern: data/stack_edu_fim-Swift_0016/*
+      component: stack_edu_fim
+      variant: Swift_0016
+    - pattern: data/stack_edu_fim-Swift_0017/*
+      component: stack_edu_fim
+      variant: Swift_0017
+    - pattern: data/stack_edu_fim-Swift_0018/*
+      component: stack_edu_fim
+      variant: Swift_0018
+    - pattern: data/stack_edu_fim-TypeScript_0015/*
+      component: stack_edu_fim
+      variant: TypeScript_0015
+    - pattern: data/stack_edu_fim-TypeScript_0016/*
+      component: stack_edu_fim
+      variant: TypeScript_0016
+    - pattern: data/stack_edu_fim-TypeScript_0017/*
+      component: stack_edu_fim
+      variant: TypeScript_0017
+    - pattern: data/stack_edu_fim-TypeScript_0018/*
+      component: stack_edu_fim
+      variant: TypeScript_0018
+    - pattern: data/stem-heavy-crawl/*
+      component: stem-heavy-crawl
+      variant: stem-heavy-crawl
+    - pattern: data/tinymath-mind/*
+      component: tinymath-mind
+      variant: tinymath-mind
+    - pattern: data/tinymath-pot/*
+      component: tinymath-pot
+      variant: tinymath-pot
+    - pattern: data/tulu-3-sft/*
+      component: tulu-3-sft
+      variant: tulu-3-sft
+    - pattern: data/wiki_to_rcqa/*
+      component: wiki_to_rcqa
+      variant: wiki_to_rcqa
+eligibility:
+  version: dolmino-eligible
+split:
+  seed: 42
+  validation_target: 1024
+tokenization:
+  prepared_model: outputs/qwen3-30b-a3b/base
+  model: configs/models/qwen3-30b-a3b.yaml
+  kind: text
+  add_special_tokens: false
+  target_rows_per_shard: 50000
+layout:
+  sequence_length: 8192
+  alignment: 8
+  algorithm: best_fit_decreasing
+  overlength: preserve_spans

@@ -1,0 +1,4 @@
+dataset_name: computer_security
+include: _default_template_yaml
+task: mmlu_redux_computer_security_chat_cot
+tag: mmlu_redux_chat_cot_subjects

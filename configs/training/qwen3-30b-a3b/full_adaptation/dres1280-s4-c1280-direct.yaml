@@ -1,0 +1,18 @@
+# dres1280-s4-c1280-direct, full adaptation: Tables 14 and 22.
+base: ../full_adaptation.yaml
+run: {output_dir: outputs/qwen3-30b-a3b/runs/dres1280-s4-c1280-full-adaptation}
+models:
+  student: {compressor_initialization: outputs/qwen3-30b-a3b/fit/dres1280-s4-c1280-direct.safetensors}
+compressor:
+  dispatch:
+    rank: 1280
+    variant: residual
+    reference:
+      schedule: fixed
+      lead: 1
+      references: [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44]
+  combine: {rank: 1280}
+optimizer:
+  parameter_groups:
+    dispatch_reference: {learning_rate: 5.0e-05, minimum_learning_rate: 5.0e-06}
+runtime: {recompute_num_layers: 4}

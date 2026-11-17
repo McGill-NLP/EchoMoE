@@ -1,0 +1,5 @@
+# Dolci for Gemma 4 26B-A4B: the Qwen3-30B-A3B recipe with this model's tokenizer.
+base: ../dolci.yaml
+tokenization:
+  prepared_model: outputs/gemma4-26b-a4b/base
+  model: configs/models/gemma4-26b-a4b.yaml

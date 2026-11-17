@@ -1,0 +1,4 @@
+dataset_name: public_relations
+include: _default_template_yaml
+task: mmlu_redux_public_relations_chat_cot
+tag: mmlu_redux_chat_cot_subjects

@@ -1,0 +1,26 @@
+# Gemma 4 26B-A4B: the SFT teacher (base) and the trained student (folded, dispatch rank 768,
+# combine rank 1408 sent padded to 1536, a reference every 4 MoE layers), both with BF16 experts.
+# One KV cache size for both variants. The cache is large (25 sliding-window layers of 8 KV heads x
+# 256 and 5 global layers of 2 x 512, about 224 KB per token in the window), so the 1K-token
+# workloads' 512 requests per GPU do not all fit at once, and vLLM admits what fits, the same in
+# both variants. The engine options override engine.yaml.
+expert_format: bf16
+engine:
+  kv_cache_memory_bytes: 55834574848  # 52 GiB
+  seed: 0
+# the base model compacts each received row's routes to its rank's experts in graphed decode
+# (fairness.py)
+decode_guard: true
+# both variants run the dense MLP on a second stream beside the router and the MoE
+second_stream: true
+# the student's BF16 reference all-gather sends each rank's rows up to the data-parallel batch
+live_rows: true
+# prompt token ids, drawn uniformly from [low, high). The vocabulary has 262,144
+prompt_vocab: [1000, 262000]
+# network contexts (QPs) each DeepEP buffer allocates
+deepep_contexts: 65
+# per-call backend times (selection.py) by the dispatch's and combine's precision: BF16, FP8 both
+# (--fp8)
+select:
+  bf16: costs-gemma4-26b-a4b-bf16.csv
+  fp8: costs-gemma4-26b-a4b-fp8.csv

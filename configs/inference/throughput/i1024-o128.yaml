@@ -1,0 +1,5 @@
+# 1024 prompt tokens, 128 generated tokens, 512 requests per GPU
+input_len: 1024
+output_len: 128
+batch_size: 512
+max_num_seqs: 512

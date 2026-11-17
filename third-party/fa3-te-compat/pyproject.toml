@@ -1,0 +1,16 @@
+[project]
+name = "fa3-te-compat"
+version = "0.1.0"
+description = "TE/FA3 compat shim: re-exports flash_attn_interface symbols under flash_attn_3.flash_attn_interface, the import path Transformer Engine expects (see TE's utils.py:136-141 install instructions)."
+requires-python = ">=3.9"
+dependencies = ["flash-attn-3"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+# Ship `flash_attn_3/flash_attn_interface.py` as a PEP 420 namespace-package
+# contribution. The FA3 wheel installs `flash_attn_3/_C.abi3.so` and no
+# `__init__.py`, so we must not ship `__init__.py` either or we'd shadow it.
+packages = ["src/flash_attn_3"]

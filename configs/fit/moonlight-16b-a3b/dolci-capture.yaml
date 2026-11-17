@@ -1,0 +1,16 @@
+model_export: outputs/moonlight-16b-a3b/teacher/hf
+tokenized_dataset: outputs/moonlight-16b-a3b/data/dolci/tokens
+fit_layout: outputs/moonlight-16b-a3b/data/dolci/train
+validation_layout: outputs/moonlight-16b-a3b/data/dolci/validation
+output_root: outputs/moonlight-16b-a3b/capture
+selection_seed: 42
+fit_rows: 512000
+validation_rows: 32768
+max_tokens_per_document: 8
+part_count: 24
+rows_per_file: 4096
+max_model_len: 8193
+max_num_seqs: 256
+max_num_batched_tokens: 8192
+gpu_memory_utilization: 0.88
+enable_chunked_prefill: true

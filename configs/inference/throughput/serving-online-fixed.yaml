@@ -1,0 +1,19 @@
+# Online serving with balanced routing (Table 35, Figure 20): as serving-online.yaml, but vLLM's
+# routing simulator assigns experts and each prompt's reply is exactly as long as the teacher's
+# reply to it with its own routing (serving.py fixed-replies), so both models do the same work.
+rates: [16, 128, 256, 384, 512]  # requests/s into the server
+seconds: 240
+warmup:
+  - {rate: 4, num_prompts: 360}
+  - {rate: 256, num_prompts: 3000}
+prompts: outputs/qwen3-30b-a3b/serving/prompts/prompts-fixed.jsonl
+ignore_eos: true
+routing: balanced
+max_model_len: 12288
+max_num_seqs: 512
+api_servers: 16
+clients: 8
+temperature: 0.7
+top_p: 0.8
+top_k: 20
+ready_seconds: 1800

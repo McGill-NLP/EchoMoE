@@ -1,0 +1,18 @@
+# Every prompt is prefilled whole: a chunked prefill splits a prompt the step cannot hold, and the
+# split grows through Nemotron-H's near-tied sigmoid routes into another trajectory.
+model_export: outputs/nemotron-3.5-lightning-30b-a3b/teacher/hf
+tokenized_dataset: outputs/nemotron-3.5-lightning-30b-a3b/data/dolmino/tokens
+layout: outputs/nemotron-3.5-lightning-30b-a3b/data/dolmino/train
+output_root: outputs/nemotron-3.5-lightning-30b-a3b/targets/dolmino-train
+order_seed: 42
+order_epochs: 1
+token_budget: 2000000000
+top_m: 1024
+part_count: 24
+rows_per_file: 262144
+logits_chunk_rows: 1024
+max_model_len: 8193
+max_num_seqs: 256
+max_num_batched_tokens: 16384
+gpu_memory_utilization: 0.88
+enable_chunked_prefill: false
