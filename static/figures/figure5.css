@@ -1,0 +1,30 @@
+/* EchoMoE Figure 5: step-time breakdown. */
+.fig5 { --f5-comm:#eb6834; --f5-comp:#78469e; --f5-moe:#1baf7a; --f5-attn:#2a78d6; --f5-other:#d5d9df; --f5-ink:#2b3340; --f5-muted:#687180;
+  position:relative; margin:1.2rem 0 0; color:var(--f5-ink); }
+.fig5 .f5-legend { display:flex; gap:8px 18px; justify-content:center; flex-wrap:wrap; font-size:12.5px; color:var(--f5-muted); margin-bottom:8px; }
+.fig5 .f5-key { display:inline-flex; align-items:center; gap:6px; }
+.fig5 .f5-key i { display:inline-block; width:12px; height:12px; border-radius:3px; }
+.fig5 .f5-panel-title { font-size:14px; font-weight:600; color:#374151; margin:4px 0 0; padding-left:2px; }
+.fig5 svg.f5-chart { width:100%; height:auto; display:block; overflow:visible; font-family:inherit; }
+.fig5 .f5-grid { stroke:#eceef2; stroke-width:1; }
+.fig5 .f5-tick { fill:var(--f5-muted); font-size:12px; }
+.fig5 .f5-axis-label { fill:#4b5563; font-size:12.5px; }
+.fig5 .f5-row { fill:var(--f5-ink); font-size:13px; }
+.fig5 .f5-row-base { font-weight:600; }
+.fig5 .f5-seg { stroke:#fff; stroke-width:2; cursor:pointer; outline:none; }
+.fig5 .f5-seg:hover, .fig5 .f5-seg:focus-visible { filter:brightness(1.08); }
+.fig5 .f5-comm { fill:var(--f5-comm); } .fig5 .f5-comp { fill:var(--f5-comp); } .fig5 .f5-moe { fill:var(--f5-moe); }
+.fig5 .f5-attn { fill:var(--f5-attn); } .fig5 .f5-other { fill:var(--f5-other); }
+.fig5 .f5-in { font-size:12px; font-weight:600; fill:#fff; pointer-events:none; }
+.fig5 .f5-in-other { fill:#4b5563; }
+.fig5 .f5-total { fill:var(--f5-muted); font-size:12.5px; }
+.fig5 .f5-total-echo { fill:var(--f5-ink); font-weight:700; }
+.fig5 .f5-tip { position:absolute; z-index:5; pointer-events:none; background:#fff; border:1px solid #e3e6eb; border-radius:6px;
+  box-shadow:0 4px 14px rgba(0,0,0,.08); padding:7px 10px; font-size:12px; line-height:1.55; color:#374151; white-space:nowrap; transform:translateY(-100%); }
+.fig5 .f5-sub { color:var(--f5-muted); }
+.fig5 details.f5-table { margin-top:6px; font-size:12px; color:var(--f5-muted); text-align:center; }
+.fig5 details.f5-table summary { cursor:pointer; display:inline-block; }
+.fig5 details.f5-table table { margin:8px auto 0; font-size:12px; text-align:right; }
+.fig5 details.f5-table th, .fig5 details.f5-table td { padding:2px 8px; border:none; }
+.fig5 .f5-in-comm, .fig5 .f5-in-moe { fill:#1f2933; }
+.fig5 .f5-below { fill:var(--f5-muted); font-size:10.5px; font-weight:600; }

@@ -1,0 +1,39 @@
+/* EchoMoE Figure 3: two equal-size panels. */
+.fig3 { --f3-echo:#78469e; --f3-plain:#b8860b; --f3-ink:#2b3340; --f3-muted:#687180; --f3-grid:#eceef2;
+  position:relative; margin:1.2rem 0 0; color:var(--f3-ink); }
+.fig3 .f3-legend { display:flex; gap:22px; justify-content:center; font-size:13px; color:var(--f3-muted); margin-bottom:6px; }
+.fig3 .f3-key { display:inline-flex; align-items:center; gap:7px; }
+.fig3 .f3-key svg { width:30px; height:12px; overflow:visible; }
+.fig3 .f3-panels { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+.fig3 .f3-panel-title { text-align:center; font-size:14px; font-weight:600; color:#374151; margin:0 0 2px; }
+.fig3 svg.f3-chart { width:100%; height:auto; display:block; overflow:visible; font-family:inherit; }
+.fig3 .f3-grid { stroke:var(--f3-grid); stroke-width:1; }
+.fig3 .f3-axis { stroke:#c7ccd3; stroke-width:1; }
+.fig3 .f3-guide { stroke:#d9cde4; stroke-width:1; stroke-dasharray:2 4; }
+.fig3 .f3-tick { fill:var(--f3-muted); font-size:12px; }
+.fig3 .f3-axis-label { fill:#4b5563; font-size:13px; }
+.fig3 .f3-base { stroke:#5f6b76; stroke-width:1.5; stroke-dasharray:7 5; }
+.fig3 .f3-note { fill:#4b5563; font-size:12px; font-weight:600; paint-order:stroke; stroke:#fff; stroke-width:4px; }
+.fig3 .f3-echo-line { fill:none; stroke:var(--f3-echo); stroke-width:2.5; stroke-linejoin:round; }
+.fig3 .f3-plain-line { fill:none; stroke:var(--f3-plain); stroke-width:2.5; stroke-dasharray:7 5; }
+.fig3 .f3-gap { fill:var(--f3-echo); opacity:.07; }
+.fig3 .f3-area { fill:var(--f3-echo); opacity:.07; }
+.fig3 .f3-echo-pt { fill:var(--f3-echo); stroke:#fff; stroke-width:2; }
+.fig3 .f3-plain-pt { fill:#fff; stroke:var(--f3-plain); stroke-width:2.2; }
+.fig3 .f3-ring { fill:#fff; stroke:var(--f3-echo); stroke-width:2.2; }
+.fig3 .f3-hit { fill:transparent; cursor:pointer; outline:none; }
+.fig3 .f3-hit:focus-visible { stroke:#b396ce; stroke-width:2; }
+.fig3 .f3-value { fill:var(--f3-ink); font-size:13px; font-weight:700; paint-order:stroke; stroke:#fff; stroke-width:4px; }
+.fig3 .f3-label-echo { fill:var(--f3-ink); font-size:14px; font-weight:700; }
+.fig3 .f3-label-plain { fill:var(--f3-ink); font-size:13px; font-weight:600; }
+.fig3 .f3-callout { fill:var(--f3-ink); font-size:12.5px; font-weight:700; }
+.fig3 .f3-callout-sub { fill:var(--f3-muted); font-size:12px; }
+.fig3 .f3-arrow { stroke:var(--f3-echo); stroke-width:2; }
+.fig3 .f3-tip { position:absolute; z-index:5; pointer-events:none; background:#fff; border:1px solid #e3e6eb; border-radius:6px;
+  box-shadow:0 4px 14px rgba(0,0,0,.08); padding:7px 10px; font-size:12px; line-height:1.5; color:#374151; white-space:nowrap; }
+.fig3 .f3-tip b { color:var(--f3-ink); }
+.fig3 details.f3-table { margin-top:6px; font-size:12px; color:var(--f3-muted); text-align:center; }
+.fig3 details.f3-table summary { cursor:pointer; display:inline-block; }
+.fig3 details.f3-table table { margin:8px auto 0; font-size:12px; text-align:right; }
+.fig3 details.f3-table th, .fig3 details.f3-table td { padding:2px 10px; border:none; }
+@media (max-width:768px) { .fig3 .f3-panels { grid-template-columns:1fr; gap:10px; } }
