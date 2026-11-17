@@ -308,8 +308,9 @@ Throughput (Tables 25–39):
 
 Nemotron 3.5 Lightning:
 - Its vLLM scores vary by a few items between identical runs (ARC-Challenge: 3 to 8 of 1,172), unlike
-  the other models, which reproduce item for item. The likely cause is that vLLM autotunes its Mamba-2
-  kernels at run time, so a run's block sizes, and with them the summation order, can differ.
+  the other models, which reproduce item for item. vLLM autotunes its Mamba-2 kernels at run time, so a
+  run's block sizes, and with them the summation order, can differ. With every Triton autotuner pinned
+  to its first configuration, two runs on different nodes matched item for item.
 - Through `transformers` (the remote code on Hugging Face), its log-probabilities differ from vLLM's
   more than the other models'. Without the `mamba-ssm` kernels, `transformers` runs the Mamba-2 layers
   in plain PyTorch: on ARC-Challenge the student scores 2.3 points and the uncompressed teacher 0.9
