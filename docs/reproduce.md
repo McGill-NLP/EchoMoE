@@ -46,52 +46,197 @@ Every stage writes under `outputs/`. Run them in this order. The `torchrun` laun
 per-node arguments, and multi-node runs add `--nnodes`, `--node-rank` and a rendezvous endpoint.
 All GPU stages ran on nodes of 8 H100s. Measured times are under [Compute](#compute).
 
-| # | Stage | Env | Command | Hardware |
-| --- | --- | --- | --- | --- |
-| 1 | Base model with the Instruct chat template | megatron | `python -m echomoe.training.base_model configs/models/qwen3-30b-a3b.yaml outputs/qwen3-30b-a3b/base` | CPU |
-| 2 | Tokenize and pack Dolmino and Dolci | megatron | `python -m echomoe.training.data.prepare --recipe configs/data/<dolmino, dolci>.yaml --data-root outputs/qwen3-30b-a3b/data` | CPU |
-| 3 | Teacher SFT | megatron | `torchrun --nproc-per-node 8 -m echomoe.training.sft --config configs/training/qwen3-30b-a3b/sft.yaml` | 8 nodes |
-| 4 | Teacher export | megatron | `torchrun --standalone --nproc-per-node 8 -m echomoe.inference.evaluation.export --checkpoint outputs/qwen3-30b-a3b/teacher/checkpoints/step-0002230 --output outputs/qwen3-30b-a3b/teacher/hf` | 1 node |
-| 5 | Activation capture, parts 0–23 | vllm | `python -m echomoe.training.data.teacher capture --config configs/fit/dolci-capture.yaml --part-index I` | 1 GPU per part |
-| 6 | Routing fanout | any | `python scripts/routing_fanout.py outputs/qwen3-30b-a3b/capture results/communication/routing_fanout.json` | CPU |
-| 7 | Moments, then the 78 fits | megatron | `python -m echomoe.fit moments outputs/qwen3-30b-a3b/capture outputs/qwen3-30b-a3b/fit`, then `python -m echomoe.fit fits outputs/qwen3-30b-a3b/fit --moments outputs/qwen3-30b-a3b/fit/moments.safetensors --export outputs/qwen3-30b-a3b/teacher/hf $(basename -s .yaml configs/training/qwen3-30b-a3b/frozen/*/*.yaml)` | 1 GPU |
-| 8 | Teacher targets, each config's `part_count` parts | vllm | `python -m echomoe.training.data.teacher targets --config configs/fit/<dolmino, dolci>-teacher-targets-<train, validation>.yaml --part-index I` | 1 GPU per part |
-| 9 | Teacher converted to Megatron, for the dev mode runs | megatron | `torchrun --nproc-per-node 8 -m echomoe.training.model --config configs/training/qwen3-30b-a3b/frozen/joint/dres512-s4-c1280-direct.yaml` | 1 node |
-| 10 | Distill one student | megatron | `torchrun --nproc-per-node 8 -m echomoe.training --config configs/training/<family>/<config>.yaml` | 8 nodes |
-| 11 | Export and fold | megatron | `torchrun --standalone --nproc-per-node 8 -m echomoe.inference.evaluation.export --checkpoint outputs/qwen3-30b-a3b/runs/<run>/checkpoints/step-N` | 1 node |
-| 12 | Score on the 27-task suite | vllm | `python -m echomoe.inference.evaluation server --model outputs/qwen3-30b-a3b/runs/<run>/export/step-N --variant folded --ifbench-checkout third-party/IFBench` | 1 node |
-| 13 | Throughput, one workload | vllm029 | per node, `torchrun --nnodes 4 --nproc-per-node 8 ... -m echomoe.inference.throughput --workload configs/inference/throughput/i4096-o256.yaml --variant base --model outputs/qwen3-30b-a3b/teacher/hf --output outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256`, then the same with `--variant folded --model outputs/qwen3-30b-a3b/runs/<run>/export/step-N`, then `python -m echomoe.inference.throughput.summarize outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256 --config <config>` | 4 nodes |
-| 14 | Larger models (Tables 37, 38): random-weight fixtures, then stage 13 with `--model-config` | vllm029 | `python -m echomoe.inference.throughput.fixtures --model-config configs/inference/throughput/<qwen3-235b-a22b, deepseek-v3, kimi-k2.6>.yaml --official <official snapshot> --output outputs/<model>/fixtures`, then stage 13 with `--model-config` and `--model outputs/<model>/fixtures/<base, folded>` | CPU, then 4 nodes |
-| 15 | Step breakdowns | vllm029 | stage 13 with `--profile` and the workloads `i4096-o256-steps2`, `i16384-o512-steps`, `i128-o1024-steps` and `i4096-o256-r8` | 4 nodes |
-| 16 | Tables | any | `python scripts/results_tables.py outputs results/evaluation` and `python scripts/throughput_tables.py outputs results/throughput` | CPU |
-| 17 | Similarity (Tables 2, 16) and residual spectrum (Table 4, Figure 5) | megatron | `python scripts/analysis.py similarity-capture [--cross-token] <hf model> outputs/qwen3-30b-a3b/data/dolci outputs/similarity/<model>`, then `python scripts/analysis.py similarity outputs/similarity/<model>/moments.safetensors outputs/analysis/similarity/<model>.json` (Table 2) and `python scripts/analysis.py cross-token outputs/similarity/<model> outputs/analysis/similarity/<model>-cross-token.json` (Table 16, needs `--cross-token`). `python scripts/analysis.py spectrum outputs/qwen3-30b-a3b/fit/moments.safetensors outputs/analysis/residual_spectrum.json` | capture: 1 node, then CPU (cross-token: 1 GPU) |
+### 1. Base model with the Instruct chat template
 
-Notes on the stages:
-- Stage 10 resumes with `--resume-from latest`. Dev mode runs end at update 1,000 and full-model
-  adaptation runs at 4,152.
-- Stage 12 variants:
-  - `folded`: every student.
-  - `folded-fp8`: Table 21's FP8 communication, full-model adaptation students.
-  - `base-vllm`, `base-blocks`, `base-blocks-fp8`: the uncompressed model, the baselines for Tables 3, 12,
-    17–19, 41 and 42, and for Table 21 (`--model outputs/qwen3-30b-a3b/teacher/hf --output outputs/qwen3-30b-a3b/teacher/eval/<variant>`).
+Environment `megatron`.
 
-- Stage 13 options (`python -m echomoe.inference.throughput --help`):
-  - `--fp8`: FP8 activations in every dispatch and combine (Tables 21, 30, 31).
-  - `--tcp`: NCCL over TCP sockets with vLLM's all-gather transport (Table 34, Figure 17).
-  - `--capped 2x|2.5x`: inter-node connections capped to about 2x or 2.5x slower (Table 34, Figure 18).
-    It needs the patched NCCL from `scripts/install.sh nccl`.
-  - `--model-config configs/inference/throughput/<model>.yaml`: the larger models (Tables 37, 38) and
-    the adapted Kanana-2 and Gemma 4 (Table 39).
-  - `--tokens`: the token check, greedy tokens and log-probabilities of every prompt.
-  - `--routing model`: the model's own router instead of balanced expert assignment.
-  - `--profile`: per-step windows for the breakdowns (stage 15).
-- Online and agent serving (Tables 35, 36, Figures 19–21) run vLLM's own server on the same 4 nodes:
-  `python -m echomoe.inference.throughput.serving prompts ...` once, then `serving run --config
-  configs/inference/throughput/serving-<online, online-fixed, agent16k, agent32k>.yaml` on every node,
-  `--variant base` then `--variant folded`. Launch each setting and variant once first to compile the
-  Triton kernels, merge them with `serving seed <launch outputs> --into <seed>`, and pass
-  `--triton-seed <seed>` to the measured launches. Without a seed, EchoMoE's kernels compile mid-rate
-  and stall the lowest request rates. The module's docstring has the full commands.
+```bash
+python -m echomoe.training.base_model configs/models/qwen3-30b-a3b.yaml outputs/qwen3-30b-a3b/base
+```
+
+### 2. Tokenize and pack Dolmino and Dolci
+
+Environment `megatron`.
+
+```bash
+python -m echomoe.training.data.prepare --recipe configs/data/dolmino.yaml --data-root outputs/qwen3-30b-a3b/data
+python -m echomoe.training.data.prepare --recipe configs/data/dolci.yaml --data-root outputs/qwen3-30b-a3b/data
+```
+
+### 3. Teacher SFT
+
+Environment `megatron`.
+
+```bash
+torchrun --nproc-per-node 8 -m echomoe.training.sft --config configs/training/qwen3-30b-a3b/sft.yaml
+```
+
+### 4. Teacher export
+
+Environment `megatron`.
+
+```bash
+torchrun --standalone --nproc-per-node 8 -m echomoe.inference.evaluation.export \
+    --checkpoint outputs/qwen3-30b-a3b/teacher/checkpoints/step-0002230 --output outputs/qwen3-30b-a3b/teacher/hf
+```
+
+### 5. Activation capture
+
+Environment `vllm`, for parts 0 to 23.
+
+```bash
+python -m echomoe.training.data.teacher capture --config configs/fit/dolci-capture.yaml --part-index I
+```
+
+### 6. Routing fanout
+
+Any environment.
+
+```bash
+python scripts/routing_fanout.py outputs/qwen3-30b-a3b/capture results/communication/routing_fanout.json
+```
+
+### 7. Moments, then the 78 fits
+
+Environment `megatron`.
+
+```bash
+python -m echomoe.fit moments outputs/qwen3-30b-a3b/capture outputs/qwen3-30b-a3b/fit
+python -m echomoe.fit fits outputs/qwen3-30b-a3b/fit --moments outputs/qwen3-30b-a3b/fit/moments.safetensors \
+    --export outputs/qwen3-30b-a3b/teacher/hf $(basename -s .yaml configs/training/qwen3-30b-a3b/frozen/*/*.yaml)
+```
+
+### 8. Teacher targets
+
+Environment `vllm`, for each config's `part_count` parts. The four configs are
+`configs/fit/<dolmino, dolci>-teacher-targets-<train, validation>.yaml`.
+
+```bash
+python -m echomoe.training.data.teacher targets --config configs/fit/dolci-teacher-targets-train.yaml --part-index I
+```
+
+### 9. Teacher converted to Megatron, for the dev mode runs
+
+Environment `megatron`.
+
+```bash
+torchrun --nproc-per-node 8 -m echomoe.training.model --config configs/training/qwen3-30b-a3b/frozen/joint/dres512-s4-c1280-direct.yaml
+```
+
+### 10. Distill one student
+
+Environment `megatron`.
+
+```bash
+torchrun --nproc-per-node 8 -m echomoe.training --config configs/training/<family>/<config>.yaml
+```
+
+A run resumes with `--resume-from latest`. Dev mode runs end at update 1,000 and full-model
+adaptation runs at 4,152.
+
+### 11. Export and fold
+
+Environment `megatron`.
+
+```bash
+torchrun --standalone --nproc-per-node 8 -m echomoe.inference.evaluation.export \
+    --checkpoint outputs/qwen3-30b-a3b/runs/<run>/checkpoints/step-N
+```
+
+### 12. Score on the 27-task suite
+
+Environment `vllm`.
+
+```bash
+python -m echomoe.inference.evaluation server --model outputs/qwen3-30b-a3b/runs/<run>/export/step-N \
+    --variant folded --ifbench-checkout third-party/IFBench
+```
+
+Variants:
+- `folded`: every student.
+- `folded-fp8`: Table 21's FP8 communication, full-model adaptation students.
+- `base-vllm`, `base-blocks`, `base-blocks-fp8`: the uncompressed model, the baselines for Tables 3, 12,
+  17–19, 41 and 42, and for Table 21 (`--model outputs/qwen3-30b-a3b/teacher/hf --output outputs/qwen3-30b-a3b/teacher/eval/<variant>`).
+
+### 13. Throughput, one workload
+
+Environment `vllm029`. On every node, the base model, then the folded student:
+
+```bash
+torchrun --nnodes 4 --nproc-per-node 8 ... -m echomoe.inference.throughput \
+    --workload configs/inference/throughput/i4096-o256.yaml --variant base \
+    --model outputs/qwen3-30b-a3b/teacher/hf --output outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256
+torchrun --nnodes 4 --nproc-per-node 8 ... -m echomoe.inference.throughput \
+    --workload configs/inference/throughput/i4096-o256.yaml --variant folded \
+    --model outputs/qwen3-30b-a3b/runs/<run>/export/step-N --output outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256
+```
+
+Then once:
+
+```bash
+python -m echomoe.inference.throughput.summarize outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256 --config <config>
+```
+
+Options (`python -m echomoe.inference.throughput --help`):
+- `--fp8`: FP8 activations in every dispatch and combine (Tables 21, 30, 31).
+- `--tcp`: NCCL over TCP sockets with vLLM's all-gather transport (Table 34, Figure 17).
+- `--capped 2x|2.5x`: inter-node connections capped to about 2x or 2.5x slower (Table 34, Figure 18).
+  It needs the patched NCCL from `scripts/install.sh nccl`.
+- `--model-config configs/inference/throughput/<model>.yaml`: the larger models (Tables 37, 38) and
+  the adapted Kanana-2 and Gemma 4 (Table 39).
+- `--tokens`: the token check, greedy tokens and log-probabilities of every prompt.
+- `--routing model`: the model's own router instead of balanced expert assignment.
+- `--profile`: per-step windows for the breakdowns (stage 15).
+
+Online and agent serving (Tables 35, 36, Figures 19–21) run vLLM's own server on the same 4 nodes:
+`python -m echomoe.inference.throughput.serving prompts ...` once, then `serving run --config
+configs/inference/throughput/serving-<online, online-fixed, agent16k, agent32k>.yaml` on every node,
+`--variant base` then `--variant folded`. Launch each setting and variant once first to compile the
+Triton kernels, merge them with `serving seed <launch outputs> --into <seed>`, and pass
+`--triton-seed <seed>` to the measured launches. Without a seed, EchoMoE's kernels compile mid-rate
+and stall the lowest request rates. The module's docstring has the full commands.
+
+### 14. Larger models (Tables 37, 38)
+
+Environment `vllm029`. Random-weight fixtures, for `<model>` one of
+`qwen3-235b-a22b`, `deepseek-v3` and `kimi-k2.6`:
+
+```bash
+python -m echomoe.inference.throughput.fixtures --model-config configs/inference/throughput/<model>.yaml \
+    --official <official snapshot> --output outputs/<model>/fixtures
+```
+
+Then stage 13 with `--model-config` and `--model outputs/<model>/fixtures/<base, folded>`.
+
+### 15. Step breakdowns
+
+Environment `vllm029`. Stage 13 with `--profile` and the workloads `i4096-o256-steps2`,
+`i16384-o512-steps`, `i128-o1024-steps` and `i4096-o256-r8`.
+
+### 16. Tables
+
+Any environment.
+
+```bash
+python scripts/results_tables.py outputs results/evaluation
+python scripts/throughput_tables.py outputs results/throughput
+```
+
+### 17. Similarity (Tables 2, 16) and residual spectrum (Table 4, Figure 5)
+
+Environment `megatron`.
+
+```bash
+python scripts/analysis.py similarity-capture [--cross-token] <hf model> outputs/qwen3-30b-a3b/data/dolci outputs/similarity/<model>
+# Table 2
+python scripts/analysis.py similarity outputs/similarity/<model>/moments.safetensors outputs/analysis/similarity/<model>.json
+# Table 16, from a capture with --cross-token
+python scripts/analysis.py cross-token outputs/similarity/<model> outputs/analysis/similarity/<model>-cross-token.json
+# Table 4, Figure 5
+python scripts/analysis.py spectrum outputs/qwen3-30b-a3b/fit/moments.safetensors outputs/analysis/residual_spectrum.json
+```
+
+## Other models
 
 Kanana-2-30B-A3B and Moonlight-16B-A3B (Table 3, DeepSeek-V3 models) take the same stages with
 `<model>` `kanana-2-30b-a3b` or `moonlight-16b-a3b` in place of `qwen3-30b-a3b`: stage 1 with
@@ -109,6 +254,8 @@ teacher SFT on 4 nodes, and `dres768-s4-c1408-direct` in stages 7 and 10. Its Ma
 `mamba-ssm` and `causal-conv1d`, which `scripts/install.sh megatron` takes from the release or
 builds into `third-party/mamba/`.
 
+## LSH-MoE
+
 LSH-MoE (Table 15) trains with stage 10 on `configs/training/qwen3-30b-a3b/lsh/k5-h3.yaml` and
 exports with stage 11. The reported evaluation served it with variant `lsh` on four nodes, one
 task group per node (`--tasks a,b,...`):
@@ -120,6 +267,8 @@ task group per node (`--tasks a,b,...`):
 
 LSH-MoE clusters the tokens that share a batch, so a task's score depends on what is served with
 it. Two identical runs differ by 2 to 3 points per task, so compare the suite mean.
+
+## Recipes behind each table
 
 | Table | Recipes | Variants |
 | --- | --- | --- |
