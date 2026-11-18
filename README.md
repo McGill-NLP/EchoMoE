@@ -68,7 +68,9 @@ Without `--tasks`, it scores the whole 27-task suite. The Kanana-2 models are Po
 
 ## Reproducing the paper
 
-[docs/reproduce.md](docs/reproduce.md) has the three environments and the 17 stages from the base model to every table. [docs/known-issues.md](docs/known-issues.md) lists what does not reproduce bitwise and why. The method and the names it uses in the code are in [docs/method.md](docs/method.md).
+- [docs/reproduce.md](docs/reproduce.md): how to install the three environments and run the 17 stages, from the base model to every table in the paper.
+- [docs/method.md](docs/method.md): how EchoMoE works, and where each part lives in the code.
+- [docs/known-issues.md](docs/known-issues.md): what can differ when you rerun our evaluations and benchmarks, and why.
 
 ```
 echomoe/
