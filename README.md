@@ -14,10 +14,6 @@ Fengyuan Liu<sup>&#42;</sup>, Jay Gala<sup>&#42;</sup>, Siva Reddy, Dzmitry Bahd
 
 </div>
 
-## Updates
-
-- **November 2026:** code and the 28 models are released.
-
 ## Links
 
 - Models: [huggingface.co/McGill-NLP/EchoMoE](https://huggingface.co/McGill-NLP/EchoMoE), also the [EchoMoE collection](https://huggingface.co/collections/McGill-NLP/echomoe-6afcbfa10b38185f87cbd0ac)

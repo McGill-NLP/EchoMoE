@@ -91,12 +91,22 @@ Yes. The tables in `configs/inference/throughput/costs-*.csv` are shipped as mea
 
 </details>
 
-### Why do the step breakdowns put EchoMoE's kernels under "misc"?
+### Why do the step breakdowns put some of EchoMoE's kernels under "misc"?
 
 <details>
 <summary>Show answer</summary>
 
-The step breakdowns count EchoMoE's expert and reference-receive kernels under "misc", as the
-reported breakdowns did.
+[`scripts/throughput_tables.py`](../scripts/throughput_tables.py) puts each GPU kernel in the first
+category whose name pattern matches (`KERNEL_CATEGORIES`), and a kernel that matches none counts as
+`other`, the row "norms, elementwise, sampling, misc" of the fine breakdown. Ten of EchoMoE's kernels
+match none:
+- Expert path: `_align_count`, `_align_place`, `_align_scan`, `_silu_mul_sorted`, `_sum_live`,
+  `_receive_routes`.
+- Reference path: `_reference`, `_send_reference`, `_receive_reference`, `_residual_prepare`.
+
+So part of EchoMoE's expert routing, activation and output sum counts as "misc", while vLLM's
+equivalents for the base model (`moe_align_block`, `act_and_mul`, `moe_sum`) count as expert work.
+The reported breakdowns used the same patterns, and `results/throughput/breakdowns.csv` reproduces
+them.
 
 </details>
