@@ -2,9 +2,9 @@
 
 # Communicate the Change: Efficient Expert Parallelism via Activation Compression
 
-Fengyuan Liu<sup>*</sup>, Jay Gala<sup>*</sup>, Siva Reddy, Dzmitry Bahdanau
+Fengyuan Liu<sup>&#42;</sup>, Jay Gala<sup>&#42;</sup>, Siva Reddy, Dzmitry Bahdanau
 
-<sub><sup>*</sup>Equal contribution</sub>
+<sub><sup>&#42;</sup>Equal contribution</sub>
 
 <!-- TODO(user): arXiv badge, e.g. [![Paper](https://img.shields.io/badge/arXiv-XXXX.XXXXX-b31b1b.svg)](https://arxiv.org/abs/XXXX.XXXXX) -->
 [![Models](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-yellow)](https://huggingface.co/McGill-NLP/EchoMoE)
