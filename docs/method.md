@@ -1,5 +1,11 @@
 # Method
 
+Expert parallelism sends every token's hidden state to the nodes that hold its experts (dispatch)
+and every expert's output back (combine). EchoMoE compresses both all-to-alls. This page describes
+what it sends, how its compressors are fit and trained, and where each part lives in the code.
+
+## How EchoMoE works
+
 **Dispatch.** Every `s`-th MoE layer is a *reference layer*: it publishes the token's full-width
 input `x_l` once to every remote node, which caches it as the reference `z`. The `s - 1`
 *non-reference layers* after it send only what the reference fails to predict, a code of width
@@ -27,12 +33,32 @@ for serving they are multiplied in. Expert `i` reads `[z, c_d]` through the fold
 through the folded output projection `W_out,i = C_c W_down,i`. The fold is computed in float64 and
 checked to a relative error of 1e-6.
 
-A configuration (s, r_d, r_c) is the run `dres{r_d}-s{s}-c{r_c}`. `dres512-s4-c1280` sends a
-dispatch code of width 512 against a reference every 4 layers and a combine code of width 1280.
-`dfull` / `cfull` leave a side uncompressed. The whole method is
-[`echomoe/codec.py`](../echomoe/codec.py), the byte model is
-[`echomoe/communication_cost.py`](../echomoe/communication_cost.py), and the fit is
-[`echomoe/fit.py`](../echomoe/fit.py). These three files need only PyTorch and run on CPU.
+## Configurations
+
+A configuration (s, r_d, r_c) is the run `dres{r_d}-s{s}-c{r_c}`. For example, `dres512-s4-c1280`
+sends a dispatch code of width 512 against a reference every 4 layers and a combine code of width
+1280. `dplain{r_d}-c{r_c}` uses plain compression, and `dfull` / `cfull` leave a side uncompressed.
+
+## Implementation reference
+
+1. **Codec:** [`echomoe/codec.py`](../echomoe/codec.py). The compressors and the compressed MoE forward.
+2. **Byte model:** [`echomoe/communication_cost.py`](../echomoe/communication_cost.py). The inter-node
+   bytes per token of a configuration, priced with the measured routing fanout.
+3. **Fit:** [`echomoe/fit.py`](../echomoe/fit.py). The activation moments and the closed-form fit of
+   every compressor.
+4. **Training:** [`echomoe/training/`](../echomoe/training/). Megatron-Core and DeepEP training of the
+   teacher (SFT) and the students (distillation), and the data preparation.
+5. **Export and fold:** [`echomoe/inference/evaluation/export.py`](../echomoe/inference/evaluation/export.py).
+   The Hugging Face export, with the codecs folded into the expert weights.
+6. **vLLM serving:** [`echomoe/inference/evaluation/model.py`](../echomoe/inference/evaluation/model.py).
+   The folded model classes and the vLLM plugin that registers them.
+7. **Throughput runtime:** [`echomoe/inference/throughput/`](../echomoe/inference/throughput/). The
+   expert-parallel runtime on vLLM 0.29 with DeepEP, online serving and the benches.
+8. **Transformers remote code:** [`echomoe/hf/`](../echomoe/hf/). The folded students for
+   `transformers`, shipped in each Hugging Face repo.
+9. **LSH-MoE:** [`echomoe/lsh.py`](../echomoe/lsh.py). The baseline of Tables 15 and 16.
+
+The codec, the byte model and the fit need only PyTorch and run on CPU.
 
 ## Names in the code
 

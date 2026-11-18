@@ -1,11 +1,13 @@
 # Reproducing the paper
 
+This page walks through every stage behind the paper's tables, from the base model to the
+throughput runs. We ran every GPU stage on nodes of 8 H100s.
+
 ## Install
 
-Linux, Python 3.12, CUDA 12.8 with `nvcc` and a C++ compiler on `PATH` (Transformer Engine and
-other native packages build against the venv's torch) and [uv](https://docs.astral.sh/uv/).
-There are three environments, built from committed lock files. They cannot be merged because their
-pins conflict.
+You need Linux, Python 3.12, [uv](https://docs.astral.sh/uv/) and CUDA 12.8 with `nvcc` and a C++
+compiler on `PATH`, since Transformer Engine and other native packages build against the venv's
+torch. The code uses three environments, built from committed lock files, whose pins conflict:
 
 ```bash
 # .venv-megatron: torch 2.11, Megatron-Core 0.19.2, TE 2.11, DeepEP 2.1.0
@@ -18,37 +20,52 @@ scripts/install.sh vllm029
 scripts/install.sh nccl
 ```
 
-The prebuilt binaries, all for H100 (sm_90), are assets of the
-[GitHub release](https://github.com/McGill-NLP/EchoMoE/releases/tag/v1.0.0)
-with their sha256 sums. These are the DeepEP wheels of `.venv-megatron` and `.venv-vllm029`, the
-`mamba-ssm` and `causal-conv1d` wheels for Nemotron, and the NCCL build. `install.sh` uses a copy
-already in `third-party/` as it is, and otherwise downloads the asset and checks its sha256. If the
-download fails, it builds the binary from source, except the megatron DeepEP wheel. Built from
-source, DeepEP for `.venv-vllm029` uses the CUDA 13 compiler that the venv installs, so it also
-needs a C++20 compiler and Linux 5.6 or newer kernel headers. For the FP8 rows (`--fp8`),
-`.venv-vllm029` also keeps a copy of DeepEP with `third-party/deepep/deepep_fp8_scaleout_combine.patch`,
-whose kernels compile at first use. On a kernel driver older than CUDA 13, set
-`ECHOMOE_CUDA_COMPAT_DIR` to NVIDIA's forward-compatible driver. Multi-node runs set `NCCL_IB_HCA`
-to the compute NICs.
+Select an environment with `. scripts/env.sh megatron|vllm|vllm029`. It also sets the kernel
+choices that affect scores, and `ECHOMOE_SITE_ENV` may name a shell file it sources first (the
+cluster's CUDA toolchain).
 
-On glibc older than 2.32, set `ECHOMOE_FA3_WHEEL` to a FlashAttention-3 wheel built for it, for
-example the release's optional `flash_attn_3-3.0.0` wheel (built on glibc 2.31). Select an
-environment with `. scripts/env.sh megatron|vllm|vllm029`. It also
-sets the kernel choices that affect scores. `ECHOMOE_SITE_ENV` may name a shell file it sources
-first (the cluster's CUDA toolchain).
+<details>
+<summary>Prebuilt binaries and system notes</summary>
 
-## Training recipes
+- **Prebuilt binaries.** The DeepEP wheels of `.venv-megatron` and `.venv-vllm029`, the `mamba-ssm`
+  and `causal-conv1d` wheels for Nemotron, and the NCCL build are assets of the
+  [GitHub release](https://github.com/McGill-NLP/EchoMoE/releases/tag/v1.0.0), all for H100 (sm_90),
+  with their sha256 sums. `install.sh` uses a copy already in `third-party/` as it is, and otherwise
+  downloads the asset and checks its sha256. If the download fails, it builds the binary from source,
+  except the megatron DeepEP wheel.
+- **DeepEP from source.** Built from source, DeepEP for `.venv-vllm029` uses the CUDA 13 compiler that
+  the venv installs, so it also needs a C++20 compiler and Linux 5.6 or newer kernel headers.
+- **FP8 rows.** For `--fp8`, `.venv-vllm029` also keeps a copy of DeepEP with
+  `third-party/deepep/deepep_fp8_scaleout_combine.patch`, whose kernels compile at first use.
+- **Older drivers.** On a kernel driver older than CUDA 13, set `ECHOMOE_CUDA_COMPAT_DIR` to NVIDIA's
+  forward-compatible driver.
+- **Older glibc.** On glibc older than 2.32, set `ECHOMOE_FA3_WHEEL` to a FlashAttention-3 wheel built
+  for it, for example the release's optional `flash_attn_3-3.0.0` wheel (built on glibc 2.31).
+- **Multi-node runs.** Set `NCCL_IB_HCA` to the compute NICs.
 
-Each training recipe under [`configs/training/qwen3-30b-a3b/`](../configs/training/qwen3-30b-a3b/) is one
-run behind the results, in one directory per table: `frozen/{dispatch_only, combine_only, joint}/`
-(dev mode) and `full_adaptation/` (full-model adaptation). A recipe names its family's shared
-settings with `base:` (`frozen.yaml` or `full_adaptation.yaml`) and sets only what differs.
+</details>
+
+## Configs
+
+| Config | Description |
+| --- | --- |
+| [`configs/models/`](../configs/models/) | The five base models, and the Instruct models whose chat templates they take |
+| [`configs/data/`](../configs/data/) | The Dolmino and Dolci data recipes, per model |
+| [`configs/fit/`](../configs/fit/) | Activation capture and teacher targets |
+| [`configs/training/<model>/`](../configs/training/) | The teacher SFT and one recipe per student run |
+| [`configs/inference/evaluation/`](../configs/inference/evaluation/) | The 27-task suite, its sampling settings and the vLLM engine profiles |
+| [`configs/inference/throughput/`](../configs/inference/throughput/) | Workloads, serving settings, per-call cost tables and the larger models |
+
+Each training recipe under [`configs/training/qwen3-30b-a3b/`](../configs/training/qwen3-30b-a3b/) is
+one run behind the results, in one directory per table: `frozen/{dispatch_only, combine_only, joint}/`
+(dev mode) and `full_adaptation/` (full-model adaptation). A recipe names its family's shared settings
+with `base:` (`frozen.yaml` or `full_adaptation.yaml`) and sets only what differs.
 
 ## Stages
 
-Every stage writes under `outputs/`. Run them in this order. The `torchrun` launches below show the
-per-node arguments, and multi-node runs add `--nnodes`, `--node-rank` and a rendezvous endpoint.
-All GPU stages ran on nodes of 8 H100s.
+Run the stages in order from the repository root. Each one writes under `outputs/`. The `torchrun`
+launches show the per-node arguments, and multi-node runs add `--nnodes`, `--node-rank` and a
+rendezvous endpoint.
 
 ### 1. Base model with the Instruct chat template
 
