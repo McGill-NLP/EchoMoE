@@ -121,14 +121,15 @@ index=(--extra-index-url https://download.pytorch.org/whl/cu128 --index-strategy
 mapfile -t prereqs < <(grep -E '^(torch|setuptools|packaging|ninja|pybind11|wheel|numpy|cmake)==' "$lock")
 uv pip install --python "$py" "${index[@]}" "${prereqs[@]}" hatchling
 
-# The lock installs DeepEP from the release's wheel (DeepEP 2.1.0 at the same commit, built for
-# this venv), which has no source build here. Megatron's Mamba layers (Nemotron-H) need mamba-ssm
-# and causal-conv1d, which have no wheel for torch 2.11. Unless the release's wheels are used, each
-# pinned sdist (with its sha256, then the wheel's) is built against the venv's torch for H100
-# alone: its setup.py keeps only sm_90's gencode pair.
+# Both locks install DeepEP from the release's wheel (DeepEP 2.1.0 at the same commit, built for
+# torch 2.11), which has no source build here.
+fetch third-party/deepep/deep_ep-2.1.0+01dc3aa-cp312-cp312-linux_x86_64.whl \
+    309cdd9c981b6590a1595c4c01f457c62efe78cf1a56606f5b10aecdfd96ff61
+# Megatron's Mamba layers (Nemotron-H) need mamba-ssm and causal-conv1d, which have no wheel for
+# torch 2.11. Unless the release's wheels are used, each pinned sdist (with its sha256, then the
+# wheel's) is built against the venv's torch for H100 alone: its setup.py keeps only sm_90's gencode
+# pair.
 if [ "$which" = megatron ]; then
-    fetch third-party/deepep/deep_ep-2.1.0+01dc3aa-cp312-cp312-linux_x86_64.whl \
-        309cdd9c981b6590a1595c4c01f457c62efe78cf1a56606f5b10aecdfd96ff61
     pypi=https://files.pythonhosted.org/packages
     for sdist in \
         "$pypi/64/cb/104778c728dc3d5ea3bf65a484e3a4cdbe894bdaa2586320e2f61d007b8c/causal_conv1d-1.5.3.post1.tar.gz aba1b717484472d0b2f2e40520a1c03f35fe5155555bd753d1c324afc56ba468 aeccda7309f9c32edfbb1183d498afe88062d02e1a6521361450d1f036dba9d0" \

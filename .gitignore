@@ -17,3 +17,4 @@ third-party/nccl/nccl/
 third-party/nccl/build/
 third-party/nccl/*.tar.gz
 *.part
+checkpoints/

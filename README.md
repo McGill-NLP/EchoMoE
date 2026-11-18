@@ -6,19 +6,19 @@ Fengyuan Liu<sup>&#42;</sup>, Jay Gala<sup>&#42;</sup>, Siva Reddy, Dzmitry Bahd
 
 <sub><sup>&#42;</sup>Equal contribution. Author ordering determined by coin flip.</sub>
 
-<!-- TODO(user): arXiv badge, e.g. [![Paper](https://img.shields.io/badge/arXiv-XXXX.XXXXX-b31b1b.svg)](https://arxiv.org/abs/XXXX.XXXXX) -->
+[![Paper](https://img.shields.io/badge/arXiv-2611.22215-b31b1b.svg)](https://arxiv.org/abs/2611.22215)
 [![Models](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Models-yellow)](https://huggingface.co/McGill-NLP/EchoMoE)
 [![Project page](https://img.shields.io/badge/Project-Page-blue)](https://mcgill-nlp.github.io/EchoMoE/)
 
-**[Links](#links)** | **[TL;DR](#tldr)** | **[Results](#results)** | **[Quick start](#quick-start)** | **[Reproduce](#reproducing-the-paper)** | **[Citation](#citation)**
+**[Links](#links)** | **[TL;DR](#tldr)** | **[Results](#results)** | **[Quick start](#quick-start)** | **[Documentation](#documentation)** | **[Citation](#citation)**
 
 </div>
 
 ## Links
 
+- Paper: [arXiv:2611.22215](https://arxiv.org/abs/2611.22215)
 - Models: [huggingface.co/McGill-NLP/EchoMoE](https://huggingface.co/McGill-NLP/EchoMoE), also the [EchoMoE collection](https://huggingface.co/collections/McGill-NLP/echomoe-6afcbfa10b38185f87cbd0ac)
 - Project page: [mcgill-nlp.github.io/EchoMoE](https://mcgill-nlp.github.io/EchoMoE/)
-<!-- TODO(user): - Paper: arXiv link -->
 
 ## TL;DR
 
@@ -52,7 +52,7 @@ Every number comes from the committed files in [`results/`](results/). LSH-MoE, 
 
 ## Quick start
 
-The models are on [Hugging Face](https://huggingface.co/McGill-NLP/EchoMoE): the Qwen3-30B-A3B teacher with its 19 students, and the teacher and reported student of Gemma 4, Kanana-2, Moonlight and Nemotron. Each model card shows how to serve the model with vLLM or load it with Hugging Face Transformers. To score a model with this repository on one node of 8 H100s:
+The models are on [Hugging Face](https://huggingface.co/McGill-NLP/EchoMoE): the Qwen3-30B-A3B teacher with its 19 students, and the teacher and reported student of Gemma 4, Kanana-2, Moonlight and Nemotron. Each model card shows how to serve the model with vLLM or load it with Hugging Face Transformers. To score a model with this repository on one node of 8 H100s, with [uv](https://docs.astral.sh/uv/) and the CUDA toolchain of [docs/reproduce.md](docs/reproduce.md#install) installed:
 
 ```bash
 git clone https://github.com/McGill-NLP/EchoMoE && cd EchoMoE
@@ -64,9 +64,9 @@ python -m echomoe.inference.evaluation server \
     --tasks arc_challenge_5shot --output outputs/quickstart
 ```
 
-Without `--tasks`, it scores the whole 27-task suite. The Kanana-2 models are Powered by Kanana, under the Kanana License Agreement.
+Without `--tasks`, it scores the whole 27-task suite.
 
-## Reproducing the paper
+## Documentation
 
 - [docs/reproduce.md](docs/reproduce.md): how to install the three environments and run the 17 stages, from the base model to every table in the paper.
 - [docs/method.md](docs/method.md): how EchoMoE works, and where each part lives in the code.
@@ -93,12 +93,14 @@ docs/                                          method, reproduction, known issue
 
 ```bibtex
 @misc{liu2026communicate,
-  title  = {Communicate the Change: Efficient Expert Parallelism via Activation Compression},
-  author = {Liu, Fengyuan and Gala, Jay and Reddy, Siva and Bahdanau, Dzmitry},
-  year   = {2026},
+  title         = {Communicate the Change: Efficient Expert Parallelism via Activation Compression},
+  author        = {Liu, Fengyuan and Gala, Jay and Reddy, Siva and Bahdanau, Dzmitry},
+  year          = {2026},
+  eprint        = {2611.22215},
+  archivePrefix = {arXiv},
+  url           = {https://arxiv.org/abs/2611.22215},
 }
 ```
-<!-- TODO(user): add eprint and url once the arXiv ID exists -->
 
 ## License
 
