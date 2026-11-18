@@ -11,7 +11,8 @@
   const root = document.querySelector('.fig4');
   if (!root) return;
   const NS = 'http://www.w3.org/2000/svg';
-  const W = 360, H = 290;
+  // panel height for a panel drawn at its real pixel width
+  const heightFor = W => Math.round(Math.max(250, Math.min(290, W * 0.8)));
   const el = (tag, attrs, parent, text) => {
     const n = document.createElementNS(NS, tag);
     for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
@@ -48,7 +49,7 @@
     const s = size * 1.25; // triangle
     return el('path', { d: `M${cx},${cy - s}L${cx + s},${cy + s * 0.8}L${cx - s},${cy + s * 0.8}Z`, class: cls }, svg);
   }
-  function frame(svg, M, yTicks, Y, yFmt, yLabel, xLabel) {
+  function frame(svg, W, H, M, yTicks, Y, yFmt, yLabel, xLabel) {
     for (const t of yTicks) {
       el('line', { x1: M.l, x2: W - M.r, y1: Y(t), y2: Y(t), class: 'f4-grid' }, svg);
       el('text', { x: M.l - 7, y: Y(t) + 4, class: 'f4-tick', 'text-anchor': 'end' }, svg, yFmt(t));
@@ -60,13 +61,13 @@
   }
 
   // ---------- (a) compression-path ablation ----------
-  {
+  EchoFit.mount(root.querySelector('[data-f4="a"]'), W => {
     const svg = root.querySelector('[data-f4="a"]');
-    const M = { l: 46, r: 16, t: 14, b: 46 };
+    const H = heightFor(W), M = { l: 46, r: 16, t: 14, b: 46 };
     const widths = [1280, 1024, 768, 512, 256];
     const X = w => M.l + 22 + widths.indexOf(w) * ((W - M.l - M.r - 44) / 4);
     const Y = v => M.t + (3 - v) / 33 * (H - M.t - M.b);
-    frame(svg, M, [0, -10, -20, -30], Y, t => (t < 0 ? '−' : '') + Math.abs(t), 'Score change (pp) →', 'Code width');
+    frame(svg, W, H, M, [0, -10, -20, -30], Y, t => (t < 0 ? '−' : '') + Math.abs(t), 'Score change (pp) →', 'Code width');
     for (const w of widths) el('text', { x: X(w), y: H - M.b + 17, class: 'f4-tick', 'text-anchor': 'middle' }, svg, w);
     const REF = [[1280, -0.0], [1024, -0.6], [768, -1.0], [512, -2.6], [256, -5.6]];
     const PLAIN = [[1024, -7.1], [768, -12.4], [512, -21.1]];
@@ -83,15 +84,16 @@
     for (const d of PLAIN) hit(svg, X(d[0]), Y(d[1]), `<b>Plain dispatch</b>, r<sub>d</sub>=${d[0]}<br>Combine at full width<br>Score change: <b>${pp(d[1])}</b>`);
     for (const d of COMB) hit(svg, X(d[0]), Y(d[1]), `<b>Combine</b>, r<sub>c</sub>=${d[0]}<br>Dispatch at full width<br>Task score: ${d[2].toFixed(1)}% (<b>${pp(d[1])}</b>)`);
     for (const d of REF) hit(svg, X(d[0]), Y(d[1]), `<b>Reference dispatch</b>, s=4, r<sub>d</sub>=${d[0]}<br>Combine at full width<br>Score change: <b>${pp(d[1])}</b>`);
-  }
+    return H;
+  });
 
   // ---------- (b) reference stride trade-off ----------
-  {
+  EchoFit.mount(root.querySelector('[data-f4="b"]'), W => {
     const svg = root.querySelector('[data-f4="b"]');
-    const M = { l: 46, r: 16, t: 14, b: 46 };
+    const H = heightFor(W), M = { l: 46, r: 16, t: 14, b: 46 };
     const X = v => M.l + (v - 10) / 32 * (W - M.l - M.r);
     const Y = v => M.t + (3 - v) / 33 * (H - M.t - M.b);
-    frame(svg, M, [0, -10, -20, -30], Y, t => (t < 0 ? '−' : '') + Math.abs(t), 'Score change (pp) →', 'RDMA bytes saved (%) →');
+    frame(svg, W, H, M, [0, -10, -20, -30], Y, t => (t < 0 ? '−' : '') + Math.abs(t), 'Score change (pp) →', 'RDMA bytes saved (%) →');
     for (const t of [15, 25, 35]) el('text', { x: X(t), y: H - M.b + 17, class: 'f4-tick', 'text-anchor': 'middle' }, svg, t);
     const d = 2048, mBar = 2.73, mMax = 3.0;
     const saved = (s, rd) => 100 * (1 - (d * mMax / s + rd * (s - 1) / s * mBar + d * mBar) / (2 * d * mBar));
@@ -109,25 +111,26 @@
     }
     // stride legend
     const lg = el('g', {}, svg);
-    el('text', { x: X(11), y: Y(-21.5), class: 'f4-legend-title' }, lg, 'Reference stride');
+    el('text', { x: X(11), y: Y(-17.4), class: 'f4-legend-title' }, lg, 'Reference stride');
     STRIDES.forEach((s, i) => {
       const x = X(11.4) + i * 34;
-      marker(lg, SHAPES[s], x, Y(-25.2), 'f4-pt f4-legend-pt', 4);
-      el('text', { x: x + 8, y: Y(-25.2) + 4, class: 'f4-tick' }, lg, s);
+      marker(lg, SHAPES[s], x, Y(-20.9), 'f4-pt f4-legend-pt', 4);
+      el('text', { x: x + 8, y: Y(-20.9) + 4, class: 'f4-tick' }, lg, s);
     });
-    const note = el('text', { x: X(11), y: Y(-29.2), class: 'f4-legend-note' }, lg, 'Labels give dispatch width r');
-    el('tspan', { 'baseline-shift': 'sub', 'font-size': '8' }, note, 'd');
-  }
+    const note = el('text', { x: X(11), y: Y(-24.6), class: 'f4-legend-note' }, lg, 'Line labels: dispatch width r');
+    el('tspan', { 'baseline-shift': 'sub', 'font-size': '9' }, note, 'd');
+    return H;
+  });
 
   // ---------- (c) decode gains ----------
-  {
+  EchoFit.mount(root.querySelector('[data-f4="c"]'), W => {
     const svg = root.querySelector('[data-f4="c"]');
-    const M = { l: 46, r: 46, t: 14, b: 46 };
+    const H = heightFor(W), M = { l: 46, r: 46, t: 14, b: 46 };
     const REQ = [4, 32, 128, 512];
     const WORK = { 4: '128000 / 512', 32: '16384 / 512', 128: '4096 / 256', 512: '1024 / 128' };
     const X = q => M.l + 18 + REQ.indexOf(q) * ((W - M.l - M.r - 36) / 3);
     const Y = v => M.t + (1.3 - v) / 0.4 * (H - M.t - M.b);
-    frame(svg, M, [0.9, 1.0, 1.1, 1.2, 1.3], Y, t => t.toFixed(1) + '×', 'Decode speedup (×) →', 'Requests per GPU');
+    frame(svg, W, H, M, [0.9, 1.0, 1.1, 1.2, 1.3], Y, t => t.toFixed(1), 'Decode speedup (×) →', 'Requests per GPU');
     for (const q of REQ) el('text', { x: X(q), y: H - M.b + 17, class: 'f4-tick', 'text-anchor': 'middle' }, svg, q);
     el('line', { x1: M.l, x2: W - M.r, y1: Y(1), y2: Y(1), class: 'f4-base' }, svg);
     // [s, r_d, r_c, RDMA reduction, speedup at 4, 32, 128, 512 requests per GPU]
@@ -151,7 +154,15 @@
       for (const p of pts) el('circle', { cx: p[0], cy: p[1], r: r[8] ? 4 : 2.5, class: `f4-pt ${cls}-pt` }, svg);
       if (r[8]) el('text', { x: X(512) + 9, y: Y(r[7]) + 4, class: 'f4-end-value' }, svg, r[7].toFixed(2) + '×');
     }
+    // legend in the empty top-left corner (low loads sit near 1.0x)
+    const lg = el('g', {}, svg);
+    [['f4-h3', '(8, 256, 512)'], ['f4-h2', '(4, 512, 768)'], ['f4-h1', '(4, 512, 1280)'], ['f4-other', 'others']].forEach(([cls, label], i) => {
+      const y = M.t + 14 + i * 15;
+      el('line', { x1: M.l + 10, x2: M.l + 26, y1: y - 4, y2: y - 4, class: `f4-line ${cls}` }, lg);
+      el('text', { x: M.l + 32, y, class: 'f4-legend-label' }, lg, label);
+    });
     for (const r of ROWS) REQ.forEach((q, i) => hit(svg, X(q), Y(r[4 + i]),
       `<b>EchoMoE</b> (${r[0]}, ${r[1]}, ${r[2]}), ${r[3].toFixed(2)}×<br>${q} requests per GPU (${WORK[q]} tokens)<br>Decode speedup: <b>${r[4 + i].toFixed(3)}×</b>`));
-  }
+    return H;
+  });
 })();

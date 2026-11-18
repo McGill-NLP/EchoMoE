@@ -11,6 +11,7 @@
   <meta property="og:title" content="Communicate the Change: Efficient Expert Parallelism via Activation Compression">
   <meta property="og:description" content="Don't resend what the other GPU already knows. EchoMoE sends only the compressed change of each token's hidden state across MoE layers.">
   <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23432355'/%3E%3Cpath d='M10 8h12v3.2h-8.4v3.2h7.4v3.2h-7.4v3.2H22V24H10z' fill='%23fff'/%3E%3C/svg%3E">
 
   <!-- Bulma CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
@@ -37,8 +38,31 @@
 
 <body>
 
+<!-- ======== Section nav (appears after the hero) ======== -->
+<nav class="topnav" aria-label="Page sections">
+  <div class="topnav-inner">
+    <a class="topnav-brand echo-name" href="#top" aria-label="EchoMoE, back to top"><span class="d">E</span><span class="l">cho</span><span class="d">M</span><span class="l">oE</span></a>
+    <div class="topnav-links">
+      <a href="#problem">Problem</a>
+      <a href="#observation">Observation</a>
+      <a href="#method">Method</a>
+      <a href="#results">Results</a>
+      <a href="#analysis">Analysis</a>
+      <a href="#inference">Inference</a>
+      <a href="#generality">Generality</a>
+      <a href="#bibtex">BibTeX</a>
+    </div>
+    <div class="topnav-actions">
+      <a href="https://arxiv.org/abs/2611.22215" aria-label="Paper on arXiv" title="Paper"><i class="fas fa-file-pdf"></i></a>
+      <a href="https://github.com/McGill-NLP/EchoMoE" aria-label="Code on GitHub" title="Code"><i class="fab fa-github"></i></a>
+      <a href="https://huggingface.co/McGill-NLP/EchoMoE" aria-label="Models on Hugging Face" title="Models"><span aria-hidden="true">&#129303;</span></a>
+    </div>
+  </div>
+  <div class="topnav-progress" aria-hidden="true"></div>
+</nav>
+
 <!-- ======== Hero Section ======== -->
-<section class="hero">
+<section class="hero" id="top">
   <div class="hero-body">
     <div class="container is-max-desktop">
       <div class="columns is-centered">
@@ -50,21 +74,21 @@
             Introducing <span class="echo-name"><span class="d">E</span><span class="l">cho</span><span class="d">M</span><span class="l">oE</span></span>
           </p>
 
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><a href="#">Fengyuan Liu</a><sup>*1,2</sup>,</span>
-            <span class="author-block"><a href="#">Jay Gala</a><sup>*1,2</sup>,</span>
-            <span class="author-block"><a href="#">Siva Reddy</a><sup>1,2,4</sup>,</span>
-            <span class="author-block"><a href="#">Dzmitry Bahdanau</a><sup>1,2,3</sup></span>
+          <div class="publication-authors">
+            <span class="author-block"><a href="https://fy-liu.github.io/">Fengyuan Liu</a><sup>*1,2</sup></span>
+            <span class="author-block"><a href="https://jaygala24.github.io/">Jay Gala</a><sup>*1,2</sup></span>
+            <span class="author-block"><a href="https://sivareddy.in/">Siva Reddy</a><sup>1,2,4</sup></span>
+            <span class="author-block"><a href="https://rizar.github.io/">Dzmitry Bahdanau</a><sup>1,2,3</sup></span>
           </div>
-          <div class="is-size-6 publication-affiliations">
+          <div class="publication-affiliations">
             <span class="affil-block"><sup>1</sup>Mila &ndash; Quebec AI Institute</span>
             <span class="affil-block"><sup>2</sup>McGill University</span>
             <span class="affil-block"><sup>3</sup>Periodic Labs</span>
             <span class="affil-block"><sup>4</sup>Canada CIFAR AI Chair</span>
           </div>
-          <div class="is-size-7 has-text-grey" style="margin-top: 0.3rem;">
-            <sup>*</sup>Equal Contribution. Author ordering determined by coin flip. &nbsp;&middot;&nbsp;
-            Correspondence: <a href="mailto:fengyuan.liu@mila.quebec">{fengyuan.liu, jay.gala}@mila.quebec</a>
+          <div class="publication-notes">
+            <p><sup class="note-mark">*</sup>Equal Contribution. Author ordering determined by coin flip.</p>
+            <p><i class="far fa-envelope note-icon" aria-hidden="true"></i>Correspondence: <a href="mailto:fengyuan.liu@mila.quebec,jay.gala@mila.quebec">{fengyuan.liu, jay.gala}@mila.quebec</a></p>
           </div>
 
           <!-- Links -->
@@ -108,12 +132,12 @@
             Mixture-of-experts (MoE) models rely on expert parallelism, where every MoE layer <strong>dispatches</strong> hidden states to the activated experts and <strong>combines</strong> the expert outputs. As compute has outpaced interconnect bandwidth, this communication has become a major bottleneck.
             Because transformer blocks update the residual stream incrementally, we use a hidden state from an earlier layer as a <strong>reference</strong> and communicate only the <strong>compressed change</strong>. <span class="echo-name"><span class="d">E</span><span class="l">cho</span><span class="d">M</span><span class="l">oE</span></span> retrofits existing MoE models without retraining from scratch.
           </p>
-          <div class="stat-row">
-            <div class="stat"><span class="stat-num">58%</span><span class="stat-label">less inter-node RDMA traffic</span></div>
-            <div class="stat"><span class="stat-num">+22.6%</span><span class="stat-label">throughput improvement</span></div>
-            <div class="stat"><span class="stat-num">2.38&times;</span><span class="stat-label">throughput over Ethernet</span></div>
-            <div class="stat"><span class="stat-num">8,500&times;</span><span class="stat-label">fewer training tokens than pretraining</span></div>
-          </div>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><span class="stat-num">58<span class="num-aff">%</span></span><span class="stat-label">less inter-node RDMA traffic</span></div>
+          <div class="stat"><span class="stat-num"><span class="num-aff">+</span>22.6<span class="num-aff">%</span></span><span class="stat-label">throughput improvement</span></div>
+          <div class="stat"><span class="stat-num">2.38<span class="num-aff">&times;</span></span><span class="stat-label">throughput over Ethernet</span></div>
+          <div class="stat"><span class="stat-num">8,500<span class="num-aff">&times;</span></span><span class="stat-label">fewer training tokens than pretraining</span></div>
         </div>
       </div>
     </div>
@@ -126,19 +150,20 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <div class="dynamic-figure">
+        <div class="dynamic-figure is-compact">
 <figure class="fig1" aria-labelledby="fig1-title">
   <div class="f1-toolbar">
-    <div class="f1-title-wrap"><span class="f1-eyebrow">Figure 1</span><h3 class="f1-title" id="fig1-title">Same route. Smaller payload.</h3></div>
-    <div class="f1-controls" aria-label="Figure 1 playback">
-      <button class="f1-control" type="button" data-f1-action="toggle" aria-label="Pause Figure 1 animation" aria-pressed="true"><svg class="f1-icon" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10" rx=".8"/><rect x="7" y="1" width="3" height="10" rx=".8"/></svg><span>Pause</span></button>
-      <button class="f1-control" type="button" data-f1-action="replay" aria-label="Replay Figure 1 animation"><svg class="f1-icon" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.2 4.2A5.2 5.2 0 1 1 1.9 9.3l1.3-.6a3.8 3.8 0 1 0 .2-3.7L5.3 6H.8V1.5Z"/></svg><span class="f1-replay-text">Replay</span></button>
-      <select class="f1-control" data-f1-speed aria-label="Figure 1 playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select>
+    <h3 class="f1-title" id="fig1-title">Same route. Smaller payload.</h3>
+    <div class="f1-controls playback" role="group" aria-label="Figure 1 playback">
+      <button class="pb-btn pb-toggle" type="button" data-f1-action="toggle" aria-label="Pause Figure 1 animation" aria-pressed="true"><svg class="pb-icon" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10" rx=".8"/><rect x="7" y="1" width="3" height="10" rx=".8"/></svg><span>Pause</span></button>
+      <button class="pb-btn pb-icon-only" type="button" data-f1-action="replay" aria-label="Replay Figure 1 animation" title="Replay"><svg class="pb-icon" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.2 4.2A5.2 5.2 0 1 1 1.9 9.3l1.3-.6a3.8 3.8 0 1 0 .2-3.7L5.3 6H.8V1.5Z"/></svg></button>
+      <span class="pb-sep" aria-hidden="true"></span>
+      <div class="pb-speed" data-f1-speed role="group" aria-label="Figure 1 playback speed"><button type="button" class="pb-speed-opt" data-speed="0.5" aria-pressed="false">0.5&times;</button><button type="button" class="pb-speed-opt" data-speed="1" aria-pressed="true">1&times;</button><button type="button" class="pb-speed-opt" data-speed="1.5" aria-pressed="false">1.5&times;</button></div>
     </div>
   </div>
   <p class="f1-scroll-hint">Swipe the diagram to follow the full route →</p>
   <div class="f1-scroll" tabindex="0" role="region" aria-label="Animated expert-parallel communication comparison">
-    <svg class="f1-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 908" role="img" aria-labelledby="fig1-svg-title fig1-svg-desc">
+    <svg class="f1-diagram f1-landscape" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 908" role="img" aria-labelledby="fig1-svg-title fig1-svg-desc">
       <title id="fig1-svg-title">Standard expert parallelism and EchoMoE</title>
       <desc id="fig1-svg-desc">Two stacked diagrams show four GPUs on two nodes. In both, attention sends token A to local expert E zero and remote expert E two, then combines their outputs. Standard expert parallelism moves nine-block payloads. EchoMoE compresses before dispatch and combine, sending two-block payloads and reconstructing them at the destination. Purple cached references support dispatch compression. Red arrows cross nodes; dark arrows stay within a node. Working components light up in sequence.</desc>
       <defs>
@@ -333,8 +358,8 @@
   <div class="f1-legend" aria-label="Figure legend">
     <span class="f1-key"><svg viewBox="0 0 30 16" aria-hidden="true"><path d="M1 8H23" stroke="#d43b35" stroke-width="2.8"/><path d="M21 4 29 8 21 12Z" fill="#d43b35"/></svg>Between nodes</span>
     <span class="f1-key"><svg viewBox="0 0 30 16" aria-hidden="true"><path d="M1 8H23" stroke="#424950" stroke-width="2.8"/><path d="M21 4 29 8 21 12Z" fill="#424950"/></svg>Within a node</span>
-    <span class="f1-key"><svg viewBox="0 0 30 20" aria-hidden="true"><path d="M4 2 25 7 25 13 4 18Z" fill="#f1eaf7" stroke="#8254a5" stroke-width="1.7"/></svg>Compress</span>
-    <span class="f1-key"><svg viewBox="0 0 30 20" aria-hidden="true"><path d="M4 7 25 2 25 18 4 13Z" fill="#f1eaf7" stroke="#8254a5" stroke-width="1.7"/></svg>Decompress</span>
+    <span class="f1-key"><svg class="f1-k-codec" viewBox="0 0 30 20" aria-hidden="true"><path d="M4 2 25 7 25 13 4 18Z" fill="#f1eaf7" stroke="#8254a5" stroke-width="1.7"/></svg>Compress</span>
+    <span class="f1-key"><svg class="f1-k-codec" viewBox="0 0 30 20" aria-hidden="true"><path d="M4 7 25 2 25 18 4 13Z" fill="#f1eaf7" stroke="#8254a5" stroke-width="1.7"/></svg>Decompress</span>
     <span class="f1-key"><svg viewBox="0 0 30 20" aria-hidden="true"><path d="M0 10H10" stroke="#8254a5" stroke-width="1.7" stroke-dasharray="3 2"/><rect x="10" y="1" width="19" height="18" rx="3" fill="#f1eaf7" stroke="#8254a5" stroke-width="1.4"/><text x="19.5" y="14.5" text-anchor="middle" fill="#78469e" font-family="Georgia,serif" font-style="italic" font-size="15">z</text></svg>Cached reference</span>
     <span class="f1-key"><svg viewBox="0 0 30 18" aria-hidden="true"><rect x="1" y="3" width="7" height="12" rx="1.5" fill="#5f6b76"/><rect x="11" y="3" width="7" height="12" rx="1.5" fill="#5f6b76"/><rect x="21" y="3" width="7" height="12" rx="1.5" fill="#5f6b76"/></svg>More blocks, more data</span>
   </div>
@@ -352,11 +377,11 @@
 
 
 <!-- ======== Problem ======== -->
-<section class="section">
+<section class="section" id="problem">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <h2 class="title is-3">Problem: Communication bottleneck of expert parallelism</h2>
+        <h2 class="title is-3"><span class="eyebrow">Problem</span>Communication bottleneck of expert parallelism</h2>
         <div class="content">
           <p>
             Mixture-of-Experts (MoE) models enable substantial growth in parameter count while keeping per-token computation modest through sparse expert activation. Serving frontier MoE models requires distributing experts across many GPUs using <strong>Expert Parallelism (EP)</strong>.
@@ -375,11 +400,11 @@
 </section>
 
 <!-- ======== Observation ======== -->
-<section class="section">
+<section class="section" id="observation">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <h2 class="title is-3">Observation: Nearby MoE layers receive similar inputs</h2>
+        <h2 class="title is-3"><span class="eyebrow">Observation</span>Nearby MoE layers receive similar inputs</h2>
         <div class="content">
           <p>
             Each transformer block adds its output to the residual stream rather than overwriting it, so a token's hidden state changes gradually with depth and nearby MoE layers read highly similar inputs.
@@ -387,12 +412,12 @@
         </div>
         <div class="insight-box">
           <div class="insight-item">
-            <span class="insight-num">&gt;90%</span>
-            <span class="insight-text">mean cosine similarity between a token's inputs to adjacent MoE layers</span>
+            <span class="insight-num"><span class="num-aff">&gt;</span>90<span class="num-aff">%</span></span>
+            <span class="insight-text">average similarity between a token's inputs to neighboring MoE layers</span>
           </div>
           <div class="insight-item">
-            <span class="insight-num">&gt;80%</span>
-            <span class="insight-text">of the variance in the next MoE input is predictable from the previous one with a simple affine predictor</span>
+            <span class="insight-num"><span class="num-aff">&gt;</span>80<span class="num-aff">%</span></span>
+            <span class="insight-text">of the next MoE layer's input can be predicted from the previous one with a simple linear fit</span>
           </div>
         </div>
         <div class="content">
@@ -407,59 +432,129 @@
 </section>
 
 <!-- ======== Method ======== -->
-<section class="section">
+<section class="section" id="method">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <h2 class="title is-3">Method: Communicate the change</h2>
+        <h2 class="title is-3"><span class="eyebrow">Method</span>Communicate the change</h2>
         <div class="content">
           <p>
             EchoMoE partitions the MoE layers into groups of $s$ consecutive layers. Full-width hidden states are transmitted once per layer group rather than at every MoE layer.
           </p>
 
-          <h4 class="title is-5"><span class="step-num">1</span>Cache a reference</h4>
-          <p>
-            The first layer of each group is a <em>reference layer</em>. It broadcasts the full hidden state to every rank, which caches it as $z$. The broadcast is asynchronous and does not block the forward pass.
-          </p>
+          <div class="method-steps">
+            <div class="method-step">
+              <span class="step-num" aria-hidden="true">1</span>
+              <h4 class="title is-5">Cache a reference</h4>
+              <p>
+                The first layer of each group is a <em>reference layer</em>. It broadcasts the full hidden state to every rank, which caches it as $z$. The broadcast is asynchronous and does not block the forward pass.
+              </p>
+            </div>
 
-          <h4 class="title is-5"><span class="step-num">2</span>Compress dispatch</h4>
-          <p>
-            The following $s-1$ layers reuse $z$. The owner rank compresses and dispatches only the difference between the current state $x_\ell$ and the scaled reference:
-          </p>
-          <p class="has-text-centered">
-            $$c_d = C_d\,(x_\ell - a \odot z)$$
-          </p>
-          <p>
-            Each expert rank reconstructs its input from the cached reference $z$ and the dispatched code $c_d$.
-          </p>
+            <div class="method-step">
+              <span class="step-num" aria-hidden="true">2</span>
+              <h4 class="title is-5">Compress dispatch</h4>
+              <p>
+                The following $s-1$ layers reuse $z$. The owner rank compresses and dispatches only the difference between the current state $x_\ell$ and the scaled reference:
+              </p>
+              <p class="has-text-centered method-eq">
+                $$c_d = C_d\,(x_\ell - a \odot z)$$
+              </p>
+              <p>
+                Each expert rank reconstructs its input from the cached reference $z$ and the dispatched code $c_d$.
+              </p>
+            </div>
 
-          <h4 class="title is-5"><span class="step-num">3</span>Compress combine</h4>
-          <p>
-            Expert outputs are updates to the residual stream and can be represented in a lower-dimensional space. Each node returns a single compressed state, which the owner rank decompresses once.
-          </p>
-          <p>
-            All compressors and decompressors are linear, so they <strong>fold into the expert weights</strong> and add no extra serving-time operations.
+            <div class="method-step">
+              <span class="step-num" aria-hidden="true">3</span>
+              <h4 class="title is-5">Compress combine</h4>
+              <p>
+                Expert outputs are updates to the residual stream and can be represented in a lower-dimensional space. Each node returns a single compressed state, which the owner rank decompresses once.
+              </p>
+            </div>
+          </div>
+
+          <p class="callout">
+            <span class="callout-icon" aria-hidden="true"><i class="fas fa-bolt"></i></span>
+            <span>All compressors and decompressors are linear, so they <strong>fold into the expert weights</strong> and add no extra serving-time operations.</span>
           </p>
         </div>
 
-        <div class="dynamic-figure">
+        <div class="dynamic-figure is-compact">
 <figure class="fig2" id="echo-architecture" data-figure="architecture" aria-labelledby="fig2-title">
   <div class="f2-toolbar">
-    <div class="f2-title-wrap"><span class="f2-eyebrow">Figure 2</span><h3 class="f2-title" id="fig2-title">Follow one token, from bottom to top.</h3></div>
-    <div class="f2-controls" aria-label="Architecture animation controls">
-      <button class="f2-play" type="button" aria-label="Pause architecture animation"><span class="f2-play-symbol" aria-hidden="true">Ⅱ</span><span class="f2-play-label">Pause</span></button>
-      <button class="f2-replay" type="button" aria-label="Replay architecture animation"><span aria-hidden="true">↻</span> Replay</button>
-      <label class="f2-speed-label"><span class="f2-sr-only">Architecture animation speed</span><select class="f2-speed" aria-label="Architecture animation speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option></select></label>
+    <h3 class="f2-title" id="fig2-title">Follow one token, from bottom to top.</h3>
+    <div class="f2-controls playback" role="group" aria-label="Architecture animation controls">
+      <button class="f2-play pb-btn pb-toggle" type="button" aria-label="Pause architecture animation"><svg class="pb-icon f2-play-symbol" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1" width="3" height="10" rx=".8"/><rect x="7" y="1" width="3" height="10" rx=".8"/></svg><span class="f2-play-label">Pause</span></button>
+      <button class="f2-replay pb-btn pb-icon-only" type="button" aria-label="Replay architecture animation" title="Replay"><svg class="pb-icon" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.2 4.2A5.2 5.2 0 1 1 1.9 9.3l1.3-.6a3.8 3.8 0 1 0 .2-3.7L5.3 6H.8V1.5Z"/></svg></button>
+      <span class="pb-sep" aria-hidden="true"></span>
+      <div class="pb-speed" data-f2-speed role="group" aria-label="Architecture animation speed"><button type="button" class="pb-speed-opt" data-speed="0.5" aria-pressed="false">0.5&times;</button><button type="button" class="pb-speed-opt" data-speed="1" aria-pressed="true">1&times;</button><button type="button" class="pb-speed-opt" data-speed="1.5" aria-pressed="false">1.5&times;</button></div>
     </div>
   </div>
+  <div class="f2-views-wrap"><div class="f2-views playback" role="group" aria-label="Choose which part of Figure 2 to show"><button type="button" class="pb-speed-opt" data-f2-view="model" aria-pressed="true">Layer stack</button><button type="button" class="pb-speed-opt" data-f2-view="detail" aria-pressed="false">Inside an EchoMoE layer</button></div></div>
   <div class="f2-stage">
     <div class="f2-model-panel"><svg class="f2-model-svg" viewBox="0 0 326 790" role="img" aria-labelledby="f2-model-title f2-model-desc"><title id="f2-model-title">Reference states are stored once and reused in following layers.</title><desc id="f2-model-desc">A token flows upward through normalization, attention, and a standard MoE layer, with black residual bypass paths. The input to the standard MoE travels asynchronously into a purple reference cache. Later, the cached reference is reused by an EchoMoE layer.</desc><defs>
  <marker id="f2-ink-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L7 3.5L0 7Z" fill="#343939"/></marker>
  <marker id="f2-purple-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L7 3.5L0 7Z" fill="#7B4F9B"/></marker>
  <marker id="f2-teal-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L7 3.5L0 7Z" fill="#2C7F92"/></marker>
  <marker id="f2-orange-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0 0L7 3.5L0 7Z" fill="#9A5212"/></marker>
-</defs><rect x="20" y="52" width="208" height="700" rx="14" class="f2-outer"/><rect x="22" y="443" width="192" height="301" rx="13" class="f2-reference-wrap"/><rect x="34" y="73" width="192" height="313" rx="13" class="f2-echo-wrap f2-stack-back"/><rect x="28" y="79" width="192" height="313" rx="13" class="f2-echo-wrap f2-stack-mid"/><rect x="22" y="85" width="192" height="313" rx="13" class="f2-echo-wrap"/><rect x="32" y="40" width="90" height="26" rx="5" class="f2-tag"/><text x="77" y="58" class="f2-math" text-anchor="middle" font-size="18">× L/s</text><rect x="143" y="87" width="62" height="25" rx="5" class="f2-tag green-tag"/><text x="174" y="105" class="f2-small" text-anchor="middle">× (s − 1)</text><rect x="164" y="448" width="41" height="24" rx="5" class="f2-tag purple-tag"/><text x="184.5" y="465" class="f2-small" text-anchor="middle">× 1</text><path id="f2-l-input" d="M120 772V711" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-n0-a0" d="M120 683V655" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-a0-add0" d="M120 619V605" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-add0-n1" d="M120 587V563" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-n1-moe" d="M120 535V512" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-moe-add1" d="M120 474V461" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-add1-n2" d="M120 443V370" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-n2-a1" d="M120 342V316" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-a1-add2" d="M120 280V266" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-add2-n3" d="M120 248V226" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-n3-echo" d="M120 198V177" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-echo-add3" d="M120 137V124" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-output" d="M120 106V70" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-skip0" d="M120 730H45Q34 730 34 719V607Q34 596 45 596H110" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-skip1" d="M120 579H45Q34 579 34 568V463Q34 452 45 452H110" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-skip2" d="M120 386H45Q34 386 34 375V268Q34 257 45 257H110" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-skip3" d="M120 241H45Q34 241 34 230V126Q34 115 45 115H110" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-store" d="M120 526H251Q262 526 262 515V441" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-l-reuse" d="M262 393V170Q262 157 249 157H192" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><circle cx="120" cy="730" r="2.5" class="f2-junction"/><circle cx="120" cy="579" r="2.5" class="f2-junction"/><circle cx="120" cy="386" r="2.5" class="f2-junction"/><circle cx="120" cy="241" r="2.5" class="f2-junction"/><circle cx="120" cy="526" r="2.5" class="f2-junction"/><g id="f2-l-n0" class="f2-compute" data-kind="norm"><rect class="f2-node" x="49" y="683" width="142" height="28" rx="8"/><text x="120.0" y="702.78" text-anchor="middle" font-size="17">RMSNorm</text></g><g id="f2-l-a0" class="f2-compute" data-kind="attention"><rect class="f2-node" x="49" y="619" width="142" height="36" rx="8"/><text x="120.0" y="642.78" text-anchor="middle" font-size="17">Attention</text></g><g id="f2-l-n1" class="f2-compute" data-kind="norm"><rect class="f2-node" x="49" y="535" width="142" height="28" rx="8"/><text x="120.0" y="554.78" text-anchor="middle" font-size="17">RMSNorm</text></g><g id="f2-l-moe" class="f2-compute" data-kind="reference"><rect class="f2-node" x="49" y="474" width="142" height="38" rx="8"/><text x="120.0" y="498.78" text-anchor="middle" font-size="17">Standard MoE</text></g><g id="f2-l-n2" class="f2-compute" data-kind="norm"><rect class="f2-node" x="49" y="342" width="142" height="28" rx="8"/><text x="120.0" y="361.78" text-anchor="middle" font-size="17">RMSNorm</text></g><g id="f2-l-a1" class="f2-compute" data-kind="attention"><rect class="f2-node" x="49" y="280" width="142" height="36" rx="8"/><text x="120.0" y="303.78" text-anchor="middle" font-size="17">Attention</text></g><g id="f2-l-n3" class="f2-compute" data-kind="norm"><rect class="f2-node" x="49" y="198" width="142" height="28" rx="8"/><text x="120.0" y="217.78" text-anchor="middle" font-size="17">RMSNorm</text></g><g id="f2-l-echo" class="f2-compute" data-kind="expert"><rect class="f2-node" x="49" y="137" width="142" height="40" rx="8"/><text x="120.0" y="162.78" text-anchor="middle" font-size="17">EchoMoE</text></g><g id="f2-l-add0" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="120" cy="596" r="8.5"/><path d="M115.5 596h9 M120 591.5v9" class="f2-plus"/></g><g id="f2-l-add1" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="120" cy="452" r="8.5"/><path d="M115.5 452h9 M120 447.5v9" class="f2-plus"/></g><g id="f2-l-add2" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="120" cy="257" r="8.5"/><path d="M115.5 257h9 M120 252.5v9" class="f2-plus"/></g><g id="f2-l-add3" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="120" cy="115" r="8.5"/><path d="M115.5 115h9 M120 110.5v9" class="f2-plus"/></g><g id="f2-l-cache" class="f2-compute f2-cache" data-kind="reference"><rect class="f2-node" x="204" y="393" width="117" height="48" rx="8"/><text x="262.5" y="413" text-anchor="middle" font-size="14" font-weight="650">reference cache</text><text x="262.5" y="431" text-anchor="middle" class="f2-math" font-size="17">z = x<tspan baseline-shift="sub" font-size="11">r</tspan></text></g><text class="f2-reference-label" x="270" y="482" text-anchor="start">store once</text><text class="f2-reference-label" x="270" y="280">reuse</text><text class="f2-math" x="131" y="530" font-size="18">x<tspan baseline-shift="sub" font-size="12">r</tspan></text><text class="f2-math" x="131" y="192" font-size="18">x<tspan baseline-shift="sub" font-size="12">ℓ</tspan></text><text class="f2-math" x="133" y="773" font-size="18">h<tspan baseline-shift="sub" font-size="12">r</tspan></text><text class="f2-math" x="133" y="78" font-size="18">h<tspan baseline-shift="sub" font-size="12">r+s</tspan></text><g class="f2-particles" data-panel="left" aria-hidden="true"/></svg></div>
-    <div class="f2-detail-panel"><p class="f2-scroll-hint">Swipe to follow the full layer <span aria-hidden="true">↔</span></p><div class="f2-detail-scroll"><svg class="f2-detail-svg" viewBox="0 0 780 790" role="img" aria-labelledby="f2-detail-title f2-detail-desc"><title id="f2-detail-title">An EchoMoE layer sends compact changes and returns compact outputs.</title><desc id="f2-detail-desc">Execute from bottom to top. Compress the current activation relative to the cached reference. Dispatch small teal payloads; purple cached references reach expert inputs at the same time. Experts execute input projection, activation, and output projection. Their compressed outputs are weighted, combined, and decompressed once.</desc><defs><clipPath id="f2-packet-clearance" clipPathUnits="userSpaceOnUse"><path d="M0 0H780V151H0Z M0 189H780V583H0Z M0 621H780V790H0Z"/></clipPath></defs><rect x="14" y="52" width="752" height="716" rx="14" class="f2-outer"/><g class="f2-layer-tag"><rect x="28" y="39" width="159" height="27" rx="5" class="f2-tag green-tag"/><text x="107.5" y="58" text-anchor="middle" font-size="18" font-weight="700">EchoMoE layer</text></g><rect x="28" y="204" width="722" height="314" rx="11" class="f2-expert-region"/><g class="f2-step-label" id="f2-step3-label"><circle cx="46" cy="87" r="12"/><text x="46" y="92" text-anchor="middle">3</text><text x="67" y="92">Decompress once</text><text class="f2-step-sub" x="67" y="112">on owner rank (DP)</text></g><g class="f2-step-label f2-step2-label" id="f2-step2-label"><circle cx="168" cy="226" r="12"/><text x="168" y="231" text-anchor="middle">2</text><text x="190" y="223"><tspan x="190" y="223">Experts read the </tspan><tspan x="190" y="243">compressed change</tspan></text><text class="f2-step-sub" x="190" y="260">on expert ranks (EP)</text></g><g class="f2-step-label" id="f2-step1-label"><circle cx="46" cy="646" r="12"/><text x="46" y="651" text-anchor="middle">1</text><text x="67" y="651">Compress only the change</text><text class="f2-step-sub" x="67" y="672">on owner rank (DP)</text></g><path id="f2-r-x" d="M410 784V742" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-to-router" d="M410 761H634Q647 761 647 748V703" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-z-scale" d="M161 733H202" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-r-z-sub" d="M306 733H400" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-r-sub-cd" d="M410 724V696" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-code-stem" d="M410 659V621" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><path id="f2-r-router-meta" d="M647 659V622" class="f2-wire orange dashed " marker-end="url(#f2-orange-arrow)"/><g id="f2-r-z" class="f2-compute" data-kind="reference"><rect class="f2-node" x="45" y="715" width="116" height="36" rx="8"/><text x="103.0" y="739" text-anchor="middle" font-size="20" id="f2-dim-z" class="f2-math f2-dimension">z ∈ ℝ<tspan baseline-shift="super" font-size="13">d</tspan></text></g><g id="f2-r-scale" class="f2-compute" data-kind="reference"><rect class="f2-node" x="202" y="715" width="104" height="36" rx="8"/><text x="254.0" y="739.8" text-anchor="middle" font-size="20" class="f2-math">a ⊙ z</text></g><text class="f2-mini-label purple-text" x="103" y="706" text-anchor="middle">cached</text><text class="f2-mini-label purple-text" x="254" y="706" text-anchor="middle">scaled</text><g id="f2-r-subtract" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="410" cy="733" r="8.5"/><path d="M405 733h10" class="f2-plus"/></g><g id="f2-r-compress" class="f2-compute" data-kind="comm"><path class="f2-node" d="M351 659H469L496 696H324Z"/><text x="410" y="684" text-anchor="middle" class="f2-math" font-size="23">C<tspan baseline-shift="sub" font-size="14">d</tspan></text></g><g id="f2-r-router" class="f2-compute" data-kind="routing"><rect class="f2-node" x="572" y="659" width="150" height="37" rx="8"/><text x="647.0" y="683.28" text-anchor="middle" font-size="17">Router (top-k)</text></g><text class="f2-mini-label" x="634" y="722" text-anchor="end">reads full x<tspan baseline-shift="sub" font-size="10">ℓ</tspan></text><text class="f2-math f2-dimension" x="425" y="785" font-size="21" id="f2-dim-x">x<tspan baseline-shift="sub" font-size="13">ℓ</tspan> ∈ ℝ<tspan baseline-shift="super" font-size="13">d</tspan></text><text class="f2-math f2-dimension" x="426" y="644" font-size="20" id="f2-dim-cd">c<tspan baseline-shift="sub" font-size="13">d</tspan> ∈ ℝ<tspan baseline-shift="super" font-size="12">r<tspan baseline-shift="sub" font-size="9">d</tspan></tspan></text><text class="f2-math" x="660" y="638" font-size="18">S, w</text><g id="f2-r-dispatch" class="f2-compute" data-kind="comm"><rect class="f2-node" x="28" y="583" width="722" height="38" rx="8"/><text x="389.0" y="608.8" text-anchor="middle" font-size="20">All-to-all dispatch</text></g><g id="f2-r-local-cache" class="f2-compute" data-kind="reference"><rect class="f2-node" x="43" y="531" width="48" height="28" rx="8"/><text x="67.0" y="552.14" text-anchor="middle" font-size="21" class="f2-math">z</text></g><rect x="52" y="268" width="184" height="234" rx="10" class="f2-expert-box"/><path id="f2-r-z0" d="M91 545H114V489" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-r-dwire0" d="M188 583V489" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><path id="f2-r-input-win0" d="M144 459V434" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-win-sigma0" d="M144 397V387" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-sigma-wout0" d="M144 358V341" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-wout-weight0" d="M144 304V292" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-weight-combine0" d="M144 274V190" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><text x="65" y="289" class="f2-math" font-size="21">E<tspan baseline-shift="sub" font-size="13">1</tspan></text><path id="f2-r-wmeta0" d="M223 283H155" class="f2-wire orange dashed " marker-end="url(#f2-orange-arrow)"/><text x="189" y="278" text-anchor="middle" class="f2-math" font-size="17">w<tspan baseline-shift="sub" font-size="11">1</tspan></text><g id="f2-r-pair0" class="f2-compute" data-kind="pair"><path class="f2-z-half" d="M78 459H158V489H78Q70 489 70 481V467Q70 459 78 459Z"/><path class="f2-c-half" d="M158 459H210Q218 459 218 467V481Q218 489 210 489H158Z"/><text x="114" y="480" text-anchor="middle" class="f2-math" font-size="20">z</text><text x="188" y="480" text-anchor="middle" class="f2-math" font-size="20">c<tspan baseline-shift="sub" font-size="12">d</tspan></text></g><g id="f2-r-win0" class="f2-compute" data-kind="expert"><path class="f2-node" d="M68 434L92 397H196L220 434Z"/><text x="144" y="422" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">in,1</tspan></text></g><g id="f2-r-sigma0" class="f2-compute" data-kind="norm"><rect class="f2-node" x="91" y="358" width="106" height="29" rx="8"/><text x="144.0" y="379.98" text-anchor="middle" font-size="22" class="f2-math">σ(·)</text></g><g id="f2-r-wout0" class="f2-compute" data-kind="expert"><path class="f2-node" d="M68 304H220L196 341H92Z"/><text x="144" y="326" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">out,1</tspan></text></g><g id="f2-r-weight0" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="144" cy="283" r="8.5"/><path d="M140 279l8 8 M140 287l8-8" class="f2-plus"/></g><rect x="288" y="268" width="184" height="234" rx="10" class="f2-expert-box"/><path id="f2-r-z1" d="M91 545H350V489" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-r-dwire1" d="M424 583V489" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><path id="f2-r-input-win1" d="M380 459V434" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-win-sigma1" d="M380 397V387" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-sigma-wout1" d="M380 358V341" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-wout-weight1" d="M380 304V292" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-weight-combine1" d="M380 274V190" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><text x="301" y="289" class="f2-math" font-size="21">E<tspan baseline-shift="sub" font-size="13">2</tspan></text><path id="f2-r-wmeta1" d="M459 283H391" class="f2-wire orange dashed " marker-end="url(#f2-orange-arrow)"/><text x="425" y="278" text-anchor="middle" class="f2-math" font-size="17">w<tspan baseline-shift="sub" font-size="11">2</tspan></text><g id="f2-r-pair1" class="f2-compute" data-kind="pair"><path class="f2-z-half" d="M314 459H394V489H314Q306 489 306 481V467Q306 459 314 459Z"/><path class="f2-c-half" d="M394 459H446Q454 459 454 467V481Q454 489 446 489H394Z"/><text x="350" y="480" text-anchor="middle" class="f2-math" font-size="20">z</text><text x="424" y="480" text-anchor="middle" class="f2-math" font-size="20">c<tspan baseline-shift="sub" font-size="12">d</tspan></text></g><g id="f2-r-win1" class="f2-compute" data-kind="expert"><path class="f2-node" d="M304 434L328 397H432L456 434Z"/><text x="380" y="422" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">in,2</tspan></text></g><g id="f2-r-sigma1" class="f2-compute" data-kind="norm"><rect class="f2-node" x="327" y="358" width="106" height="29" rx="8"/><text x="380.0" y="379.98" text-anchor="middle" font-size="22" class="f2-math">σ(·)</text></g><g id="f2-r-wout1" class="f2-compute" data-kind="expert"><path class="f2-node" d="M304 304H456L432 341H328Z"/><text x="380" y="326" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">out,2</tspan></text></g><g id="f2-r-weight1" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="380" cy="283" r="8.5"/><path d="M376 279l8 8 M376 287l8-8" class="f2-plus"/></g><rect x="524" y="268" width="184" height="234" rx="10" class="f2-expert-box"/><path id="f2-r-z2" d="M91 545H586V489" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-r-dwire2" d="M660 583V489" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><path id="f2-r-input-win2" d="M616 459V434" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-win-sigma2" d="M616 397V387" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-sigma-wout2" d="M616 358V341" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-wout-weight2" d="M616 304V292" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-weight-combine2" d="M616 274V190" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><text x="537" y="289" class="f2-math" font-size="21">E<tspan baseline-shift="sub" font-size="13">k</tspan></text><path id="f2-r-wmeta2" d="M695 283H627" class="f2-wire orange dashed " marker-end="url(#f2-orange-arrow)"/><text x="661" y="278" text-anchor="middle" class="f2-math" font-size="17">w<tspan baseline-shift="sub" font-size="11">k</tspan></text><g id="f2-r-pair2" class="f2-compute" data-kind="pair"><path class="f2-z-half" d="M550 459H630V489H550Q542 489 542 481V467Q542 459 550 459Z"/><path class="f2-c-half" d="M630 459H682Q690 459 690 467V481Q690 489 682 489H630Z"/><text x="586" y="480" text-anchor="middle" class="f2-math" font-size="20">z</text><text x="660" y="480" text-anchor="middle" class="f2-math" font-size="20">c<tspan baseline-shift="sub" font-size="12">d</tspan></text></g><g id="f2-r-win2" class="f2-compute" data-kind="expert"><path class="f2-node" d="M540 434L564 397H668L692 434Z"/><text x="616" y="422" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">in,k</tspan></text></g><g id="f2-r-sigma2" class="f2-compute" data-kind="norm"><rect class="f2-node" x="563" y="358" width="106" height="29" rx="8"/><text x="616.0" y="379.98" text-anchor="middle" font-size="22" class="f2-math">σ(·)</text></g><g id="f2-r-wout2" class="f2-compute" data-kind="expert"><path class="f2-node" d="M540 304H692L668 341H564Z"/><text x="616" y="326" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">out,k</tspan></text></g><g id="f2-r-weight2" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="616" cy="283" r="8.5"/><path d="M612 279l8 8 M612 287l8-8" class="f2-plus"/></g><path id="f2-r-combine-decomp" d="M410 151V124" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><text id="f2-expert-ellipsis" x="498" y="380" class="f2-math" text-anchor="middle" font-size="28">⋯</text><g id="f2-r-combine" class="f2-compute" data-kind="comm"><rect class="f2-node" x="28" y="151" width="722" height="38" rx="8"/><text x="389.0" y="176.8" text-anchor="middle" font-size="20">All-to-all combine</text></g><g id="f2-r-decompress" class="f2-compute" data-kind="comm"><path class="f2-node" d="M324 82H496L473 124H347Z"/><text x="410" y="108" text-anchor="middle" class="f2-math" font-size="23">D<tspan baseline-shift="sub" font-size="14">c</tspan></text></g><path id="f2-r-output" d="M410 82V42" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><text class="f2-math f2-dimension" x="424" y="44" font-size="22" id="f2-dim-y">ŷ ∈ ℝ<tspan baseline-shift="super" font-size="13">d</tspan></text><text class="f2-math f2-dimension" x="425" y="143" font-size="18" id="f2-dim-cc">c<tspan baseline-shift="sub" font-size="12">c</tspan> ∈ ℝ<tspan baseline-shift="super" font-size="12">r<tspan baseline-shift="sub" font-size="9">c</tspan></tspan></text><g class="f2-particles" data-panel="right" aria-hidden="true" clip-path="url(#f2-packet-clearance)"/></svg></div></div>
+</defs><rect x="20" y="52" width="208" height="700" rx="14" class="f2-outer"/><rect x="22" y="443" width="192" height="301" rx="13" class="f2-reference-wrap"/><rect x="34" y="73" width="192" height="313" rx="13" class="f2-echo-wrap f2-stack-back"/><rect x="28" y="79" width="192" height="313" rx="13" class="f2-echo-wrap f2-stack-mid"/><rect x="22" y="85" width="192" height="313" rx="13" class="f2-echo-wrap"/><rect x="32" y="40" width="90" height="26" rx="5" class="f2-tag"/><text x="77" y="58" class="f2-math" text-anchor="middle" font-size="18">× L/s</text><rect x="143" y="87" width="62" height="25" rx="5" class="f2-tag green-tag"/><text x="174" y="105" class="f2-small" text-anchor="middle">× (s − 1)</text><rect x="164" y="448" width="41" height="24" rx="5" class="f2-tag purple-tag"/><text x="184.5" y="465" class="f2-small" text-anchor="middle">× 1</text><path id="f2-l-input" d="M120 772V711" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-n0-a0" d="M120 683V655" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-a0-add0" d="M120 619V605" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-add0-n1" d="M120 587V563" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-n1-moe" d="M120 535V512" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-moe-add1" d="M120 474V461" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-add1-n2" d="M120 443V370" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-n2-a1" d="M120 342V316" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-a1-add2" d="M120 280V266" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-add2-n3" d="M120 248V226" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-n3-echo" d="M120 198V177" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-echo-add3" d="M120 137V124" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-output" d="M120 106V70" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-skip0" d="M120 730H45Q34 730 34 719V607Q34 596 45 596H110" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-skip1" d="M120 579H45Q34 579 34 568V463Q34 452 45 452H110" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-skip2" d="M120 386H45Q34 386 34 375V268Q34 257 45 257H110" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-skip3" d="M120 241H45Q34 241 34 230V126Q34 115 45 115H110" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-l-store" d="M120 526H251Q262 526 262 515V441" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-l-reuse" d="M262 393V170Q262 157 249 157H192" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><circle cx="120" cy="730" r="2.5" class="f2-junction"/><circle cx="120" cy="579" r="2.5" class="f2-junction"/><circle cx="120" cy="386" r="2.5" class="f2-junction"/><circle cx="120" cy="241" r="2.5" class="f2-junction"/><circle cx="120" cy="526" r="2.5" class="f2-junction"/><g id="f2-l-n0" class="f2-compute" data-kind="norm"><rect class="f2-node" x="49" y="683" width="142" height="28" rx="8"/><text x="120.0" y="702.78" text-anchor="middle" font-size="17">RMSNorm</text></g><g id="f2-l-a0" class="f2-compute" data-kind="attention"><rect class="f2-node" x="49" y="619" width="142" height="36" rx="8"/><text x="120.0" y="642.78" text-anchor="middle" font-size="17">Attention</text></g><g id="f2-l-n1" class="f2-compute" data-kind="norm"><rect class="f2-node" x="49" y="535" width="142" height="28" rx="8"/><text x="120.0" y="554.78" text-anchor="middle" font-size="17">RMSNorm</text></g><g id="f2-l-moe" class="f2-compute" data-kind="reference"><rect class="f2-node" x="49" y="474" width="142" height="38" rx="8"/><text x="120.0" y="498.78" text-anchor="middle" font-size="17">Standard MoE</text></g><g id="f2-l-n2" class="f2-compute" data-kind="norm"><rect class="f2-node" x="49" y="342" width="142" height="28" rx="8"/><text x="120.0" y="361.78" text-anchor="middle" font-size="17">RMSNorm</text></g><g id="f2-l-a1" class="f2-compute" data-kind="attention"><rect class="f2-node" x="49" y="280" width="142" height="36" rx="8"/><text x="120.0" y="303.78" text-anchor="middle" font-size="17">Attention</text></g><g id="f2-l-n3" class="f2-compute" data-kind="norm"><rect class="f2-node" x="49" y="198" width="142" height="28" rx="8"/><text x="120.0" y="217.78" text-anchor="middle" font-size="17">RMSNorm</text></g><g id="f2-l-echo" class="f2-compute" data-kind="expert"><rect class="f2-node" x="49" y="137" width="142" height="40" rx="8"/><text x="120.0" y="162.78" text-anchor="middle" font-size="17">EchoMoE</text></g><g id="f2-l-add0" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="120" cy="596" r="8.5"/><path d="M115.5 596h9 M120 591.5v9" class="f2-plus"/></g><g id="f2-l-add1" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="120" cy="452" r="8.5"/><path d="M115.5 452h9 M120 447.5v9" class="f2-plus"/></g><g id="f2-l-add2" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="120" cy="257" r="8.5"/><path d="M115.5 257h9 M120 252.5v9" class="f2-plus"/></g><g id="f2-l-add3" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="120" cy="115" r="8.5"/><path d="M115.5 115h9 M120 110.5v9" class="f2-plus"/></g><g id="f2-l-cache" class="f2-compute f2-cache" data-kind="reference"><rect class="f2-node" x="204" y="393" width="117" height="48" rx="8"/><text x="262.5" y="413" text-anchor="middle" font-size="14" font-weight="650">reference cache</text><text x="262.5" y="431" text-anchor="middle" class="f2-math" font-size="17">z = x<tspan baseline-shift="sub" font-size="11">r</tspan></text></g><text class="f2-reference-label" x="270" y="475"><tspan x="270">store</tspan><tspan x="270" dy="15">once</tspan></text><text class="f2-reference-label" x="270" y="280">reuse</text><text class="f2-math" x="110" y="529" font-size="18" text-anchor="end">x<tspan baseline-shift="sub" font-size="12">r</tspan></text><text class="f2-math" x="131" y="192" font-size="18">x<tspan baseline-shift="sub" font-size="12">ℓ</tspan></text><text class="f2-math" x="133" y="773" font-size="18">h<tspan baseline-shift="sub" font-size="12">r</tspan></text><text class="f2-math" x="133" y="78" font-size="18">h<tspan baseline-shift="sub" font-size="12">r+s</tspan></text><g class="f2-particles" data-panel="left" aria-hidden="true"/></svg></div>
+    <div class="f2-detail-panel"><p class="f2-scroll-hint">Swipe to follow the full layer <span aria-hidden="true">↔</span></p><div class="f2-detail-scroll"><svg class="f2-detail-svg" viewBox="0 0 780 790" role="img" aria-labelledby="f2-detail-title f2-detail-desc"><title id="f2-detail-title">An EchoMoE layer sends compact changes and returns compact outputs.</title><desc id="f2-detail-desc">Execute from bottom to top. Compress the current activation relative to the cached reference. Dispatch small teal payloads; purple cached references reach expert inputs at the same time. Experts execute input projection, activation, and output projection. Their compressed outputs are weighted, combined, and decompressed once.</desc><defs><clipPath id="f2-packet-clearance" clipPathUnits="userSpaceOnUse"><path d="M0 0H780V151H0Z M0 189H780V583H0Z M0 621H780V790H0Z"/></clipPath></defs><rect x="14" y="52" width="752" height="716" rx="14" class="f2-outer"/><g class="f2-layer-tag"><rect x="28" y="39" width="159" height="27" rx="5" class="f2-tag green-tag"/><text x="107.5" y="58" text-anchor="middle" font-size="18" font-weight="700">EchoMoE layer</text></g><rect x="28" y="204" width="722" height="314" rx="11" class="f2-expert-region"/><g class="f2-step-label" id="f2-step3-label"><circle cx="46" cy="87" r="12"/><text x="46" y="92" text-anchor="middle">3</text><text x="67" y="92">Decompress once</text><text class="f2-step-sub" x="67" y="112">on owner rank (DP)</text></g><g class="f2-step-label f2-step2-label" id="f2-step2-label"><circle cx="168" cy="226" r="12"/><text x="168" y="231" text-anchor="middle">2</text><text x="190" y="223"><tspan x="190" y="223">Experts read the </tspan><tspan x="190" y="243">compressed change</tspan></text><text class="f2-step-sub" x="190" y="260">on expert ranks (EP)</text></g><g class="f2-step-label" id="f2-step1-label"><circle cx="46" cy="646" r="12"/><text x="46" y="651" text-anchor="middle">1</text><text x="67" y="651">Compress only the change</text><text class="f2-step-sub" x="67" y="672">on owner rank (DP)</text></g><path id="f2-r-x" d="M410 784V742" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-to-router" d="M410 761H634Q647 761 647 748V703" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-z-scale" d="M161 733H202" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-r-z-sub" d="M306 733H400" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-r-sub-cd" d="M410 724V696" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-code-stem" d="M410 659V621" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><path id="f2-r-router-meta" d="M647 659V622" class="f2-wire orange dashed " marker-end="url(#f2-orange-arrow)"/><g id="f2-r-z" class="f2-compute" data-kind="reference"><rect class="f2-node" x="45" y="715" width="116" height="36" rx="8"/><text x="103.0" y="739" text-anchor="middle" font-size="20" id="f2-dim-z" class="f2-math f2-dimension">z ∈ ℝ<tspan baseline-shift="super" font-size="13">d</tspan></text></g><g id="f2-r-scale" class="f2-compute" data-kind="reference"><rect class="f2-node" x="202" y="715" width="104" height="36" rx="8"/><text x="254.0" y="739.8" text-anchor="middle" font-size="20" class="f2-math">a ⊙ z</text></g><text class="f2-mini-label purple-text" x="103" y="706" text-anchor="middle">cached</text><text class="f2-mini-label purple-text" x="254" y="706" text-anchor="middle">scaled</text><g id="f2-r-subtract" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="410" cy="733" r="8.5"/><path d="M405 733h10" class="f2-plus"/></g><g id="f2-r-compress" class="f2-compute" data-kind="comm"><path class="f2-node" d="M351 659H469L496 696H324Z"/><text x="410" y="684" text-anchor="middle" class="f2-math" font-size="23">C<tspan baseline-shift="sub" font-size="14">d</tspan></text></g><g id="f2-r-router" class="f2-compute" data-kind="routing"><rect class="f2-node" x="572" y="659" width="150" height="37" rx="8"/><text x="647.0" y="683.28" text-anchor="middle" font-size="17">Router (top-k)</text></g><text class="f2-mini-label" x="634" y="722" text-anchor="end">reads full x<tspan baseline-shift="sub" font-size="10">ℓ</tspan></text><text class="f2-math f2-dimension" x="425" y="785" font-size="21" id="f2-dim-x">x<tspan baseline-shift="sub" font-size="13">ℓ</tspan> ∈ ℝ<tspan baseline-shift="super" font-size="13">d</tspan></text><text class="f2-math f2-dimension" x="426" y="644" font-size="20" id="f2-dim-cd">c<tspan baseline-shift="sub" font-size="13">d</tspan> ∈ ℝ<tspan baseline-shift="super" font-size="12">r<tspan baseline-shift="sub" font-size="9">d</tspan></tspan></text><text class="f2-math" x="660" y="638" font-size="18">S, w</text><g id="f2-r-dispatch" class="f2-compute" data-kind="comm"><rect class="f2-node" x="28" y="583" width="722" height="38" rx="8"/><text x="389.0" y="608.8" text-anchor="middle" font-size="20">All-to-all dispatch</text></g><g id="f2-r-local-cache" class="f2-compute" data-kind="reference"><rect class="f2-node" x="43" y="531" width="48" height="28" rx="8"/><text x="67.0" y="552.14" text-anchor="middle" font-size="21" class="f2-math">z</text></g><rect x="52" y="268" width="184" height="234" rx="10" class="f2-expert-box"/><path id="f2-r-z0" d="M91 545H114V489" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-r-dwire0" d="M188 583V489" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><path id="f2-r-input-win0" d="M144 459V434" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-win-sigma0" d="M144 397V387" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-sigma-wout0" d="M144 358V341" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-wout-weight0" d="M144 304V292" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-weight-combine0" d="M144 274V190" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><text x="65" y="289" class="f2-math" font-size="21">E<tspan baseline-shift="sub" font-size="13">1</tspan></text><path id="f2-r-wmeta0" d="M223 283H155" class="f2-wire orange dashed " marker-end="url(#f2-orange-arrow)"/><text x="189" y="278" text-anchor="middle" class="f2-math" font-size="17">w<tspan baseline-shift="sub" font-size="11">1</tspan></text><g id="f2-r-pair0" class="f2-compute" data-kind="pair"><path class="f2-z-half" d="M78 459H158V489H78Q70 489 70 481V467Q70 459 78 459Z"/><path class="f2-c-half" d="M158 459H210Q218 459 218 467V481Q218 489 210 489H158Z"/><text x="114" y="480" text-anchor="middle" class="f2-math" font-size="20">z</text><text x="188" y="480" text-anchor="middle" class="f2-math" font-size="20">c<tspan baseline-shift="sub" font-size="12">d</tspan></text></g><g id="f2-r-win0" class="f2-compute" data-kind="expert"><path class="f2-node" d="M68 434L92 397H196L220 434Z"/><text x="144" y="422" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">in,1</tspan></text></g><g id="f2-r-sigma0" class="f2-compute" data-kind="norm"><rect class="f2-node" x="91" y="358" width="106" height="29" rx="8"/><text x="144.0" y="379.98" text-anchor="middle" font-size="22" class="f2-math">σ(·)</text></g><g id="f2-r-wout0" class="f2-compute" data-kind="expert"><path class="f2-node" d="M68 304H220L196 341H92Z"/><text x="144" y="326" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">out,1</tspan></text></g><g id="f2-r-weight0" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="144" cy="283" r="8.5"/><path d="M140 279l8 8 M140 287l8-8" class="f2-plus"/></g><rect x="288" y="268" width="184" height="234" rx="10" class="f2-expert-box"/><path id="f2-r-z1" d="M91 545H350V489" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-r-dwire1" d="M424 583V489" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><path id="f2-r-input-win1" d="M380 459V434" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-win-sigma1" d="M380 397V387" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-sigma-wout1" d="M380 358V341" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-wout-weight1" d="M380 304V292" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-weight-combine1" d="M380 274V190" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><text x="301" y="289" class="f2-math" font-size="21">E<tspan baseline-shift="sub" font-size="13">2</tspan></text><path id="f2-r-wmeta1" d="M459 283H391" class="f2-wire orange dashed " marker-end="url(#f2-orange-arrow)"/><text x="425" y="278" text-anchor="middle" class="f2-math" font-size="17">w<tspan baseline-shift="sub" font-size="11">2</tspan></text><g id="f2-r-pair1" class="f2-compute" data-kind="pair"><path class="f2-z-half" d="M314 459H394V489H314Q306 489 306 481V467Q306 459 314 459Z"/><path class="f2-c-half" d="M394 459H446Q454 459 454 467V481Q454 489 446 489H394Z"/><text x="350" y="480" text-anchor="middle" class="f2-math" font-size="20">z</text><text x="424" y="480" text-anchor="middle" class="f2-math" font-size="20">c<tspan baseline-shift="sub" font-size="12">d</tspan></text></g><g id="f2-r-win1" class="f2-compute" data-kind="expert"><path class="f2-node" d="M304 434L328 397H432L456 434Z"/><text x="380" y="422" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">in,2</tspan></text></g><g id="f2-r-sigma1" class="f2-compute" data-kind="norm"><rect class="f2-node" x="327" y="358" width="106" height="29" rx="8"/><text x="380.0" y="379.98" text-anchor="middle" font-size="22" class="f2-math">σ(·)</text></g><g id="f2-r-wout1" class="f2-compute" data-kind="expert"><path class="f2-node" d="M304 304H456L432 341H328Z"/><text x="380" y="326" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">out,2</tspan></text></g><g id="f2-r-weight1" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="380" cy="283" r="8.5"/><path d="M376 279l8 8 M376 287l8-8" class="f2-plus"/></g><rect x="524" y="268" width="184" height="234" rx="10" class="f2-expert-box"/><path id="f2-r-z2" d="M91 545H586V489" class="f2-wire purple dashed " marker-end="url(#f2-purple-arrow)"/><path id="f2-r-dwire2" d="M660 583V489" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><path id="f2-r-input-win2" d="M616 459V434" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-win-sigma2" d="M616 397V387" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-sigma-wout2" d="M616 358V341" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-wout-weight2" d="M616 304V292" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><path id="f2-r-weight-combine2" d="M616 274V190" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><text x="537" y="289" class="f2-math" font-size="21">E<tspan baseline-shift="sub" font-size="13">k</tspan></text><path id="f2-r-wmeta2" d="M695 283H627" class="f2-wire orange dashed " marker-end="url(#f2-orange-arrow)"/><text x="661" y="278" text-anchor="middle" class="f2-math" font-size="17">w<tspan baseline-shift="sub" font-size="11">k</tspan></text><g id="f2-r-pair2" class="f2-compute" data-kind="pair"><path class="f2-z-half" d="M550 459H630V489H550Q542 489 542 481V467Q542 459 550 459Z"/><path class="f2-c-half" d="M630 459H682Q690 459 690 467V481Q690 489 682 489H630Z"/><text x="586" y="480" text-anchor="middle" class="f2-math" font-size="20">z</text><text x="660" y="480" text-anchor="middle" class="f2-math" font-size="20">c<tspan baseline-shift="sub" font-size="12">d</tspan></text></g><g id="f2-r-win2" class="f2-compute" data-kind="expert"><path class="f2-node" d="M540 434L564 397H668L692 434Z"/><text x="616" y="422" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">in,k</tspan></text></g><g id="f2-r-sigma2" class="f2-compute" data-kind="norm"><rect class="f2-node" x="563" y="358" width="106" height="29" rx="8"/><text x="616.0" y="379.98" text-anchor="middle" font-size="22" class="f2-math">σ(·)</text></g><g id="f2-r-wout2" class="f2-compute" data-kind="expert"><path class="f2-node" d="M540 304H692L668 341H564Z"/><text x="616" y="326" class="f2-math" text-anchor="middle" font-size="23">W̃<tspan baseline-shift="sub" font-size="12">out,k</tspan></text></g><g id="f2-r-weight2" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="616" cy="283" r="8.5"/><path d="M612 279l8 8 M612 287l8-8" class="f2-plus"/></g><path id="f2-r-combine-decomp" d="M410 151V124" class="f2-wire teal  " marker-end="url(#f2-teal-arrow)"/><text id="f2-expert-ellipsis" x="498" y="380" class="f2-math" text-anchor="middle" font-size="28">⋯</text><g id="f2-r-combine" class="f2-compute" data-kind="comm"><rect class="f2-node" x="28" y="151" width="722" height="38" rx="8"/><text x="389.0" y="176.8" text-anchor="middle" font-size="20">All-to-all combine</text></g><g id="f2-r-decompress" class="f2-compute" data-kind="comm"><path class="f2-node" d="M324 82H496L473 124H347Z"/><text x="410" y="108" text-anchor="middle" class="f2-math" font-size="23">D<tspan baseline-shift="sub" font-size="14">c</tspan></text></g><path id="f2-r-output" d="M410 82V42" class="f2-wire ink  " marker-end="url(#f2-ink-arrow)"/><text class="f2-math f2-dimension" x="424" y="44" font-size="22" id="f2-dim-y">ŷ ∈ ℝ<tspan baseline-shift="super" font-size="13">d</tspan></text><text class="f2-math f2-dimension" x="425" y="143" font-size="18" id="f2-dim-cc">c<tspan baseline-shift="sub" font-size="12">c</tspan> ∈ ℝ<tspan baseline-shift="super" font-size="12">r<tspan baseline-shift="sub" font-size="9">c</tspan></tspan></text><g class="f2-particles" data-panel="right" aria-hidden="true" clip-path="url(#f2-packet-clearance)"/></svg></div><svg class="f2-detail-svg-m" viewBox="0 0 340 652" role="img" aria-labelledby="f2-m-title f2-m-desc"><title id="f2-m-title">Inside an EchoMoE layer: compact codes travel between ranks.</title><desc id="f2-m-desc">Read from bottom to top. The change from the cached reference is compressed and dispatched as a small teal code. Each of the k selected experts reads the cached reference z and the code together, computes, and sends back a weighted compact output, which is combined and decompressed once.</desc>
+<defs><clipPath id="f2-m-packet-clearance" clipPathUnits="userSpaceOnUse"><path d="M0 0H340V120H0Z M0 150H340V418H0Z M0 448H340V652H0Z"/></clipPath></defs>
+<rect x="4" y="36" width="332" height="586" rx="12" class="f2-outer"/>
+<g class="f2-layer-tag"><rect x="12" y="24" width="116" height="24" rx="5" class="f2-tag green-tag"/><text x="70" y="40.5" text-anchor="middle" font-size="13.5" font-weight="700">EchoMoE layer</text></g>
+<rect x="10" y="158" width="320" height="246" rx="10" class="f2-expert-region"/>
+<g class="f2-step-label f2-m-step" id="f2-m-step3-label"><circle cx="26" cy="74" r="9"/><text x="26" y="78.2" text-anchor="middle">3</text><text x="41" y="78.5">Decompress once</text><text class="f2-step-sub" x="41" y="94">on owner rank (DP)</text></g>
+<g class="f2-step-label f2-m-step" id="f2-m-step2-label"><circle cx="26" cy="182" r="9"/><text x="26" y="186.2" text-anchor="middle">2</text><text x="41" y="186.5">Experts read the</text><text x="41" y="204">compressed change</text><text class="f2-step-sub" x="41" y="221">on expert ranks (EP)</text></g>
+<g class="f2-step-label f2-m-step" id="f2-m-step1-label"><circle cx="26" cy="462" r="9"/><text x="26" y="466.2" text-anchor="middle">1</text><text x="41" y="466.5">Compress only</text><text x="41" y="484">the change</text><text class="f2-step-sub" x="41" y="501">on owner rank (DP)</text></g>
+<path id="f2-m-output" d="M250 62V22" class="f2-wire ink" marker-end="url(#f2-ink-arrow)"/>
+<text class="f2-math f2-dimension" x="260" y="30" font-size="17">ŷ ∈ ℝ<tspan baseline-shift="super" font-size="11">d</tspan></text>
+<g id="f2-m-decompress" class="f2-compute" data-kind="comm"><path class="f2-node" d="M200 62H300L284 94H216Z"/><text x="250" y="84" text-anchor="middle" class="f2-math" font-size="19">D<tspan baseline-shift="sub" font-size="12">c</tspan></text></g>
+<path id="f2-m-combine-decomp" d="M250 120V97" class="f2-wire teal" marker-end="url(#f2-teal-arrow)"/>
+<text class="f2-math f2-dimension" x="260" y="113" font-size="15">c<tspan baseline-shift="sub" font-size="10">c</tspan> ∈ ℝ<tspan baseline-shift="super" font-size="10">r<tspan baseline-shift="sub" font-size="9">c</tspan></tspan></text>
+<g id="f2-m-combine" class="f2-compute" data-kind="comm"><rect class="f2-node" x="10" y="120" width="320" height="30" rx="7"/><text x="140" y="140" text-anchor="middle" font-size="14.5">All-to-all combine</text></g>
+<rect x="196" y="166" width="128" height="222" rx="10" class="f2-expert-box f2-m-stack"/>
+<rect x="191" y="171" width="128" height="222" rx="10" class="f2-expert-box f2-m-stack"/>
+<rect x="186" y="176" width="128" height="222" rx="10" class="f2-expert-box"/>
+<g class="f2-m-k"><rect x="290" y="156" width="36" height="20" rx="5" class="f2-tag green-tag"/><text x="308" y="170.5" text-anchor="middle" class="f2-math" font-size="14">× k</text></g>
+<text x="195" y="205" class="f2-math" font-size="17">E<tspan baseline-shift="sub" font-size="11">i</tspan></text>
+<path id="f2-m-weight-combine0" d="M250 191V152" class="f2-wire teal" marker-end="url(#f2-teal-arrow)"/>
+<path id="f2-m-wmeta0" d="M304 200H261" class="f2-wire orange dashed" marker-end="url(#f2-orange-arrow)"/>
+<text x="284" y="191" text-anchor="middle" class="f2-math" font-size="15">w<tspan baseline-shift="sub" font-size="10">i</tspan></text>
+<g id="f2-m-weight0" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="250" cy="200" r="8"/><path d="M246.5 196.5l7 7M246.5 203.5l7-7" class="f2-plus"/></g>
+<path id="f2-m-wout-weight0" d="M250 220V211" class="f2-wire ink" marker-end="url(#f2-ink-arrow)"/>
+<g id="f2-m-wout0" class="f2-compute" data-kind="expert"><path class="f2-node" d="M194 220H306L288 250H212Z"/><text x="250" y="241" class="f2-math" text-anchor="middle" font-size="18">W̃<tspan baseline-shift="sub" font-size="10">out,i</tspan></text></g>
+<path id="f2-m-sigma-wout0" d="M250 264V253" class="f2-wire ink" marker-end="url(#f2-ink-arrow)"/>
+<g id="f2-m-sigma0" class="f2-compute" data-kind="norm"><rect class="f2-node" x="214" y="264" width="72" height="26" rx="7"/><text x="250" y="282.5" text-anchor="middle" font-size="17" class="f2-math">σ(·)</text></g>
+<path id="f2-m-win-sigma0" d="M250 302V293" class="f2-wire ink" marker-end="url(#f2-ink-arrow)"/>
+<g id="f2-m-win0" class="f2-compute" data-kind="expert"><path class="f2-node" d="M194 332L212 302H288L306 332Z"/><text x="250" y="323" class="f2-math" text-anchor="middle" font-size="18">W̃<tspan baseline-shift="sub" font-size="10">in,i</tspan></text></g>
+<path id="f2-m-input-win0" d="M250 356V335" class="f2-wire ink" marker-end="url(#f2-ink-arrow)"/>
+<g id="f2-m-pair0" class="f2-compute" data-kind="pair"><path class="f2-z-half" d="M206 356H258V384H206Q198 384 198 376V364Q198 356 206 356Z"/><path class="f2-c-half" d="M258 356H294Q302 356 302 364V376Q302 384 294 384H258Z"/><text x="228" y="375.5" text-anchor="middle" class="f2-math" font-size="17">z</text><text x="280" y="375.5" text-anchor="middle" class="f2-math" font-size="17">c<tspan baseline-shift="sub" font-size="11">d</tspan></text></g>
+<g id="f2-m-local-cache" class="f2-compute" data-kind="reference"><rect class="f2-node" x="22" y="357" width="36" height="26" rx="7"/><text x="40" y="376" text-anchor="middle" font-size="18" class="f2-math">z</text></g>
+<text class="f2-mini-label purple-text" x="40" y="349" text-anchor="middle">local</text>
+<path id="f2-m-z0" d="M58 370H196" class="f2-wire purple dashed" marker-end="url(#f2-purple-arrow)"/>
+<path id="f2-m-dwire0" d="M280 418V388" class="f2-wire teal" marker-end="url(#f2-teal-arrow)"/>
+<g id="f2-m-dispatch" class="f2-compute" data-kind="comm"><rect class="f2-node" x="10" y="418" width="320" height="30" rx="7"/><text x="140" y="438" text-anchor="middle" font-size="14.5">All-to-all dispatch</text></g>
+<path id="f2-m-code-stem" d="M186 512V451" class="f2-wire teal" marker-end="url(#f2-teal-arrow)"/>
+<text class="f2-math f2-dimension" x="196" y="486" font-size="15">c<tspan baseline-shift="sub" font-size="10">d</tspan> ∈ ℝ<tspan baseline-shift="super" font-size="10">r<tspan baseline-shift="sub" font-size="9">d</tspan></tspan></text>
+<path id="f2-m-router-meta" d="M288 512V451" class="f2-wire orange dashed" marker-end="url(#f2-orange-arrow)"/>
+<text class="f2-math" x="296" y="474" font-size="15">S, w</text>
+<g id="f2-m-compress" class="f2-compute" data-kind="comm"><path class="f2-node" d="M156 512H216L232 542H140Z"/><text x="186" y="533" text-anchor="middle" class="f2-math" font-size="19">C<tspan baseline-shift="sub" font-size="12">d</tspan></text></g>
+<g id="f2-m-router" class="f2-compute" data-kind="routing"><rect class="f2-node" x="246" y="512" width="84" height="36" rx="7"/><text x="288" y="527" text-anchor="middle" font-size="13">Router</text><text x="288" y="541.5" text-anchor="middle" font-size="11">(top-k)</text></g>
+<text class="f2-mini-label purple-text" x="41" y="560" text-anchor="middle">cached</text>
+<text class="f2-mini-label purple-text" x="125" y="560" text-anchor="middle">scaled</text>
+<g id="f2-m-z" class="f2-compute" data-kind="reference"><rect class="f2-node" x="10" y="567" width="62" height="28" rx="7"/><text x="41" y="586.5" text-anchor="middle" font-size="16" class="f2-math f2-dimension">z ∈ ℝ<tspan baseline-shift="super" font-size="10">d</tspan></text></g>
+<path id="f2-m-z-scale" d="M72 581H96" class="f2-wire purple dashed" marker-end="url(#f2-purple-arrow)"/>
+<g id="f2-m-scale" class="f2-compute" data-kind="reference"><rect class="f2-node" x="98" y="567" width="54" height="28" rx="7"/><text x="125" y="586.5" text-anchor="middle" font-size="16" class="f2-math">a ⊙ z</text></g>
+<path id="f2-m-z-sub" d="M152 581H176" class="f2-wire purple dashed" marker-end="url(#f2-purple-arrow)"/>
+<g id="f2-m-subtract" class="f2-compute" data-kind="sum"><circle class="f2-node" cx="186" cy="581" r="8"/><path d="M182 581h8" class="f2-plus"/></g>
+<path id="f2-m-sub-cd" d="M186 572V545" class="f2-wire ink" marker-end="url(#f2-ink-arrow)"/>
+<text class="f2-mini-label" x="280" y="578" text-anchor="end">reads full x<tspan baseline-shift="sub" font-size="9">ℓ</tspan></text>
+<path id="f2-m-x" d="M186 646V591" class="f2-wire ink" marker-end="url(#f2-ink-arrow)"/>
+<path id="f2-m-to-router" d="M186 612H276Q288 612 288 600V551" class="f2-wire ink" marker-end="url(#f2-ink-arrow)"/>
+<text class="f2-math f2-dimension" x="196" y="642" font-size="16">x<tspan baseline-shift="sub" font-size="10">ℓ</tspan> ∈ ℝ<tspan baseline-shift="super" font-size="10">d</tspan></text>
+<g class="f2-particles" data-panel="mobile" aria-hidden="true" clip-path="url(#f2-m-packet-clearance)"/>
+</svg></div>
   </div>
   <div class="f2-narration"><span class="f2-phase-tag">REFERENCE LAYER</span><p class="f2-status" aria-live="polite" aria-atomic="true">The token enters the reference layer.</p></div>
   <div class="f2-progress"><input class="f2-scrubber" type="range" min="0" max="20300" step="100" value="0" aria-label="Figure 2 animation progress"/></div>
@@ -489,11 +584,11 @@
 
 
 <!-- ======== Results ======== -->
-<section class="section">
+<section class="section" id="results">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <h2 class="title is-3">Results: Less RDMA traffic, higher throughput</h2>
+        <h2 class="title is-3"><span class="eyebrow">Results</span>Less RDMA traffic, higher throughput</h2>
         <div class="content">
           <p>
             We evaluate EchoMoE on Qwen3-30B-A3B across 18 benchmarks spanning knowledge &amp; reasoning, mathematics, coding and instruction following, served with vLLM at EP32 on four H100 nodes.
@@ -533,11 +628,11 @@
 </section>
 
 <!-- ======== Ablations ======== -->
-<section class="section">
+<section class="section" id="analysis">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <h2 class="title is-3">Analysis: Reference states improve dispatch compression</h2>
+        <h2 class="title is-3"><span class="eyebrow">Analysis</span>Reference states improve dispatch compression</h2>
         <div class="dynamic-figure">
         <figure class="fig4" aria-label="Compression ablations and decode gains">
           <div class="f4-panels">
@@ -553,12 +648,7 @@
             </div>
             <div>
               <p class="f4-panel-title">(c) Decode gains</p>
-              <div class="f4-legend">
-                <span class="f4-key"><i style="background:#c2a5dc"></i>(4,512,1280)</span>
-                <span class="f4-key"><i style="background:#9467bd"></i>(4,512,768)</span>
-                <span class="f4-key"><i style="background:#5b2a80"></i>(8,256,512)</span>
-                <span class="f4-key"><i style="background:#d5d9df"></i>others</span>
-              </div>
+              <p class="f4-panel-sub">Eleven configurations, three highlighted</p>
               <svg class="f4-chart" data-f4="c" viewBox="0 0 360 290" role="img" aria-label="Decode speedup versus requests per GPU for 11 configurations: speedups rise with load, reaching 1.27x at 512 requests per GPU for (8,256,512)."></svg>
             </div>
           </div>
@@ -569,13 +659,23 @@
         <p class="fig-caption">
           <strong>Figure 4. The reference is what makes compression work.</strong> <strong>(a)</strong> Compressing the change loses far less than compressing the activation directly. <strong>(b)</strong> Refreshing the reference more often is the better use of bandwidth. <strong>(c)</strong> Decode gains grow with load.
         </p>
-        <div class="content">
-          <ul class="takeaways">
-            <li><strong>Reference states substantially improve dispatch compression.</strong> At width 512, plain dispatch loses 21.1 pp, whereas reference dispatch loses only 2.6 pp.</li>
-            <li><strong>Expert outputs are more compressible than dispatch activations</strong>, consistent with their lower-dimensional structure.</li>
-            <li><strong>Smaller strides with narrower codes outperform larger strides with wider codes.</strong> Communication is better spent on more frequent references.</li>
-          </ul>
-        </div>
+        <ul class="takeaway-grid" aria-label="Key takeaways">
+          <li class="takeaway">
+            <span class="takeaway-tag">Fig. 4a</span>
+            <strong class="takeaway-title">Reference states substantially improve dispatch compression.</strong>
+            <span class="takeaway-body">At width 512, plain dispatch loses 21.1 pp, whereas reference dispatch loses only 2.6 pp.</span>
+          </li>
+          <li class="takeaway">
+            <span class="takeaway-tag">Fig. 4a</span>
+            <strong class="takeaway-title">Expert outputs are more compressible than dispatch activations.</strong>
+            <span class="takeaway-body">This is consistent with their lower-dimensional structure.</span>
+          </li>
+          <li class="takeaway">
+            <span class="takeaway-tag">Fig. 4b</span>
+            <strong class="takeaway-title">Smaller strides with narrower codes outperform larger strides with wider codes.</strong>
+            <span class="takeaway-body">Communication is better spent on more frequent references.</span>
+          </li>
+        </ul>
 
       </div>
     </div>
@@ -583,11 +683,11 @@
 </section>
 
 <!-- ======== Speed ======== -->
-<section class="section">
+<section class="section" id="inference">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <h2 class="title is-3">Inference: Where the speedup comes from</h2>
+        <h2 class="title is-3"><span class="eyebrow">Inference</span>Where the speedup comes from</h2>
         <div class="content">
           <p>
             <strong>EchoMoE shortens prefill mainly by reducing communication.</strong> Prefill communication drops from 115 to 64 ms, while compression adds only a few milliseconds.
@@ -595,16 +695,16 @@
         </div>
         <figure class="fig5" aria-label="Prefill and decode step time breakdown">
           <div class="f5-legend">
-            <span class="f5-key"><i style="background:#eb6834"></i>Communication</span>
-            <span class="f5-key"><i style="background:#78469e"></i>Compression</span>
-            <span class="f5-key"><i style="background:#1baf7a"></i>MoE compute</span>
-            <span class="f5-key"><i style="background:#2a78d6"></i>Attention compute</span>
-            <span class="f5-key"><i style="background:#d5d9df"></i>Other (compute, sync wait, CPU)</span>
+            <span class="f5-key"><i style="background:var(--f5-comm)"></i>Communication</span>
+            <span class="f5-key"><i style="background:var(--f5-comp)"></i>Compression</span>
+            <span class="f5-key"><i style="background:var(--f5-moe)"></i>MoE compute</span>
+            <span class="f5-key"><i style="background:var(--f5-attn)"></i>Attention compute</span>
+            <span class="f5-key"><i style="background:var(--f5-other)"></i>Other (compute, sync wait, CPU)</span>
           </div>
           <p class="f5-panel-title">Prefill step (4,096 tokens per GPU)</p>
-          <svg class="f5-chart" data-f5="prefill" viewBox="0 0 760 216" role="img" aria-label="Prefill step time: 220.7 ms uncompressed versus 186.1, 171.3 and 137.6 ms for EchoMoE; communication falls from 115 ms to 79, 64 and 43 ms."></svg>
+          <svg class="f5-chart" data-f5="prefill" viewBox="0 0 760 226" role="img" aria-label="Prefill step time: 220.7 ms uncompressed versus 186.1, 171.3 and 137.6 ms for EchoMoE; communication falls from 115 ms to 79, 64 and 43 ms."></svg>
           <p class="f5-panel-title">Decode step (128 tokens per GPU)</p>
-          <svg class="f5-chart" data-f5="decode" viewBox="0 0 760 216" role="img" aria-label="Decode step time: 40.4 ms uncompressed versus 39.6, 37.9 and 37.0 ms for EchoMoE; communication falls from 11.4 ms to 9.9, 9.0 and 7.3 ms."></svg>
+          <svg class="f5-chart" data-f5="decode" viewBox="0 0 760 226" role="img" aria-label="Decode step time: 40.4 ms uncompressed versus 39.6, 37.9 and 37.0 ms for EchoMoE; communication falls from 11.4 ms to 9.9, 9.0 and 7.3 ms."></svg>
           <div class="f5-tip" hidden></div>
           <details class="f5-table"><summary>Show data (ms)</summary><table><thead><tr><th>Step</th><th>(s, r<sub>d</sub>, r<sub>c</sub>)</th><th>Comm.</th><th>Compr.</th><th>MoE</th><th>Attention</th><th>Other compute</th><th>Sync wait</th><th>CPU</th><th>Total</th></tr></thead><tbody><tr><td>Prefill</td><td>Uncompressed</td><td>114.6</td><td>0.0</td><td>37.1</td><td>27.7</td><td>20.1</td><td>11.7</td><td>9.4</td><td><b>220.7</b></td></tr><tr><td>Prefill</td><td>(4, 512, 1280)</td><td>79.4</td><td>6.9</td><td>35.6</td><td>27.7</td><td>22.2</td><td>8.1</td><td>6.2</td><td><b>186.1</b></td></tr><tr><td>Prefill</td><td>(4, 512, 768)</td><td>64.4</td><td>6.4</td><td>31.1</td><td>27.7</td><td>21.6</td><td>13.2</td><td>6.7</td><td><b>171.3</b></td></tr><tr><td>Prefill</td><td>(8, 256, 512)</td><td>42.6</td><td>6.5</td><td>27.6</td><td>27.7</td><td>19.5</td><td>6.0</td><td>7.7</td><td><b>137.6</b></td></tr><tr><td>Decode</td><td>Uncompressed</td><td>11.4</td><td>0.0</td><td>2.6</td><td>19.2</td><td>2.1</td><td>1.5</td><td>3.5</td><td><b>40.4</b></td></tr><tr><td>Decode</td><td>(4, 512, 1280)</td><td>9.9</td><td>0.9</td><td>2.2</td><td>19.2</td><td>2.1</td><td>1.5</td><td>3.7</td><td><b>39.6</b></td></tr><tr><td>Decode</td><td>(4, 512, 768)</td><td>9.0</td><td>0.8</td><td>2.1</td><td>19.1</td><td>2.1</td><td>1.0</td><td>3.7</td><td><b>37.9</b></td></tr><tr><td>Decode</td><td>(8, 256, 512)</td><td>7.3</td><td>0.9</td><td>1.9</td><td>19.1</td><td>2.0</td><td>2.0</td><td>3.7</td><td><b>37.0</b></td></tr></tbody></table></details>
         </figure>
@@ -640,11 +740,11 @@
 </section>
 
 <!-- ======== Generality ======== -->
-<section class="section">
+<section class="section" id="generality">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <h2 class="title is-3">Generality: Other MoE models</h2>
+        <h2 class="title is-3"><span class="eyebrow">Generality</span>Other MoE models</h2>
         <div class="content">
           <p>
             Applied to Gemma&nbsp;4, Kanana-2, Nemotron-3.5 and Moonlight, EchoMoE roughly <strong>halves</strong> their RDMA traffic with a 2.4&ndash;5.9 pp task performance drop. EchoMoE also composes cleanly with FP8 quantization, with no additional loss in task performance.
@@ -657,12 +757,12 @@
 </section>
 
 <!-- ======== Conclusion ======== -->
-<section class="section">
+<section class="section" id="conclusion">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <h2 class="title is-3">Conclusion</h2>
-        <div class="content">
+        <div class="tldr conclusion">
+          <h2 class="tldr-label">Conclusion</h2>
           <p>
             EchoMoE exploits the cross-layer predictability of MoE inputs by caching an earlier activation as a reference and <strong>communicating only the compressed change</strong>. It establishes cross-layer predictability as a practical mechanism for substantially reducing EP communication in existing MoE models, and could also be incorporated as a novel architecture for pretraining.
           </p>
@@ -679,21 +779,21 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <h2 class="title is-3">BibTeX</h2>
+        <h2 class="title is-3"><span class="eyebrow">Citation</span>BibTeX</h2>
         <div class="bibtex-container">
           <button class="button is-small is-light copy-btn" onclick="copyBibtex()">
             <span class="icon is-small"><i class="fas fa-copy"></i></span>
             <span>Copy</span>
           </button>
-<pre id="bibtex-text">@misc{liu2026communicatechangeefficientexpert,
-      title={Communicate the Change: Efficient Expert Parallelism via Activation Compression}, 
-      author={Fengyuan Liu and Jay Gala and Siva Reddy and Dzmitry Bahdanau},
-      year={2026},
-      eprint={2611.22215},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2611.22215}, 
-}</pre>
+<pre id="bibtex-text"><span class="bib-line">@misc{liu2026communicatechangeefficientexpert,
+</span><span class="bib-line bib-field">  title={Communicate the Change: Efficient Expert Parallelism via Activation Compression},
+</span><span class="bib-line bib-field">  author={Fengyuan Liu and Jay Gala and Siva Reddy and Dzmitry Bahdanau},
+</span><span class="bib-line bib-field">  year={2026},
+</span><span class="bib-line bib-field">  eprint={2611.22215},
+</span><span class="bib-line bib-field">  archivePrefix={arXiv},
+</span><span class="bib-line bib-field">  primaryClass={cs.LG},
+</span><span class="bib-line bib-field">  url={https://arxiv.org/abs/2611.22215},
+</span><span class="bib-line">}</span></pre>
         </div>
       </div>
     </div>
@@ -702,12 +802,12 @@
 
 
 <!-- ======== Acknowledgements ======== -->
-<section class="section">
+<section class="section acknowledgements">
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-10">
-        <h2 class="title is-4">Acknowledgements</h2>
-        <div class="content is-size-7 has-text-grey">
+        <h2 class="title is-6">Acknowledgements</h2>
+        <div class="content">
           <p>
             We acknowledge the support of the 2026 Google TPU Research &amp; Education Awards (TPU Builders Research Program). Siva Reddy is supported by the Canada CIFAR AI Chairs program. We thank the Mila IDT team and the Digital Research Alliance of Canada for providing the computational resources used in this work. We also thank members of McGill University, Mila, and ServiceNow Research, especially Tom&aacute;s Vergara Browne and Spandana Gella.
           </p>
@@ -721,9 +821,11 @@
 <!-- ======== Footer ======== -->
 <footer class="footer">
   <div class="container">
-    <div class="content has-text-centered">
-      <p class="is-size-7 has-text-grey-light">
-        Template adapted from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" class="has-text-grey">Academic Project Page Template</a>.
+    <div class="footer-inner">
+      <a class="footer-brand echo-name" href="#top"><span class="d">E</span><span class="l">cho</span><span class="d">M</span><span class="l">oE</span></a>
+      <p class="footer-affil">Mila &ndash; Quebec AI Institute &middot; McGill University</p>
+      <p class="footer-credit">
+        Template adapted from <a href="https://github.com/eliahuhorwitz/Academic-project-page-template">Academic Project Page Template</a>.
       </p>
     </div>
   </div>
@@ -740,12 +842,15 @@ function copyBibtex() {
 }
 </script>
 
+<script src="static/nav.js"></script>
 <script src="static/figures/figure1.js"></script>
 <script src="static/figures/figure2.js"></script>
+<script src="static/figures/fit.js"></script>
 <script src="static/figures/figure3.js"></script>
 <script src="static/figures/figure4.js"></script>
 <script src="static/figures/figure5.js"></script>
 <script src="static/figures/figure6.js"></script>
+<script src="static/figures/reveal.js"></script>
 
 </body>
 </html>

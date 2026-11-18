@@ -1,27 +1,20 @@
 /* Animated Figure 1 — original EchoMoE palette and topology. */
 .fig1 { --f1-ink:#252c35; --f1-blue:#365c91; --f1-green:#557936; --f1-purple:#78469e; --f1-red:#d43b35; --f1-gray:#5f6b76; margin:0; color:var(--f1-ink); border:1px solid #e3e6eb; border-radius:16px; overflow:hidden; background:#fff; }
 .fig1 * { box-sizing:border-box; }
-.fig1 .f1-toolbar { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:20px 24px 17px; border-bottom:1px solid #eceef2; }
-.fig1 .f1-title-wrap { display:flex; align-items:baseline; gap:13px; flex-wrap:wrap; }
-.fig1 .f1-eyebrow { font-size:11px; letter-spacing:.12em; font-weight:700; text-transform:uppercase; color:#78818d; }
+.fig1 .f1-toolbar { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 14px 12px 24px; border-bottom:1px solid #eceef2; }
 .fig1 .f1-title { margin:0; font-size:16px; line-height:1.35; font-weight:650; color:#2b3340; }
-.fig1 .f1-controls { display:flex; align-items:center; gap:7px; flex-shrink:0; }
-.fig1 .f1-control { height:32px; border:1px solid #dfe3e9; border-radius:7px; background:#fff; color:#445065; padding:0 10px; font:inherit; font-size:12px; font-weight:600; display:inline-flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; transition:background .18s, border-color .18s; }
-.fig1 .f1-control:hover { background:#f6f4fa; border-color:#c5b5d5; }
-.fig1 .f1-control:focus-visible { outline:3px solid #b396ce; outline-offset:3px; }
-.fig1 select.f1-control { min-width:61px; padding:0 8px; }
-.fig1 .f1-icon { width:12px; height:12px; fill:currentColor; }
+.fig1 .f1-controls { flex-shrink:0; } /* playback group styled in style.css (.playback) */
 .fig1 .f1-scroll { padding:13px 16px 0; overflow:visible; }
 .fig1 .f1-diagram { width:100%; height:auto; display:block; min-width:0; overflow:visible; font-family:inherit; fill:#252c35; }
 .fig1 .f1-panel-title { font-size:21px; font-weight:700; }
-.fig1 .f1-panel-sub { font-size:13px; fill:#7c838b; }
-.fig1 .f1-gpu { font-size:15px; fill:#555e68; }
+.fig1 .f1-panel-sub { font-size:14.5px; fill:#7c838b; }
+.fig1 .f1-gpu { font-size:16px; fill:#555e68; }
 .fig1 .f1-node-label { font-size:15px; font-weight:650; }
 .fig1 .f1-token-label { fill:#fff; font-size:20px; font-weight:700; }
 .fig1 .f1-expert-label { font-family:Georgia, 'Times New Roman', serif; font-size:28px; font-style:italic; fill:#527333; }
 .fig1 .f1-output-label { font-size:24px; font-weight:600; fill:#365c91; }
 .fig1 .f1-stage-label { font-size:16px; font-weight:700; letter-spacing:.02em; }
-.fig1 .f1-node-name { font-size:14px; fill:#717985; font-style:italic; }
+.fig1 .f1-node-name { font-size:15px; fill:#717985; font-style:italic; }
 .fig1 .f1-route { fill:none; stroke-linecap:round; stroke-width:4.5; }
 .fig1 .f1-background-route { stroke:#dfe4e9; stroke-width:2.25; fill:none; }
 .fig1 .f1-surface { transition:fill .16s linear,stroke .16s linear,filter .16s linear; }
@@ -56,25 +49,49 @@
 .fig1 .f1-scrubber:hover::-moz-range-thumb,.fig1 .f1-scrubber:focus-visible::-moz-range-thumb { opacity:1; }
 .fig1 .f1-scrubber:focus-visible { outline:2px solid #b396ce; outline-offset:2px; border-radius:3px; }
 
-.fig1 .f1-legend { display:flex; gap:12px 22px; flex-wrap:wrap; align-items:center; justify-content:center; padding:16px 20px 14px; color:#687180; font-size:11px; line-height:1.4; }
+.fig1 .f1-legend { display:flex; gap:8px 22px; flex-wrap:wrap; align-items:center; justify-content:center; padding:15px 20px 16px; color:#687180; font-size:12px; line-height:1.4; }
 .fig1 .f1-key { display:inline-flex; align-items:center; gap:7px; white-space:nowrap; }
 .fig1 .f1-key svg { width:27px; height:17px; flex-shrink:0; overflow:visible; }
 .fig1 .f1-caption { padding:0 24px 18px; margin:0; font-size:11px; line-height:1.5; color:#687180; text-align:center; }
 .fig1 .f1-scroll-hint { display:none; margin:10px 20px 0; color:#687180; font-size:11px; }
+/* Portrait layout (built in figure1.js): replaces the wide diagram on narrow screens,
+   drawn at roughly one SVG unit per CSS pixel so its text stays readable. */
+.fig1 .f1-portrait { display:none; }
+.fig1 .f1-portrait .f1-m-lane { font-size:12.5px; font-weight:700; }
+.fig1 .f1-portrait .f1-m-stage { font-size:12px; font-weight:700; fill:#2b3340; }
+.fig1 .f1-portrait .f1-m-stage-sub { font-size:10.5px; }
+.fig1 .f1-portrait .f1-m-gpu { font-size:11.5px; font-weight:600; fill:#555e68; }
+.fig1 .f1-portrait .f1-m-node { font-size:10.5px; font-style:italic; fill:#717985; }
+.fig1 .f1-portrait .f1-m-token { font-size:13px; font-weight:700; fill:#fff; }
+.fig1 .f1-portrait .f1-m-attn { font-size:11.5px; font-weight:650; fill:#365c91; }
+.fig1 .f1-portrait .f1-m-expert { font-family:Georgia,'Times New Roman',serif; font-size:19px; font-style:italic; fill:#527333; }
+.fig1 .f1-portrait .f1-m-output { font-size:15px; font-weight:600; fill:#365c91; }
+.fig1 .f1-portrait .f1-m-cache { font:italic 12px Georgia,serif; fill:#78469e; }
+.fig1 .f1-portrait .f1-m-divider { stroke:#d4d9df; stroke-width:1; stroke-dasharray:4 4; fill:none; }
+.fig1 .f1-portrait .f1-m-stub { stroke:#a4acb6; stroke-width:2; fill:none; }
+.fig1 .f1-portrait .f1-m-halo { stroke:#fff; stroke-width:5.5; fill:none; }
+.fig1 .f1-portrait .f1-route { stroke-width:2.5; }
+.fig1 .f1-portrait .f1-payload { stroke-width:1.4; }
+.fig1 .f1-portrait .f1-reference { stroke-width:1.5; stroke-dasharray:2.5 2; }
+.fig1 .f1-portrait .f1-cache { stroke-width:1.3; }
+.fig1 .f1-portrait .f1-surface { stroke-width:1.6; }
+.fig1 .f1-portrait .f1-attn.is-active .f1-surface,.fig1 .f1-portrait .f1-output.is-active .f1-surface,
+.fig1 .f1-portrait .f1-expert.is-active .f1-surface,.fig1 .f1-portrait .f1-codec.is-active .f1-surface { stroke-width:2.2; }
+@media (max-width:820px) {
+ .fig1 .f1-landscape { display:none; }
+ .fig1 .f1-portrait { display:block; max-width:440px; margin:0 auto; }
+ .fig1 .f1-k-codec { transform:rotate(90deg) scale(.85); }
+}
 @media (max-width:720px) {
  .fig1 { border-radius:12px; }
- .fig1 .f1-toolbar { padding:16px; gap:13px; align-items:flex-start; flex-wrap:wrap; }
- .fig1 .f1-title-wrap { gap:4px; flex-direction:column; flex:1 0 100%; }
- .fig1 .f1-title { font-size:14px; }
- .fig1 .f1-control { padding:0 8px; }
- .fig1 .f1-controls { gap:5px; }
- .fig1 .f1-replay-text { display:none; }
+ .fig1 .f1-toolbar { padding:14px 12px 12px 16px; gap:10px; align-items:flex-start; flex-wrap:wrap; }
+ .fig1 .f1-title { font-size:14px; flex:1 0 100%; }
  .fig1 .f1-scroll { padding:10px 10px 0; }
  .fig1 .f1-statuses { grid-template-columns:1fr; }
  .fig1 .f1-status { padding:10px 16px; }
  .fig1 .f1-status + .f1-status { border-left:0; border-top:1px solid #f0f1f4; }
- .fig1 .f1-legend { justify-content:flex-start; gap:10px 18px; padding:13px 16px; }
+ .fig1 .f1-legend { justify-content:flex-start; gap:8px 18px; padding:14px 16px; }
  .fig1 .f1-caption { padding:0 16px 15px; text-align:left; }
  .fig1 .f1-scroll-hint { display:none; }
 }
-@media (prefers-reduced-motion:reduce) { .fig1 .f1-surface,.fig1 .f1-control { transition:none; } }
+@media (prefers-reduced-motion:reduce) { .fig1 .f1-surface { transition:none; } }

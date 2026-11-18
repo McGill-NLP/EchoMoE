@@ -30,9 +30,6 @@
   ];
   const saved = red => 100 * (1 - 1 / red);
 
-  const W = 760, H = 330, M = { l: 56, r: 150, t: 20, b: 52 };
-  const X = v => M.l + (v - 28) / (80 - 28) * (W - M.l - M.r);
-  const Y = v => M.t + (3.4 - v) / (3.4 - 0.8) * (H - M.t - M.b);
   const el = (tag, attrs, parent, text) => {
     const n = document.createElementNS(NS, tag);
     for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
@@ -41,68 +38,83 @@
     return n;
   };
   const svg = root.querySelector('svg.f6-chart');
-
-  // axes and grid
-  for (const t of [1, 1.5, 2, 2.5, 3]) {
-    el('line', { x1: M.l, x2: W - M.r, y1: Y(t), y2: Y(t), class: 'f6-grid' }, svg);
-    el('text', { x: M.l - 8, y: Y(t) + 4, class: 'f6-tick', 'text-anchor': 'end' }, svg, t.toFixed(1) + '×');
-  }
-  for (const t of [30, 40, 50, 60, 70, 80]) {
-    el('text', { x: X(t), y: H - M.b + 18, class: 'f6-tick', 'text-anchor': 'middle' }, svg, t);
-  }
-  el('line', { x1: M.l, x2: W - M.r, y1: H - M.b, y2: H - M.b, class: 'f6-axis' }, svg);
-  el('text', { x: (M.l + W - M.r) / 2, y: H - 8, class: 'f6-axis-label', 'text-anchor': 'middle' }, svg, 'Inter-node RDMA saved (%) →');
-  const midY = (M.t + H - M.b) / 2;
-  el('text', { x: 14, y: midY, class: 'f6-axis-label', 'text-anchor': 'middle', transform: `rotate(-90 14 ${midY})` }, svg, 'Throughput speedup (×) →');
-  el('line', { x1: M.l, x2: W - M.r, y1: Y(1), y2: Y(1), class: 'f6-base' }, svg);
-  el('text', { x: X(35.5), y: Y(1) + 16, class: 'f6-note' }, svg, 'Uncompressed (1.0×)');
-
-  // lines, markers, end labels
-  const pts = ROWS.map(r => [saved(r[3]), r]);
-  for (const s of SERIES) {
-    const d = pts.map((p, i) => `${i ? 'L' : 'M'}${X(p[0]).toFixed(1)},${Y(p[1][s.idx]).toFixed(1)}`).join('');
-    el('path', { d, class: `f6-line ${s.cls}` }, svg);
-    for (const p of pts) {
-      const cx = X(p[0]), cy = Y(p[1][s.idx]);
-      if (s.key === 'fp8') el('rect', { x: cx - 4.5, y: cy - 4.5, width: 9, height: 9, rx: 1.5, class: `f6-pt ${s.cls}` }, svg);
-      else el('circle', { cx, cy, r: s.key === 'ib' ? 3.5 : 4.5, class: `f6-pt ${s.cls}` }, svg);
-    }
-    const last = pts[pts.length - 1];
-    el('text', { x: X(last[0]) + 14, y: Y(last[1][s.idx]) + 5, class: `f6-end ${s.cls}-ink` }, svg, s.name);
-  }
-  // peak values
-  const last = pts[pts.length - 1];
-  el('text', { x: X(last[0]), y: Y(last[1][5]) - 13, class: 'f6-value', 'text-anchor': 'middle' }, svg, `${last[1][5].toFixed(2)}×`);
-  el('text', { x: X(last[0]), y: Y(last[1][4]) - 13, class: 'f6-value', 'text-anchor': 'middle' }, svg, `${last[1][4].toFixed(2)}×`);
-
-  // hover: one column per configuration
   const tip = root.querySelector('.f6-tip');
-  const guide = el('line', { y1: M.t, y2: H - M.b, class: 'f6-hover-guide', visibility: 'hidden' }, svg);
-  const xs = pts.map(p => X(p[0]));
-  pts.forEach((p, i) => {
-    const left = i ? (xs[i - 1] + xs[i]) / 2 : xs[i] - 12;
-    const right = i < xs.length - 1 ? (xs[i] + xs[i + 1]) / 2 : xs[i] + 12;
-    const hit = el('rect', { x: left, y: M.t, width: right - left, height: H - M.t - M.b, class: 'f6-hit', tabindex: 0 }, svg);
-    const r = p[1];
-    const html = `<b>EchoMoE</b> (s=${r[0]}, r<sub>d</sub>=${r[1]}, r<sub>c</sub>=${r[2]})<br>
-      RDMA reduction: ${r[3].toFixed(2)}× (${Math.round(p[0])}% saved)<br>
-      <span class="f6-sw f6-fp8"></span>TCP, FP8: <b>${r[5].toFixed(2)}×</b><br>
-      <span class="f6-sw f6-bf16"></span>TCP, BF16: <b>${r[4].toFixed(2)}×</b><br>
-      <span class="f6-sw f6-ib"></span>InfiniBand, BF16: <b>${r[6].toFixed(2)}×</b>`;
-    const show = clientX => {
-      guide.setAttribute('x1', xs[i]); guide.setAttribute('x2', xs[i]); guide.setAttribute('visibility', 'visible');
-      tip.innerHTML = html; tip.hidden = false;
-      const box = root.getBoundingClientRect(), sbox = svg.getBoundingClientRect();
-      const px = sbox.left - box.left + xs[i] / W * sbox.width;
-      let x = px + 14;
-      if (x + tip.offsetWidth > box.width - 6) x = px - tip.offsetWidth - 14;
-      tip.style.left = x + 'px';
-      tip.style.top = (sbox.top - box.top + Y(r[5]) / H * sbox.height) + 'px';
-    };
-    const hide = () => { tip.hidden = true; guide.setAttribute('visibility', 'hidden'); };
-    hit.addEventListener('mouseenter', e => show(e.clientX));
-    hit.addEventListener('mouseleave', hide);
-    hit.addEventListener('focus', () => show());
-    hit.addEventListener('blur', hide);
+  const pts = ROWS.map(r => [saved(r[3]), r]);
+
+  EchoFit.mount(svg, W => {
+    // narrow screens: short end labels (the legend above names them in full)
+    const narrow = W < 520;
+    const names = narrow ? { fp8: 'FP8', bf16: 'BF16', ib: 'IB' } : null;
+    const H = Math.round(Math.max(270, Math.min(330, W * 0.46)));
+    const probe = SERIES.map(s => el('text', { class: `f6-end ${s.cls}-ink` }, svg, names ? names[s.key] : s.name));
+    const endW = Math.max(...probe.map(EchoFit.textWidth));
+    probe.forEach(t => t.remove());
+    const M = { l: 52, r: Math.ceil(endW) + 26, t: 20, b: 48 };
+    const X = v => M.l + (v - 28) / (80 - 28) * (W - M.l - M.r);
+    const Y = v => M.t + (3.4 - v) / (3.4 - 0.7) * (H - M.t - M.b);
+
+    // axes and grid
+    for (const t of [1, 1.5, 2, 2.5, 3]) {
+      el('line', { x1: M.l, x2: W - M.r, y1: Y(t), y2: Y(t), class: 'f6-grid' }, svg);
+      el('text', { x: M.l - 8, y: Y(t) + 4, class: 'f6-tick', 'text-anchor': 'end' }, svg, t.toFixed(1) + '×');
+    }
+    for (const t of [30, 40, 50, 60, 70, 80]) {
+      el('text', { x: X(t), y: H - M.b + 17, class: 'f6-tick', 'text-anchor': 'middle' }, svg, t);
+    }
+    el('line', { x1: M.l, x2: W - M.r, y1: H - M.b, y2: H - M.b, class: 'f6-axis' }, svg);
+    el('text', { x: (M.l + W - M.r) / 2, y: H - 8, class: 'f6-axis-label', 'text-anchor': 'middle' }, svg, 'Inter-node RDMA saved (%) →');
+    const midY = (M.t + H - M.b) / 2;
+    el('text', { x: 13, y: midY, class: 'f6-axis-label', 'text-anchor': 'middle', transform: `rotate(-90 13 ${midY})` }, svg, 'Throughput speedup (×) →');
+    // baseline stops at the last configuration so the end labels sit clear of it
+    el('line', { x1: M.l, x2: X(pts[pts.length - 1][0]) + 8, y1: Y(1), y2: Y(1), class: 'f6-base' }, svg);
+    el('text', { x: X(35.5), y: Y(1) + 15, class: 'f6-note' }, svg, 'Uncompressed (1.0×)');
+
+    // lines, markers, end labels
+    for (const s of SERIES) {
+      const d = pts.map((p, i) => `${i ? 'L' : 'M'}${X(p[0]).toFixed(1)},${Y(p[1][s.idx]).toFixed(1)}`).join('');
+      el('path', { d, class: `f6-line ${s.cls}` }, svg);
+      for (const p of pts) {
+        const cx = X(p[0]), cy = Y(p[1][s.idx]);
+        if (s.key === 'fp8') el('rect', { x: cx - 4.5, y: cy - 4.5, width: 9, height: 9, rx: 1.5, class: `f6-pt ${s.cls}` }, svg);
+        else el('circle', { cx, cy, r: s.key === 'ib' ? 3.5 : 4.5, class: `f6-pt ${s.cls}` }, svg);
+      }
+      const last = pts[pts.length - 1];
+      el('text', { x: X(last[0]) + 14, y: Y(last[1][s.idx]) + 5, class: `f6-end ${s.cls}-ink` }, svg, names ? names[s.key] : s.name);
+    }
+    // peak values
+    const last = pts[pts.length - 1];
+    el('text', { x: X(last[0]), y: Y(last[1][5]) - 13, class: 'f6-value', 'text-anchor': 'middle' }, svg, `${last[1][5].toFixed(2)}×`);
+    el('text', { x: X(last[0]), y: Y(last[1][4]) - 13, class: 'f6-value', 'text-anchor': 'middle' }, svg, `${last[1][4].toFixed(2)}×`);
+
+    // hover: one column per configuration
+    const guide = el('line', { y1: M.t, y2: H - M.b, class: 'f6-hover-guide', visibility: 'hidden' }, svg);
+    const xs = pts.map(p => X(p[0]));
+    pts.forEach((p, i) => {
+      const left = i ? (xs[i - 1] + xs[i]) / 2 : xs[i] - 12;
+      const right = i < xs.length - 1 ? (xs[i] + xs[i + 1]) / 2 : xs[i] + 12;
+      const hit = el('rect', { x: left, y: M.t, width: right - left, height: H - M.t - M.b, class: 'f6-hit', tabindex: 0 }, svg);
+      const r = p[1];
+      const html = `<b>EchoMoE</b> (s=${r[0]}, r<sub>d</sub>=${r[1]}, r<sub>c</sub>=${r[2]})<br>
+        RDMA reduction: ${r[3].toFixed(2)}× (${Math.round(p[0])}% saved)<br>
+        <span class="f6-sw f6-fp8"></span>TCP, FP8: <b>${r[5].toFixed(2)}×</b><br>
+        <span class="f6-sw f6-bf16"></span>TCP, BF16: <b>${r[4].toFixed(2)}×</b><br>
+        <span class="f6-sw f6-ib"></span>InfiniBand, BF16: <b>${r[6].toFixed(2)}×</b>`;
+      const show = () => {
+        guide.setAttribute('x1', xs[i]); guide.setAttribute('x2', xs[i]); guide.setAttribute('visibility', 'visible');
+        tip.innerHTML = html; tip.hidden = false;
+        const box = root.getBoundingClientRect(), sbox = svg.getBoundingClientRect();
+        const px = sbox.left - box.left + xs[i] / W * sbox.width;
+        let x = px + 14;
+        if (x + tip.offsetWidth > box.width - 6) x = px - tip.offsetWidth - 14;
+        tip.style.left = Math.max(4, x) + 'px';
+        tip.style.top = (sbox.top - box.top + Y(r[5]) / H * sbox.height) + 'px';
+      };
+      const hide = () => { tip.hidden = true; guide.setAttribute('visibility', 'hidden'); };
+      hit.addEventListener('mouseenter', show);
+      hit.addEventListener('mouseleave', hide);
+      hit.addEventListener('focus', show);
+      hit.addEventListener('blur', hide);
+    });
+    return H;
   });
 })();

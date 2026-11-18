@@ -3,14 +3,14 @@
   --f4-w1280:#cdb6e3; --f4-w1024:#ad8bcf; --f4-w768:#8c61b6; --f4-w512:#6a3c94; --f4-w256:#43205f;
   --f4-h1:#c2a5dc; --f4-h2:#9467bd; --f4-h3:#5b2a80;
   position:relative; margin:0; color:var(--f4-ink); }
-.fig4 .f4-panels { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
-.fig4 .f4-panel-title { text-align:center; font-size:14px; font-weight:600; color:#374151; margin:0 0 2px; }
-.fig4 .f4-panel-sub { text-align:center; font-size:12px; color:var(--f4-muted); margin:0 0 4px; }
+.fig4 .f4-panels { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.fig4 .f4-panel-title { text-align:center; font-size:14px; font-weight:600; color:#374151; margin:0; }
+.fig4 .f4-panel-sub { text-align:center; font-size:12px; color:var(--f4-muted); margin:1px 0 6px; }
 .fig4 svg.f4-chart { width:100%; height:auto; display:block; overflow:visible; font-family:inherit; }
 .fig4 .f4-grid { stroke:#eceef2; stroke-width:1; }
 .fig4 .f4-axis { stroke:#c7ccd3; stroke-width:1; }
 .fig4 .f4-tick { fill:var(--f4-muted); font-size:11.5px; }
-.fig4 .f4-axis-label { fill:#4b5563; font-size:12.5px; }
+.fig4 .f4-axis-label { fill:#4b5563; font-size:12px; }
 .fig4 .f4-base { stroke:#5f6b76; stroke-width:1.5; stroke-dasharray:6 4; }
 .fig4 .f4-line { fill:none; stroke-width:2.2; stroke-linejoin:round; }
 .fig4 .f4-ref { stroke:var(--f4-ref); } .fig4 .f4-ref-pt { fill:var(--f4-ref); stroke:#fff; stroke-width:1.8; }
@@ -26,6 +26,7 @@
 .fig4 .f4-width-label { fill:var(--f4-ink); font-size:11.5px; font-weight:600; paint-order:stroke; stroke:#fff; stroke-width:3px; }
 .fig4 .f4-legend-title { fill:#4b5563; font-size:11.5px; font-weight:600; }
 .fig4 .f4-legend-note { fill:var(--f4-muted); font-size:11px; }
+.fig4 .f4-legend-label { fill:#4b5563; font-size:11.5px; }
 .fig4 .f4-legend-pt { fill:#5f6b76; stroke:#fff; stroke-width:1; }
 .fig4 .f4-other { stroke:#d5d9df; stroke-width:1.4; } .fig4 .f4-other-pt { fill:#d5d9df; }
 .fig4 .f4-h1 { stroke:var(--f4-h1); stroke-width:2.4; } .fig4 .f4-h1-pt { fill:var(--f4-h1); stroke:#fff; stroke-width:1.5; }
@@ -34,13 +35,14 @@
 .fig4 .f4-end-value { fill:var(--f4-ink); font-size:11.5px; font-weight:700; }
 .fig4 .f4-hit { fill:transparent; cursor:pointer; outline:none; }
 .fig4 .f4-hit:focus-visible { stroke:#b396ce; stroke-width:2; }
-.fig4 .f4-legend { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; font-size:12px; color:var(--f4-muted); margin:2px 0 4px; }
-.fig4 .f4-key { display:inline-flex; align-items:center; gap:6px; }
-.fig4 .f4-key i { display:inline-block; width:18px; height:3px; border-radius:2px; }
 .fig4 .f4-tip { position:absolute; z-index:5; pointer-events:none; background:#fff; border:1px solid #e3e6eb; border-radius:6px;
   box-shadow:0 4px 14px rgba(0,0,0,.08); padding:7px 10px; font-size:12px; line-height:1.55; color:#374151; white-space:nowrap; transform:translateY(-50%); }
 .fig4 details.f4-table { margin-top:8px; font-size:12px; color:var(--f4-muted); text-align:center; }
 .fig4 details.f4-table summary { cursor:pointer; display:inline-block; }
 .fig4 details.f4-table table { margin:8px auto 0; font-size:12px; text-align:right; }
 .fig4 details.f4-table th, .fig4 details.f4-table td { padding:2px 9px; border:none; }
-@media (max-width:860px) { .fig4 .f4-panels { grid-template-columns:1fr; max-width:420px; margin:0 auto; } }
+/* two columns (third panel centered below) on tablets, one column on phones */
+@media (max-width:939px) { .fig4 .f4-panels { grid-template-columns:1fr 1fr; }
+  .fig4 .f4-panels > :nth-child(3) { grid-column:1 / -1; justify-self:center; width:calc(50% - 10px); } }
+@media (max-width:639px) { .fig4 .f4-panels { grid-template-columns:1fr; max-width:460px; margin:0 auto; }
+  .fig4 .f4-panels > :nth-child(3) { width:auto; justify-self:stretch; } }

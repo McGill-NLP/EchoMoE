@@ -11,7 +11,7 @@
     const controls = {
       play: root.querySelector('.f2-play'),
       replay: root.querySelector('.f2-replay'),
-      speed: root.querySelector('.f2-speed'),
+      speed: Array.from(root.querySelectorAll('[data-f2-speed] [data-speed]')),
       scrubber: root.querySelector('.f2-scrubber'),
       caption: root.querySelector('.f2-status'),
       tag: root.querySelector('.f2-phase-tag')
@@ -19,9 +19,16 @@
     const elements = new Map(Array.from(root.querySelectorAll('[id]')).map(el => [el.id, el]));
     const nodes = Array.from(root.querySelectorAll('.f2-compute'));
     const packetLayers = {
-      left: root.querySelector('[data-panel="left"]'),
-      right: root.querySelector('[data-panel="right"]')
+      l: root.querySelector('[data-panel="left"]'),
+      r: root.querySelector('[data-panel="right"]'),
+      m: root.querySelector('[data-panel="mobile"]')
     };
+    // Narrow screens show one panel at a time and a single-column version of
+    // the layer detail ("f2-m-" ids mirror the desktop "f2-r-" ids).
+    const narrow = window.matchMedia('(max-width: 799px)');
+    const viewButtons = Array.from(root.querySelectorAll('[data-f2-view]'));
+    const detailWindow = [8250, 17550];
+    let view = '';
     const colors = { ink:'#4a5356', purple:'#7b4f9b', teal:'#27879d', green:'#6a8c4c', orange:'#ae641a' };
     let time = reducedMotion ? 12100 : 0;
     let paused = reducedMotion;
@@ -57,7 +64,11 @@
     ];
 
     const highlights = [];
-    function highlight(id, start, end) { highlights.push({el:elements.get(id), start, end}); }
+    function highlight(id, start, end) {
+      const el = elements.get(id);
+      if (el) highlights.push({el, start, end});
+      if (id.startsWith('f2-r-')) highlight(id.replace('f2-r-', 'f2-m-'), start, end);
+    }
     [
       ['f2-l-n0',450,900], ['f2-l-a0',1200,1750], ['f2-l-add0',2050,2350],
       ['f2-l-n1',2700,3150], ['f2-l-moe',3450,4050], ['f2-l-add1',4350,4650],
@@ -77,8 +88,10 @@
 
     const packets = [];
     function packet(pathId, start, end, color='ink', count=4, options={}) {
+      if (pathId.startsWith('f2-r-')) packet(pathId.replace('f2-r-', 'f2-m-'), start, end, color, count, options);
       const path = elements.get(pathId);
-      if (!path) throw new Error('Figure 2 missing path: '+pathId);
+      if (!path) return;  // the single-column view draws one expert, not three
+      const layer = pathId.slice(3, 4);
       const group = document.createElementNS(NS,'g');
       group.classList.add('f2-packet');
       group.dataset.path = pathId;
@@ -103,8 +116,8 @@
         block.setAttribute('rx','1.1');
         group.appendChild(block);
       }
-      packetLayers[pathId.startsWith('f2-l-')?'left':'right'].appendChild(group);
-      packets.push({path, group, start, end, length:path.getTotalLength(), endPadding,
+      packetLayers[layer].appendChild(group);
+      packets.push({path, group, layer, start, end, length:null, endPadding,
         hold:options.hold||0, offset:options.offset||0});
     }
     // Left: attention and MoE sublayers plus the actual residual bypasses.
@@ -152,11 +165,20 @@
       nodes.forEach(el=>el.classList.remove('is-active','is-stored','is-waiting'));
       highlights.forEach(h=>{if(t>=h.start && t<h.end)h.el.classList.add('is-active');});
       if(t>=4850){
-        ['f2-l-cache','f2-r-z','f2-r-local-cache'].forEach(id=>elements.get(id).classList.add('is-stored'));
+        ['f2-l-cache','f2-r-z','f2-r-local-cache','f2-m-z','f2-m-local-cache'].forEach(id=>elements.get(id)?.classList.add('is-stored'));
       }
       if(t>=8150&&t<17850)elements.get('f2-l-add3').classList.add('is-waiting');
       root.querySelector('.f2-detail-panel').classList.toggle('is-muted',t<7850);
+      const nextView=t>=detailWindow[0]&&t<detailWindow[1]?'detail':'model';
+      if(nextView!==view){
+        view=nextView;
+        root.dataset.view=view;
+        viewButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.f2View===view)));
+      }
+      const hiddenLayer=narrow.matches?'r':'m';
       packets.forEach(p=>{
+        if(p.layer===hiddenLayer){p.group.setAttribute('opacity','0');return;}
+        if(p.length===null)p.length=p.path.getTotalLength();
         const inTravel=t>=p.start&&t<p.end;
         const inHold=p.hold&&t>=p.end&&t<p.hold;
         if(!inTravel&&!inHold){p.group.setAttribute('opacity','0');return;}
@@ -183,7 +205,9 @@
     }
     function updateControl(){
       root.classList.toggle('is-paused',paused);
-      controls.play.querySelector('.f2-play-symbol').textContent=paused?'▶':'Ⅱ';
+      controls.play.querySelector('.f2-play-symbol').innerHTML=paused
+        ?'<path d="M3 1.4 11 6 3 10.6Z"></path>'
+        :'<rect x="2" y="1" width="3" height="10" rx=".8"></rect><rect x="7" y="1" width="3" height="10" rx=".8"></rect>';
       controls.play.querySelector('.f2-play-label').textContent=paused?'Play':'Pause';
       controls.play.setAttribute('aria-label',(paused?'Play':'Pause')+' architecture animation');
     }
@@ -203,8 +227,16 @@
     function seek(ms){time=Math.max(0,Math.min(duration,Number(ms)||0));lastStamp=null;render(time);}
     controls.play.addEventListener('click',()=>paused?play():pause());
     controls.replay.addEventListener('click',()=>{seek(0);play();});
-    controls.speed.addEventListener('change',()=>{speed=Number(controls.speed.value)||1;lastStamp=null;});
+    controls.speed.forEach(btn=>btn.addEventListener('click',()=>{
+      speed=Number(btn.dataset.speed)||1;
+      lastStamp=null;
+      controls.speed.forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));
+    }));
     controls.scrubber.addEventListener('input',()=>{pause();seek(controls.scrubber.value);});
+    viewButtons.forEach(btn=>btn.addEventListener('click',()=>{
+      if(btn.dataset.f2View!==view)seek(btn.dataset.f2View==='detail'?detailWindow[0]:0);
+    }));
+    narrow.addEventListener('change',()=>render(time));
     if('IntersectionObserver' in window){
       const observer=new IntersectionObserver(entries=>{
         visible=entries[0].isIntersecting;

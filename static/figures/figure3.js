@@ -40,10 +40,6 @@
   const echo = ECHO.map(r => [saved(r[3]), r[4], gainOf(r[6]), r[7] ? fmtRed(r[3]) : null, r]);
   const plain = PLAIN.map(r => [saved(r[2]), r[3], null, null, r]);
 
-  const W = 480, H = 320, M = { l: 50, r: 18, t: 22, b: 50 };
-  const X = v => M.l + (v - 28) / (80 - 28) * (W - M.l - M.r);
-  const mkY = (lo, hi) => v => M.t + (hi - v) / (hi - lo) * (H - M.t - M.b);
-
   const el = (tag, attrs, parent, text) => {
     const n = document.createElementNS(NS, tag);
     for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
@@ -64,19 +60,33 @@
   }
   const hideTip = () => { tip.hidden = true; };
 
-  function axes(svg, Y, ticks, yLabel, fmt) {
+  // Layout for a panel drawn at its real pixel width W.
+  function layout(W) {
+    const H = Math.round(Math.max(270, Math.min(300, W * 0.75)));
+    // Leave room right of the last highlighted point (75.2% saved) for its value
+    // label; both panels share this margin so their x-axes stay aligned.
+    const k = (80 - 75.2) / 52;
+    const r = Math.max(14, Math.ceil((72 - k * (W - 46)) / (1 - k)));
+    const M = { l: 46, r, t: 16, b: 44 };
+    const X = v => M.l + (v - 28) / (80 - 28) * (W - M.l - M.r);
+    const mkY = (lo, hi) => v => M.t + (hi - v) / (hi - lo) * (H - M.t - M.b);
+    return { W, H, M, X, mkY };
+  }
+
+  function axes(svg, L, Y, ticks, yLabel, fmt) {
+    const { W, H, M, X } = L;
     const g = el('g', { class: 'f3-axes' }, svg);
     for (const t of ticks) {
       el('line', { x1: M.l, x2: W - M.r, y1: Y(t), y2: Y(t), class: 'f3-grid' }, g);
       el('text', { x: M.l - 8, y: Y(t) + 4, class: 'f3-tick', 'text-anchor': 'end' }, g, fmt(t));
     }
     for (const t of [30, 40, 50, 60, 70, 80]) {
-      el('text', { x: X(t), y: H - M.b + 18, class: 'f3-tick', 'text-anchor': 'middle' }, g, t);
+      el('text', { x: X(t), y: H - M.b + 17, class: 'f3-tick', 'text-anchor': 'middle' }, g, t);
     }
     el('line', { x1: M.l, x2: W - M.r, y1: H - M.b, y2: H - M.b, class: 'f3-axis' }, g);
     el('text', { x: (M.l + W - M.r) / 2, y: H - 8, class: 'f3-axis-label', 'text-anchor': 'middle' }, g, 'Inter-node RDMA saved (%) →');
-    el('text', { x: 14, y: (M.t + H - M.b) / 2, class: 'f3-axis-label', 'text-anchor': 'middle',
-      transform: `rotate(-90 14 ${(M.t + H - M.b) / 2})` }, g, yLabel);
+    el('text', { x: 13, y: (M.t + H - M.b) / 2, class: 'f3-axis-label', 'text-anchor': 'middle',
+      transform: `rotate(-90 13 ${(M.t + H - M.b) / 2})` }, g, yLabel);
     // guides at the highlighted configurations
     for (const d of echo.filter(d => d[3])) {
       el('line', { x1: X(d[0]), x2: X(d[0]), y1: M.t, y2: H - M.b, class: 'f3-guide' }, g);
@@ -85,7 +95,7 @@
 
   const path = (pts, X, Y) => pts.map((p, i) => `${i ? 'L' : 'M'}${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join('');
 
-  function points(svg, data, Y, valIdx, cls, tipFn) {
+  function points(svg, X, data, Y, valIdx, cls, tipFn) {
     const g = el('g', {}, svg);
     for (const d of data) {
       const cx = X(d[0]), cy = Y(d[valIdx]);
@@ -115,10 +125,11 @@
     Task score: ${r[3].toFixed(1)}% (${fmtDelta(r[4])})`; };
 
   // ---- Left: task score ----
-  {
+  EchoFit.mount(root.querySelector('[data-f3="score"]'), W => {
     const svg = root.querySelector('[data-f3="score"]');
-    const Y = mkY(50, 68);
-    axes(svg, Y, [50, 55, 60, 65], 'Task score (%) →', t => t);
+    const L = layout(W), { H, M, X } = L;
+    const Y = L.mkY(50, 68);
+    axes(svg, L, Y, [50, 55, 60, 65], 'Task score (%) →', t => t);
     el('line', { x1: M.l, x2: W - M.r, y1: Y(BASE), y2: Y(BASE), class: 'f3-base' }, svg);
     el('text', { x: W - M.r - 4, y: Y(BASE) - 6, class: 'f3-note', 'text-anchor': 'end' }, svg, 'Uncompressed (66.9)');
     // shaded gap between the two frontiers
@@ -133,22 +144,40 @@
     // plain (1.78x, 62.8) vs EchoMoE (2.39x, 63.1): 1 - 1.78/2.39 = 26% fewer bytes
     const pA = plain[0], eB = echo.find(d => d[4][3] === 2.39);
     el('line', { x1: X(pA[0]) + 8, y1: Y(pA[1]), x2: X(eB[0]) - 12, y2: Y(pA[1]), class: 'f3-arrow', 'marker-end': 'url(#f3-head)' }, svg);
-    el('text', { x: X(29.5), y: Y(58.6), class: 'f3-callout' }, svg, '26% fewer RDMA bytes');
-    el('text', { x: X(29.5), y: Y(57.4), class: 'f3-callout-sub' }, svg, 'at similar performance');
-    el('text', { x: X(29.5), y: Y(63.9), class: 'f3-label-echo' }, svg, 'EchoMoE');
-    el('text', { x: X(54), y: Y(53.6), class: 'f3-label-plain' }, svg, 'Plain compression');
-    for (const d of echo.filter(d => d[3])) {
-      el('text', { x: X(d[0]) + 11, y: Y(d[1]) - 9, class: 'f3-value' }, svg, fmtDelta(d[4][5]));
+    // callout in the empty lower-left corner: one line if it clears the
+    // baseline's line, otherwise stacked
+    const c1 = el('text', { x: X(29.5), y: Y(58.6), class: 'f3-callout' }, svg, '26% fewer RDMA bytes');
+    if (X(29.5) + EchoFit.textWidth(c1) < X(57.3) - 6) {
+      el('text', { x: X(29.5), y: Y(58.6) + 15, class: 'f3-callout-sub' }, svg, 'at similar performance');
+    } else {
+      const cx = M.l + 8, cy = Y(57.2);
+      c1.setAttribute('x', cx); c1.setAttribute('y', cy); c1.textContent = '26% fewer';
+      el('text', { x: cx, y: cy + 15, class: 'f3-callout' }, svg, 'RDMA bytes');
+      el('text', { x: cx, y: cy + 30, class: 'f3-callout-sub' }, svg, 'at similar performance');
     }
-    points(svg, plain, Y, 1, 'f3-plain-pt', plainTip);
-    points(svg, echo, Y, 1, 'f3-echo-pt', echoTip);
-  }
+    // line names: EchoMoE under the start of its line, the baseline beside its last point
+    const lab = el('text', { x: X(29.5), y: Y(63.5), class: 'f3-label-echo' }, svg, 'EchoMoE');
+    if (X(29.5) + EchoFit.textWidth(lab) > X(echo[2][0]) - 12) {   // too tight: sit above the line's right end
+      lab.setAttribute('x', W - M.r); lab.setAttribute('y', Y(61.8)); lab.setAttribute('text-anchor', 'end');
+    }
+    el('text', { x: X(75) - 10, y: H - M.b - 6, class: 'f3-label-plain', 'text-anchor': 'end' }, svg, 'Plain compression');
+    for (const d of echo.filter(d => d[3])) {
+      const t = el('text', { x: X(d[0]) + 11, y: Y(d[1]) - 9, class: 'f3-value' }, svg, fmtDelta(d[4][5]));
+      if (X(d[0]) + 11 + EchoFit.textWidth(t) > W - 2) {   // no room on the right: sit below the point
+        t.setAttribute('x', X(d[0]) + 4); t.setAttribute('y', Y(d[1]) + 24); t.setAttribute('text-anchor', 'end');
+      }
+    }
+    points(svg, X, plain, Y, 1, 'f3-plain-pt', plainTip);
+    points(svg, X, echo, Y, 1, 'f3-echo-pt', echoTip);
+    return H;
+  });
 
   // ---- Right: throughput gain ----
-  {
+  EchoFit.mount(root.querySelector('[data-f3="throughput"]'), W => {
     const svg = root.querySelector('[data-f3="throughput"]');
-    const Y = mkY(-4, 50);
-    axes(svg, Y, [0, 10, 20, 30, 40, 50], 'Throughput gain (%) →', t => t);
+    const L = layout(W), { H, M, X } = L;
+    const Y = L.mkY(-6, 50);
+    axes(svg, L, Y, [0, 10, 20, 30, 40, 50], 'Throughput gain (%) →', t => t);
     el('line', { x1: M.l, x2: W - M.r, y1: Y(0), y2: Y(0), class: 'f3-base' }, svg);
     el('text', { x: M.l + 6, y: Y(0) + 16, class: 'f3-note' }, svg, 'Uncompressed (0%)');
     const line = echo.map(d => [d[0], d[2]]);
@@ -157,6 +186,7 @@
     for (const d of echo.filter(d => d[3])) {
       el('text', { x: X(d[0]) - 12, y: Y(d[2]) - 8, class: 'f3-value', 'text-anchor': 'end' }, svg, `+${d[2].toFixed(1)}%`);
     }
-    points(svg, echo, Y, 2, 'f3-echo-pt', echoTip);
-  }
+    points(svg, X, echo, Y, 2, 'f3-echo-pt', echoTip);
+    return H;
+  });
 })();
