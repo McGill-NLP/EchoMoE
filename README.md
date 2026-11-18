@@ -61,16 +61,18 @@ The models are on [Hugging Face](https://huggingface.co/McGill-NLP/EchoMoE): the
 ```bash
 git clone https://github.com/McGill-NLP/EchoMoE && cd EchoMoE
 scripts/install.sh vllm && . scripts/env.sh vllm
-hf download McGill-NLP/EchoMoE-Qwen3-30B-A3B-s4-r512-c768 --local-dir checkpoints/EchoMoE-Qwen3-30B-A3B-s4-r512-c768
-python -m echomoe.inference.evaluation server --model checkpoints/EchoMoE-Qwen3-30B-A3B-s4-r512-c768 \
-    --variant folded --tasks arc_challenge_5shot --output outputs/quickstart
+hf download McGill-NLP/EchoMoE-Qwen3-30B-A3B-s4-r512-c768 \
+    --local-dir checkpoints/EchoMoE-Qwen3-30B-A3B-s4-r512-c768
+python -m echomoe.inference.evaluation server \
+    --model checkpoints/EchoMoE-Qwen3-30B-A3B-s4-r512-c768 --variant folded \
+    --tasks arc_challenge_5shot --output outputs/quickstart
 ```
 
 Without `--tasks`, it scores the whole 27-task suite. The Kanana-2 models are Powered by Kanana, under the Kanana License Agreement.
 
 ## Reproducing the paper
 
-[docs/reproduce.md](docs/reproduce.md) has the three environments, the 17 stages from the base model to every table, and the measured compute (about 13,300 GPU-hours). [docs/known-issues.md](docs/known-issues.md) lists what does not reproduce bitwise and why. The method and the names it uses in the code are in [docs/method.md](docs/method.md).
+[docs/reproduce.md](docs/reproduce.md) has the three environments and the 17 stages from the base model to every table. [docs/known-issues.md](docs/known-issues.md) lists what does not reproduce bitwise and why. The method and the names it uses in the code are in [docs/method.md](docs/method.md).
 
 ```
 echomoe/

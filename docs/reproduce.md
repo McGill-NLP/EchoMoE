@@ -8,10 +8,14 @@ There are three environments, built from committed lock files. They cannot be me
 pins conflict.
 
 ```bash
-scripts/install.sh megatron   # .venv-megatron: torch 2.11, Megatron-Core 0.19.2, TE 2.11, DeepEP 2.1.0
-scripts/install.sh vllm       # .venv-vllm: vLLM 0.21, lm-eval 0.4.12, plus pinned IFBench and LiveCodeBench
-scripts/install.sh vllm029    # .venv-vllm029: vLLM 0.29 on CUDA 13, DeepEP v2 with the rail patch
-scripts/install.sh nccl       # NCCL 2.31.2 with the rate cap, for the capped-network rows only
+# .venv-megatron: torch 2.11, Megatron-Core 0.19.2, TE 2.11, DeepEP 2.1.0
+scripts/install.sh megatron
+# .venv-vllm: vLLM 0.21, lm-eval 0.4.12, plus pinned IFBench and LiveCodeBench
+scripts/install.sh vllm
+# .venv-vllm029: vLLM 0.29 on CUDA 13, DeepEP v2 with the rail patch
+scripts/install.sh vllm029
+# NCCL 2.31.2 with the rate cap, for the capped-network rows only
+scripts/install.sh nccl
 ```
 
 The prebuilt binaries, all for H100 (sm_90), are assets of the
@@ -44,14 +48,15 @@ settings with `base:` (`frozen.yaml` or `full_adaptation.yaml`) and sets only wh
 
 Every stage writes under `outputs/`. Run them in this order. The `torchrun` launches below show the
 per-node arguments, and multi-node runs add `--nnodes`, `--node-rank` and a rendezvous endpoint.
-All GPU stages ran on nodes of 8 H100s. Measured times are under [Compute](#compute).
+All GPU stages ran on nodes of 8 H100s.
 
 ### 1. Base model with the Instruct chat template
 
 Environment `megatron`.
 
 ```bash
-python -m echomoe.training.base_model configs/models/qwen3-30b-a3b.yaml outputs/qwen3-30b-a3b/base
+python -m echomoe.training.base_model configs/models/qwen3-30b-a3b.yaml \
+    outputs/qwen3-30b-a3b/base
 ```
 
 ### 2. Tokenize and pack Dolmino and Dolci
@@ -59,8 +64,10 @@ python -m echomoe.training.base_model configs/models/qwen3-30b-a3b.yaml outputs/
 Environment `megatron`.
 
 ```bash
-python -m echomoe.training.data.prepare --recipe configs/data/dolmino.yaml --data-root outputs/qwen3-30b-a3b/data
-python -m echomoe.training.data.prepare --recipe configs/data/dolci.yaml --data-root outputs/qwen3-30b-a3b/data
+python -m echomoe.training.data.prepare --recipe configs/data/dolmino.yaml \
+    --data-root outputs/qwen3-30b-a3b/data
+python -m echomoe.training.data.prepare --recipe configs/data/dolci.yaml \
+    --data-root outputs/qwen3-30b-a3b/data
 ```
 
 ### 3. Teacher SFT
@@ -68,7 +75,8 @@ python -m echomoe.training.data.prepare --recipe configs/data/dolci.yaml --data-
 Environment `megatron`.
 
 ```bash
-torchrun --nproc-per-node 8 -m echomoe.training.sft --config configs/training/qwen3-30b-a3b/sft.yaml
+torchrun --nproc-per-node 8 -m echomoe.training.sft \
+    --config configs/training/qwen3-30b-a3b/sft.yaml
 ```
 
 ### 4. Teacher export
@@ -77,7 +85,8 @@ Environment `megatron`.
 
 ```bash
 torchrun --standalone --nproc-per-node 8 -m echomoe.inference.evaluation.export \
-    --checkpoint outputs/qwen3-30b-a3b/teacher/checkpoints/step-0002230 --output outputs/qwen3-30b-a3b/teacher/hf
+    --checkpoint outputs/qwen3-30b-a3b/teacher/checkpoints/step-0002230 \
+    --output outputs/qwen3-30b-a3b/teacher/hf
 ```
 
 ### 5. Activation capture
@@ -85,7 +94,8 @@ torchrun --standalone --nproc-per-node 8 -m echomoe.inference.evaluation.export 
 Environment `vllm`, for parts 0 to 23.
 
 ```bash
-python -m echomoe.training.data.teacher capture --config configs/fit/dolci-capture.yaml --part-index I
+python -m echomoe.training.data.teacher capture --config configs/fit/dolci-capture.yaml \
+    --part-index I
 ```
 
 ### 6. Routing fanout
@@ -93,7 +103,8 @@ python -m echomoe.training.data.teacher capture --config configs/fit/dolci-captu
 Any environment.
 
 ```bash
-python scripts/routing_fanout.py outputs/qwen3-30b-a3b/capture results/communication/routing_fanout.json
+python scripts/routing_fanout.py outputs/qwen3-30b-a3b/capture \
+    results/communication/routing_fanout.json
 ```
 
 ### 7. Moments, then the 78 fits
@@ -102,8 +113,10 @@ Environment `megatron`.
 
 ```bash
 python -m echomoe.fit moments outputs/qwen3-30b-a3b/capture outputs/qwen3-30b-a3b/fit
-python -m echomoe.fit fits outputs/qwen3-30b-a3b/fit --moments outputs/qwen3-30b-a3b/fit/moments.safetensors \
-    --export outputs/qwen3-30b-a3b/teacher/hf $(basename -s .yaml configs/training/qwen3-30b-a3b/frozen/*/*.yaml)
+python -m echomoe.fit fits outputs/qwen3-30b-a3b/fit \
+    --moments outputs/qwen3-30b-a3b/fit/moments.safetensors \
+    --export outputs/qwen3-30b-a3b/teacher/hf \
+    $(basename -s .yaml configs/training/qwen3-30b-a3b/frozen/*/*.yaml)
 ```
 
 ### 8. Teacher targets
@@ -112,7 +125,8 @@ Environment `vllm`, for each config's `part_count` parts. The four configs are
 `configs/fit/<dolmino, dolci>-teacher-targets-<train, validation>.yaml`.
 
 ```bash
-python -m echomoe.training.data.teacher targets --config configs/fit/dolci-teacher-targets-train.yaml --part-index I
+python -m echomoe.training.data.teacher targets \
+    --config configs/fit/dolci-teacher-targets-train.yaml --part-index I
 ```
 
 ### 9. Teacher converted to Megatron, for the dev mode runs
@@ -120,7 +134,8 @@ python -m echomoe.training.data.teacher targets --config configs/fit/dolci-teach
 Environment `megatron`.
 
 ```bash
-torchrun --nproc-per-node 8 -m echomoe.training.model --config configs/training/qwen3-30b-a3b/frozen/joint/dres512-s4-c1280-direct.yaml
+torchrun --nproc-per-node 8 -m echomoe.training.model \
+    --config configs/training/qwen3-30b-a3b/frozen/joint/dres512-s4-c1280-direct.yaml
 ```
 
 ### 10. Distill one student
@@ -128,7 +143,8 @@ torchrun --nproc-per-node 8 -m echomoe.training.model --config configs/training/
 Environment `megatron`.
 
 ```bash
-torchrun --nproc-per-node 8 -m echomoe.training --config configs/training/<family>/<config>.yaml
+torchrun --nproc-per-node 8 -m echomoe.training \
+    --config configs/training/<family>/<config>.yaml
 ```
 
 A run resumes with `--resume-from latest`. Dev mode runs end at update 1,000 and full-model
@@ -148,8 +164,9 @@ torchrun --standalone --nproc-per-node 8 -m echomoe.inference.evaluation.export 
 Environment `vllm`.
 
 ```bash
-python -m echomoe.inference.evaluation server --model outputs/qwen3-30b-a3b/runs/<run>/export/step-N \
-    --variant folded --ifbench-checkout third-party/IFBench
+python -m echomoe.inference.evaluation server \
+    --model outputs/qwen3-30b-a3b/runs/<run>/export/step-N --variant folded \
+    --ifbench-checkout third-party/IFBench
 ```
 
 Variants:
@@ -165,16 +182,19 @@ Environment `vllm029`. On every node, the base model, then the folded student:
 ```bash
 torchrun --nnodes 4 --nproc-per-node 8 ... -m echomoe.inference.throughput \
     --workload configs/inference/throughput/i4096-o256.yaml --variant base \
-    --model outputs/qwen3-30b-a3b/teacher/hf --output outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256
+    --model outputs/qwen3-30b-a3b/teacher/hf \
+    --output outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256
 torchrun --nnodes 4 --nproc-per-node 8 ... -m echomoe.inference.throughput \
     --workload configs/inference/throughput/i4096-o256.yaml --variant folded \
-    --model outputs/qwen3-30b-a3b/runs/<run>/export/step-N --output outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256
+    --model outputs/qwen3-30b-a3b/runs/<run>/export/step-N \
+    --output outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256
 ```
 
 Then once:
 
 ```bash
-python -m echomoe.inference.throughput.summarize outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256 --config <config>
+python -m echomoe.inference.throughput.summarize \
+    outputs/qwen3-30b-a3b/throughput/<config>-i4096-o256 --config <config>
 ```
 
 Options (`python -m echomoe.inference.throughput --help`):
@@ -202,7 +222,8 @@ Environment `vllm029`. Random-weight fixtures, for `<model>` one of
 `qwen3-235b-a22b`, `deepseek-v3` and `kimi-k2.6`:
 
 ```bash
-python -m echomoe.inference.throughput.fixtures --model-config configs/inference/throughput/<model>.yaml \
+python -m echomoe.inference.throughput.fixtures \
+    --model-config configs/inference/throughput/<model>.yaml \
     --official <official snapshot> --output outputs/<model>/fixtures
 ```
 
@@ -227,13 +248,17 @@ python scripts/throughput_tables.py outputs results/throughput
 Environment `megatron`.
 
 ```bash
-python scripts/analysis.py similarity-capture [--cross-token] <hf model> outputs/qwen3-30b-a3b/data/dolci outputs/similarity/<model>
+python scripts/analysis.py similarity-capture [--cross-token] <hf model> \
+    outputs/qwen3-30b-a3b/data/dolci outputs/similarity/<model>
 # Table 2
-python scripts/analysis.py similarity outputs/similarity/<model>/moments.safetensors outputs/analysis/similarity/<model>.json
+python scripts/analysis.py similarity outputs/similarity/<model>/moments.safetensors \
+    outputs/analysis/similarity/<model>.json
 # Table 16, from a capture with --cross-token
-python scripts/analysis.py cross-token outputs/similarity/<model> outputs/analysis/similarity/<model>-cross-token.json
+python scripts/analysis.py cross-token outputs/similarity/<model> \
+    outputs/analysis/similarity/<model>-cross-token.json
 # Table 4, Figure 5
-python scripts/analysis.py spectrum outputs/qwen3-30b-a3b/fit/moments.safetensors outputs/analysis/residual_spectrum.json
+python scripts/analysis.py spectrum outputs/qwen3-30b-a3b/fit/moments.safetensors \
+    outputs/analysis/residual_spectrum.json
 ```
 
 ## Other models
@@ -281,21 +306,3 @@ it. Two identical runs differ by 2 to 3 points per task, so compare the suite me
 | 25–28, 30, 31 throughput | the 11 full-model adaptation students of Table 25, five workloads in `configs/inference/throughput/` | `base`, `folded` |
 | 29 operation times | dres512-s4-c768 at 4096/256 and dres512-s4-c1024 at 128k, `--profile` | `base`, `folded` |
 | 37, 38 larger models | random-weight Qwen3-235B-A22B, DeepSeek-V3 and Kimi-K2.6 (`configs/inference/throughput/<model>.yaml`) | `base`, `folded` |
-
-## Compute
-
-Measured from the logs of the runs behind `results/`. A run that restarted is left out of the per-run
-figures. Stages 1, 4, 5, 6 and 9 have no timing record, and 4, 5 and 9 wrote their outputs within minutes.
-
-| Stage | Hardware | Measured time |
-| --- | --- | --- |
-| 2 Data preparation | CPU, 32 workers | Dolmino: 46 min download and split, 1 h 46 min tokenize and pack. Dolci: 18 min tokenize and pack |
-| 3 Teacher SFT, 2,230 updates | 8 nodes | 4.8 h busy, including one crash and resume (309 GPU-h) |
-| 7 Moments, then 78 fits | 1 GPU | 12 min, then 1–8 s per fit |
-| 8 Teacher targets | 2 nodes (Dolci), 8 nodes (Dolmino) | Dolci train: 7.9 h. Dolmino train: 6.5 h, plus 10.8 h when its budget was raised to 6B tokens. File times only, so lower bounds |
-| 10 Dev mode student (backbone frozen), 1,000 updates | 8 nodes | median 1.12 h (0.99–1.24), 78 runs, about 5,700 GPU-h |
-| 10 Full-model adaptation student, 4,152 updates | 8 nodes | median 4.06 h (3.48–4.31), 19 runs, about 5,000 GPU-h |
-| 11 Export, full-model adaptation | 1 node | median 6 min (file times) |
-| 12 One 27-task suite | 1 node | median 97 min (61–169), 119 suites, 198 node-hours |
-
-In total, about 13,300 GPU-hours, 11,000 of them training.
